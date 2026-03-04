@@ -42,7 +42,7 @@ class AIService {
       temperature?: number;
       max_tokens?: number;
     }
-  ): Promise<AIResponse> {
+  ): Promise<string> {
     const model = this.getModelById(options.model);
     if (!model) {
       throw new Error(`Model ${options.model} not found`);
@@ -59,7 +59,7 @@ class AIService {
     
     const response = await this.callAPI(model, settings, prompt);
     
-    return response;
+    return response.content;
   }
 
   private getModelById(modelId: string): AIModel | undefined {

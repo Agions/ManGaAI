@@ -332,7 +332,7 @@ class DramaWorkflowService {
           id: `scene-${board.id}`,
           storyboardId: board.id,
           renderPrompt,
-          description: sceneResult.content,
+          description: sceneResult,
           imageUrl: null, // 实际图像URL由外部图像生成API填充
           status: 'described'
         });

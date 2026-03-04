@@ -428,7 +428,7 @@ class EnhancedDramaWorkflowService {
           id: `scene-${board.id}`,
           storyboardId: board.id,
           renderPrompt,
-          description: sceneResult.content,
+          description: sceneResult,
           imageUrl: null,
           status: 'completed'
         };
@@ -518,7 +518,7 @@ class EnhancedDramaWorkflowService {
           id: `scene-${board.id}`,
           storyboardId: board.id,
           renderPrompt,
-          description: sceneResult.content,
+          description: sceneResult,
           imageUrl: null,
           status: 'completed'
         });
