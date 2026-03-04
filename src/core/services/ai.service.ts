@@ -197,7 +197,7 @@ ${script}
     model: AIModel,
     settings: AIModelSettings,
     prompt: string
-  ): Promise<string> {
+  ): Promise<AIResponse> {
     // 构建请求配置
     const config: RequestConfig = {
       model: settings.model || model.id,
