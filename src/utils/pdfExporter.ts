@@ -5,7 +5,7 @@ import 'jspdf-autotable';
 // 声明扩展模块，解决TypeScript类型问题
 declare module 'jspdf' {
   interface jsPDF {
-    autoTable: (options: any) => jsPDF;
+    autoTable: (options: unknown) => jsPDF;
   }
 }
 
@@ -22,8 +22,8 @@ export const exportScriptToPDF = (script: Script, projectName: string) => {
   const title = `${projectName} - 解说脚本`;
   doc.setProperties({
     title,
-    author: 'ClipAiMan',
-    creator: 'ClipAiMan Script Generator',
+    author: 'ManGa AI',
+    creator: 'ManGa AI Script Generator',
     subject: '视频解说脚本',
   });
   
@@ -79,7 +79,7 @@ export const exportScriptToPDF = (script: Script, projectName: string) => {
     doc.setPage(i);
     doc.setFontSize(8);
     doc.text(
-      `ClipAiMan - 第 ${i} 页，共 ${pageCount} 页`,
+      `ManGa AI - 第 ${i} 页，共 ${pageCount} 页`,
       doc.internal.pageSize.getWidth() / 2,
       doc.internal.pageSize.getHeight() - 10,
       { align: 'center' }

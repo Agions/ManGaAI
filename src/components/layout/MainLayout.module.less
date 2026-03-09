@@ -1,0 +1,456 @@
+@import '../../styles/variables.less';
+
+/* ==================== 通用样式 ==================== */
+
+.layout,
+.mainLayout {
+  min-height: 100vh;
+}
+
+.sider {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  position: fixed;
+  left: 0;
+  height: 100vh;
+  overflow: auto;
+  z-index: 10;
+  background-color: #fff;
+  border-right: none;
+  transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+  background: linear-gradient(180deg, #ffffff, #f9fafc);
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+}
+
+/* Logo */
+.logo {
+  height: @layout-header-height;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 @spacing-medium;
+  color: @primary-color;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+  margin: 0;
+  overflow: hidden;
+  transition: all 0.3s;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 15%;
+    right: 15%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(24, 144, 255, 0.3), transparent);
+  }
+
+  h4 {
+    background: linear-gradient(90deg, @primary-color, @secondary-color);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: @font-weight-bold;
+    font-size: 18px;
+    letter-spacing: -0.5px;
+  }
+}
+
+/* 菜单 */
+.menu {
+  border-right: none;
+  padding: @spacing-medium @spacing-small;
+
+  :global(.ant-menu-item) {
+    border-radius: 10px;
+    margin: @spacing-small 0;
+    height: 48px;
+    line-height: 48px;
+    font-weight: @font-weight-medium;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: rgba(24, 144, 255, 0.05);
+      transform: translateX(4px);
+    }
+
+    &.ant-menu-item-selected {
+      background-color: rgba(24, 144, 255, 0.1);
+      font-weight: @font-weight-bold;
+      box-shadow: 0 4px 12px rgba(24, 144, 255, 0.1);
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 10px;
+        bottom: 10px;
+        width: 3px;
+        background: linear-gradient(to bottom, #1890ff, #722ed1);
+        border-radius: 0 3px 3px 0;
+        box-shadow: 0 0 8px rgba(24, 144, 255, 0.5);
+      }
+
+      .anticon {
+        color: #1890ff;
+      }
+    }
+
+    .anticon {
+      transition: all 0.3s ease;
+      font-size: 18px;
+      margin-right: 12px;
+    }
+  }
+}
+
+/* 内容区 */
+.content {
+  padding: @container-padding;
+  overflow: auto;
+  background-color: @background-color-base;
+  min-height: calc(100vh - @layout-header-height);
+  margin-left: @layout-sider-width;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #f8fafc, #f5f7fa);
+
+  .siderCollapsed & {
+    margin-left: 80px;
+  }
+}
+
+.contentWrapper {
+  max-width: @layout-content-max-width;
+  margin: 0 auto;
+  background: @component-background;
+  padding: @container-padding;
+  border-radius: @border-radius-large;
+  box-shadow: @box-shadow-card;
+  min-height: calc(100vh - 112px);
+}
+
+.collapseButton {
+  position: absolute;
+  bottom: @spacing-large;
+  width: 100%;
+  text-align: center;
+}
+
+/* 头部 */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  padding: 0 @container-padding;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  height: @layout-header-height;
+  position: sticky;
+  top: 0;
+  z-index: 9;
+  margin-left: @layout-sider-width;
+  transition: all 0.3s;
+
+  .siderCollapsed & {
+    margin-left: 80px;
+  }
+}
+
+.headerTitle {
+  font-size: 18px;
+  font-weight: @font-weight-medium;
+  color: @primary-color;
+  position: relative;
+  padding-left: @spacing-large;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 18px;
+    background: @primary-color;
+    border-radius: 2px;
+  }
+}
+
+.headerControls {
+  display: flex;
+  align-items: center;
+  gap: @spacing-small;
+
+  .ant-btn:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+    color: @primary-color;
+  }
+
+  .userButton {
+    padding: @spacing-small @spacing-medium;
+    border-radius: @border-radius-base;
+    transition: all 0.3s;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.03);
+    }
+  }
+}
+
+/* 通知项 */
+.notificationItem {
+  padding: 8px 0;
+  max-width: 280px;
+
+  strong {
+    display: block;
+    margin-bottom: 4px;
+  }
+}
+
+/* ==================== Professional 风格 ==================== */
+
+.proSider {
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 100;
+  overflow: hidden;
+
+  :global(.ant-layout-sider-children) {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.proLogo {
+  display: flex;
+  align-items: center;
+  padding: 20px 16px;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 8px;
+}
+
+.logoIcon {
+  font-size: 32px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.logoText {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.logoTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.logoSubtitle {
+  font-size: 11px;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.proMenu {
+  background: transparent !important;
+  border-right: none !important;
+  flex: 1;
+  padding: 0 12px;
+
+  :global(.ant-menu-item) {
+    margin: 4px 0 !important;
+    border-radius: 10px !important;
+    height: 48px !important;
+    line-height: 48px !important;
+    font-size: 14px !important;
+  }
+
+  :global(.ant-menu-item-selected) {
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.2) 0%, transparent 100%) !important;
+  }
+
+  :global(.ant-menu-item:hover) {
+    background: rgba(255, 255, 255, 0.05) !important;
+  }
+
+  :global(.ant-menu-item .anticon) {
+    font-size: 18px !important;
+  }
+}
+
+.proFooter {
+  padding: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.newProjectBtn {
+  height: 44px !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4) !important;
+}
+
+.proHeader {
+  background: #fff !important;
+  padding: 0 24px !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 99;
+  margin-left: 260px;
+  transition: margin-left 0.2s;
+}
+
+:global(.ant-layout-sider-collapsed) + .ant-layout .proHeader {
+  margin-left: 80px;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+}
+
+.trigger {
+  font-size: 18px !important;
+  padding: 8px 12px !important;
+  border-radius: 8px !important;
+
+  &:hover {
+    background: #f1f5f9 !important;
+  }
+}
+
+.searchWrapper {
+  .searchInput {
+    width: 320px;
+    border-radius: 10px !important;
+
+    :global(.ant-input) {
+      border-radius: 10px !important;
+      background: #f8fafc !important;
+      border: 1px solid #e2e8f0 !important;
+    }
+  }
+}
+
+.headerBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: #f1f5f9 !important;
+  }
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #f1f5f9;
+  }
+}
+
+.avatar {
+  background: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.userName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.2;
+}
+
+.userRole {
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.2;
+}
+
+.proContent {
+  margin-left: 260px;
+  padding: 24px;
+  min-height: calc(100vh - 64px);
+  background: #f8fafc;
+  transition: margin-left 0.2s;
+}
+
+:global(.ant-layout-sider-collapsed) + .ant-layout .proContent {
+  margin-left: 80px;
+}
+
+/* ==================== 响应式 ==================== */
+@media (max-width: 768px) {
+  .header,
+  .proHeader {
+    margin-left: 0;
+    padding: 0 16px !important;
+  }
+
+  .content,
+  .proContent {
+    margin-left: 0;
+    padding: 16px;
+  }
+
+  .searchWrapper {
+    display: none;
+  }
+
+  .userInfo {
+    display: none;
+  }
+}

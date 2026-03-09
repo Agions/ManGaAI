@@ -1,18 +1,21 @@
 import React, { useEffect, useState, Suspense, lazy } from 'react';
 import { Routes, Route, BrowserRouter, Navigate } from 'react-router-dom';
 import { message, notification, Spin } from 'antd';
-import Layout from './components/layout/Layout';
+import { MainLayout } from './components/layout';
 import ErrorBoundary from './ErrorBoundary';
+import { getPageImporters, preloadPage } from '@/core/router/page-preload';
+import { runWhenIdle } from '@/core/utils/idle';
 import './App.css';
 
+const importers = getPageImporters();
 // 懒加载页面组件
-const Home = lazy(() => import('./pages/Home'));
-const Workflow = lazy(() => import('./pages/Workflow'));
-const ProjectEdit = lazy(() => import('./pages/ProjectEdit'));
-const ProjectDetail = lazy(() => import('./pages/ProjectDetail'));
-const ScriptDetail = lazy(() => import('./pages/ScriptDetail'));
-const VideoEditor = lazy(() => import('./pages/VideoEditor'));
-const Settings = lazy(() => import('./pages/Settings'));
+const Home = lazy(importers.home);
+const Workflow = lazy(importers.workflow);
+const ProjectEdit = lazy(importers.projectEdit);
+const ProjectDetail = lazy(importers.projectDetail);
+const ScriptDetail = lazy(importers.scriptDetail);
+const Settings = lazy(importers.settings);
+const UIDemo = lazy(importers.demo);
 
 // 加载时的占位组件
 const PageLoader: React.FC = () => (
@@ -97,11 +100,19 @@ const App: React.FC = () => {
     }
   }, [ffmpegReady, checking]);
 
+  useEffect(() => {
+    const warmup = () => {
+      void preloadPage(importers.workflow, '/workflow');
+      void preloadPage(importers.projectEdit, '/project');
+    };
+    return runWhenIdle(warmup, { timeoutMs: 1200 });
+  }, []);
+
   return (
     <ErrorBoundary>
       <AppProvider>
         <BrowserRouter>
-          <Layout>
+          <MainLayout variant="professional">
             <Suspense fallback={<PageLoader />}>
               <Routes>
               {/* 首页 */}
@@ -114,26 +125,18 @@ const App: React.FC = () => {
               <Route path="/project/new" element={<ProjectEdit />} />
               <Route path="/project/edit/:projectId" element={<ProjectEdit />} />
               <Route path="/project/:projectId" element={<ProjectDetail />} />
-              
-              {/* 视频编辑工作台 */}
-              <Route path="/editor" element={<VideoEditor />} />
-              <Route path="/editor/:projectId" element={<VideoEditor />} />
-              
-              {/* 脚本页面 */}
-              <Route path="/scripts" element={<Home />} />
-              <Route path="/script/:scriptId" element={<ScriptDetail />} />
-              
-              {/* 模板页面 */}
-              <Route path="/templates" element={<Home />} />
-              
+
               {/* 设置页面 */}
               <Route path="/settings" element={<Settings />} />
-              
+
+              {/* UI组件演示 */}
+              <Route path="/demo" element={<UIDemo />} />
+
               {/* 重定向 */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
             </Suspense>
-          </Layout>
+          </MainLayout>
         </BrowserRouter>
       </AppProvider>
     </ErrorBoundary>

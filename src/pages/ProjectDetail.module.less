@@ -72,6 +72,56 @@
   width: 100%;
 }
 
+.workflowSection {
+  margin-top: 8px;
+}
+
+.storyboardDetail {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.storyboardFramesCard,
+.collabCard {
+  width: 100%;
+}
+
+.framePreview {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.collabList {
+  margin-top: 12px;
+  max-height: 240px;
+  overflow: auto;
+}
+
+.versionActions {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.costQuickActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.qualityGateList {
+  margin: 0;
+  padding-left: 16px;
+}
+
+.exportActions {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+
 .emptyEditor {
   display: flex;
   flex-direction: column;
@@ -93,4 +143,14 @@
   .scriptHeader h4 {
     color: rgba(255, 255, 255, 0.85);
   }
-} 
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 12px;
+  }
+
+  .header {
+    align-items: flex-start;
+  }
+}

@@ -70,13 +70,24 @@ export interface DramaStyle {
   basePrompt: string;
 }
 
-// 一致性检查结果
+// ========== 一致性检查结果
 export interface ConsistencyIssue {
   type: string;
   severity: 'error' | 'warning' | 'info';
   message: string;
   suggestion: string;
   autoFixable: boolean;
+}
+
+// 一致性检查点
+export interface ConsistencyCheckpoint {
+  id: string;
+  episodeId: string;
+  sceneId: string;
+  type: 'character' | 'appearance' | 'scene' | 'style';
+  status: 'passed' | 'warning' | 'failed';
+  issues: ConsistencyIssue[];
+  checkedAt: string;
 }
 
 // 角色库
@@ -585,7 +596,7 @@ class EnhancedConsistencyService {
       handbook += `---\n\n`;
     });
 
-    handbook += `\n---\n*手册由 ClipAiMan 一致性服务生成*\n`;
+    handbook += `\n---\n*手册由 ManGa AI 一致性服务生成*\n`;
     
     return handbook;
   }
@@ -598,7 +609,7 @@ class EnhancedConsistencyService {
     if (!library || !library.dramaStyle) return '# 风格未定义';
 
     const style = library.dramaStyle;
-    
+
     return `# ${style.name} 风格指南
 
 ## 基础信息
@@ -621,6 +632,74 @@ ${this.generateDramaStylePrompt(style)}
 
 ---
 *生成时间: ${new Date().toLocaleString('zh-CN')}*`;
+  }
+
+  /**
+   * 拆分长句子 - 从基础版迁移
+   */
+  splitLongSentences(text: string): string {
+    const sentences = text.split(/([。！？.!?])/);
+    const result: string[] = [];
+
+    for (let i = 0; i < sentences.length; i += 2) {
+      const sentence = sentences[i];
+      const punctuation = sentences[i + 1] || '';
+
+      if (sentence.length > 30) {
+        // 在逗号处拆分
+        const parts = sentence.split(/，/);
+        result.push(...parts.map((p, idx) =>
+          idx === parts.length - 1 ? p + punctuation : p + '。'
+        ));
+      } else {
+        result.push(sentence + punctuation);
+      }
+    }
+
+    return result.join('');
+  }
+
+  /**
+   * 生成一致性报告 - 从基础版迁移
+   */
+  generateConsistencyReport(
+    episodeId: string,
+    checkpoints: ConsistencyCheckpoint[]
+  ): string {
+    const failed = checkpoints.filter(c => c.status === 'failed');
+    const warnings = checkpoints.filter(c => c.status === 'warning');
+    const passed = checkpoints.filter(c => c.status === 'passed');
+
+    return `
+# 一致性检查报告
+
+## 概览
+- 剧集: ${episodeId}
+- 检查时间: ${new Date().toLocaleString('zh-CN')}
+- 总检查点: ${checkpoints.length}
+- ✅ 通过: ${passed.length}
+- ⚠️ 警告: ${warnings.length}
+- ❌ 失败: ${failed.length}
+
+## 详细结果
+
+${checkpoints.map(cp => `
+### ${cp.sceneId}
+- 类型: ${cp.type}
+- 状态: ${cp.status === 'passed' ? '✅ 通过' : cp.status === 'warning' ? '⚠️ 警告' : '❌ 失败'}
+${cp.issues.map(issue => `
+- ${issue.severity === 'error' ? '❌' : issue.severity === 'warning' ? '⚠️' : 'ℹ️'} ${issue.message}
+  - 建议: ${issue.suggestion}
+  - 可自动修复: ${issue.autoFixable ? '是' : '否'}
+`).join('')}
+`).join('\n')}
+
+## 建议
+${failed.length > 0 ? '- 优先处理失败项\n' : ''}${warnings.length > 0 ? '- 关注警告项\n' : ''}- 定期检查一致性
+
+---
+*报告由 ManGaAI 一致性服务生成*
+    `.trim();
   }
 }
 

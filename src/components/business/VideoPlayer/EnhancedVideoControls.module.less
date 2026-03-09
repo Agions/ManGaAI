@@ -1,0 +1,200 @@
+@import '../../../styles/variables.less';
+
+/* ==================== 视频控制条 ==================== */
+
+.controls {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  padding: @spacing-md @spacing-lg @spacing-sm;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.progressContainer {
+  margin-bottom: @spacing-sm;
+
+  :global(.ant-slider) {
+    margin: 0;
+
+    .ant-slider-rail {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .ant-slider-track {
+      background-color: @primary-color;
+    }
+
+    .ant-slider-handle {
+      &::after {
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+      }
+    }
+
+    &:hover {
+      .ant-slider-rail {
+        background-color: rgba(255, 255, 255, 0.4);
+      }
+    }
+  }
+}
+
+.progressSlider {
+  height: 4px;
+
+  &:hover {
+    height: 6px;
+  }
+}
+
+.controlBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.leftControls,
+.rightControls {
+  display: flex;
+  align-items: center;
+  gap: @spacing-xs;
+}
+
+.playButton {
+  font-size: 28px !important;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+.timeDisplay {
+  color: #fff;
+  font-size: @font-size-base;
+  font-family: @font-family;
+  padding: 0 @spacing-sm;
+}
+
+.currentTime {
+  font-weight: 500;
+}
+
+.timeSeparator {
+  margin: 0 4px;
+  opacity: 0.7;
+}
+
+.duration {
+  opacity: 0.7;
+}
+
+.rateButton {
+  color: #fff !important;
+  font-weight: 500;
+  min-width: 40px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.volumeControl {
+  display: flex;
+  align-items: center;
+  gap: @spacing-xs;
+
+  .ant-btn {
+    color: #fff !important;
+  }
+}
+
+.volumeSlider {
+  width: 60px;
+
+  :global(.ant-slider) {
+    margin: 0;
+
+    .ant-slider-rail {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .ant-slider-track {
+      background-color: #fff;
+    }
+
+    .ant-slider-handle {
+      &::after {
+        box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+      }
+    }
+  }
+}
+
+/* ==================== 快捷键说明 ==================== */
+
+.shortcuts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: @spacing-sm;
+  padding: @spacing-md;
+  background: @background-color-base;
+  border-radius: @border-radius-base;
+}
+
+.shortcutItem {
+  display: flex;
+  align-items: center;
+  gap: @spacing-sm;
+}
+
+.shortcutKey {
+  display: inline-block;
+  padding: 2px 6px;
+  font-size: @font-size-small;
+  font-family: @font-family;
+  background: @component-background;
+  border: 1px solid @border-color-base;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  min-width: 24px;
+  text-align: center;
+}
+
+.shortcutDesc {
+  font-size: @font-size-small;
+  color: @text-color-secondary;
+}
+
+/* ==================== 暗色模式 ==================== */
+
+:global(.dark-theme) {
+  .shortcuts {
+    background: @dark-component-background;
+  }
+
+  .shortcutKey {
+    background: @dark-background;
+    border-color: @dark-border-color;
+  }
+}
+
+/* ==================== 响应式 ==================== */
+
+@media (max-width: 768px) {
+  .controls {
+    padding: @spacing-sm;
+  }
+
+  .timeDisplay {
+    font-size: @font-size-small;
+    padding: 0 @spacing-xs;
+  }
+
+  .volumeSlider {
+    display: none;
+  }
+
+  .rateButton {
+    display: none;
+  }
+}

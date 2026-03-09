@@ -111,8 +111,9 @@ const VideoAnalyzer: React.FC<VideoAnalyzerProps> = ({
       
       message.success('视频分析完成');
       onAnalysisComplete(analysis);
-    } catch (error: any) {
-      setError(error.message || '视频分析失败');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : '视频分析失败';
+      setError(errorMessage);
       message.error('视频分析失败，请稍后重试');
     } finally {
       setLoading(false);

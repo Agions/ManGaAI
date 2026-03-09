@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { Card, Button, Radio, Form, Input, Select, message, Typography, Alert, Spin, Space, Tooltip } from 'antd';
 import { FileTextOutlined, RobotOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { v4 as uuidv4 } from 'uuid';
-import { aiService } from '@/core/services/legacy/aiService';
+import { aiService } from '@/core/services';
 import { useLegacyStore } from '@/core/stores';
-import type { Script, VideoAnalysis, AIModelType } from '@/core/types/legacy.types';
-import { AI_MODEL_INFO } from '@/core/types/legacy.types';
+import type { ScriptData, ScriptMetadata, ScriptSegment, VideoAnalysis } from '@/core/types';
+import { AIModelType, AI_MODEL_INFO } from '@/core/types/legacy.types';
 import styles from './ScriptGenerator.module.less';
 
 const { Title, Paragraph } = Typography;
@@ -15,7 +15,7 @@ const { Option } = Select;
 interface ScriptGeneratorProps {
   projectId: string;
   analysis: VideoAnalysis;
-  onScriptGenerated: (script: Script) => void;
+  onScriptGenerated: (script: ScriptData) => void;
 }
 
 const ScriptGenerator: React.FC<ScriptGeneratorProps> = ({
@@ -30,11 +30,23 @@ const ScriptGenerator: React.FC<ScriptGeneratorProps> = ({
   const { aiModelsSettings, selectedAIModel } = useLegacyStore();
   const [selectedModel, setSelectedModel] = useState<AIModelType>(selectedAIModel);
 
+  // 解析脚本内容为片段
+  const parseScriptContent = (content: string): ScriptSegment[] => {
+    const paragraphs = content.split('\n\n').filter(p => p.trim());
+    return paragraphs.map((p, index) => ({
+      id: `seg_${index + 1}`,
+      startTime: index * 30,
+      endTime: (index + 1) * 30,
+      content: p.trim(),
+      type: index === 0 ? 'narration' : index === paragraphs.length - 1 ? 'narration' : 'dialogue'
+    }));
+  };
+
   const handleGenerate = async () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       // 获取所选AI模型配置
       const modelSettings = aiModelsSettings[selectedModel];
       if (!modelSettings?.enabled || !modelSettings?.apiKey) {
@@ -43,37 +55,45 @@ const ScriptGenerator: React.FC<ScriptGeneratorProps> = ({
 
       // 获取表单值，用于引导生成
       const formValues = generationMethod === 'guided' ? form.getFieldsValue() : {};
-      
+
       // 调用AI服务生成脚本内容
-      const scriptContent = await aiService.generateScript(
-        selectedModel,
-        modelSettings.apiKey as string,
-        analysis,
-        formValues
+      const scriptContent = await aiService.generate(
+        `请基于以下视频分析结果生成一个专业的解说脚本。视频分析: ${JSON.stringify(analysis)}`,
+        {
+          model: selectedAIModel,
+          provider: AI_MODEL_INFO[selectedModel].provider.toLowerCase(),
+        }
       );
-      
+
       // 解析脚本内容为结构化数据
-      const scriptSegments = aiService.parseScriptContent(scriptContent);
-      
+      const scriptSegments = parseScriptContent(scriptContent);
+
       // 创建脚本对象
-      const script: Script = {
+      const script: ScriptData = {
         id: uuidv4(),
         title: formValues.title || '未命名脚本',
-        videoId: projectId,
-        content: scriptContent, // 原始内容文本
-        segments: scriptSegments.map((segment: any) => ({
-          ...segment,
-          id: uuidv4()
-        })),
+        content: scriptContent,
+        segments: scriptSegments,
+        metadata: {
+          style: formValues.style || 'informative',
+          tone: formValues.tone || 'neutral',
+          length: 'medium',
+          targetAudience: 'general',
+          language: 'zh',
+          wordCount: scriptContent.length,
+          estimatedDuration: Math.ceil(scriptContent.length / 150),
+          generatedBy: AI_MODEL_INFO[selectedModel].name,
+          generatedAt: new Date().toISOString()
+        },
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        modelUsed: AI_MODEL_INFO[selectedModel].name
+        updatedAt: new Date().toISOString()
       };
-      
+
       message.success('脚本生成成功');
       onScriptGenerated(script);
-    } catch (error: any) {
-      setError(error.message || '脚本生成失败');
+    } catch (error: unknown) {
+      const err = error as Error;
+      setError(err.message || '脚本生成失败');
       message.error('脚本生成失败，请稍后重试');
     } finally {
       setLoading(false);
@@ -83,7 +103,7 @@ const ScriptGenerator: React.FC<ScriptGeneratorProps> = ({
   // 处理AI模型变更
   const handleModelChange = (value: AIModelType) => {
     setSelectedModel(value);
-    
+
     // 检查是否有API密钥
     const modelSettings = aiModelsSettings[value];
     if (!modelSettings?.enabled) {
@@ -119,14 +139,14 @@ const ScriptGenerator: React.FC<ScriptGeneratorProps> = ({
             </span>
           }
         >
-          <Select 
+          <Select
             value={selectedModel}
             onChange={handleModelChange}
             style={{ width: '100%' }}
           >
             {Object.entries(AI_MODEL_INFO).map(([key, model]) => (
-              <Option 
-                key={key} 
+              <Option
+                key={key}
                 value={key}
                 disabled={!aiModelsSettings[key as AIModelType]?.enabled}
               >
@@ -193,9 +213,9 @@ const ScriptGenerator: React.FC<ScriptGeneratorProps> = ({
             label="重点关注"
           >
             <Select mode="multiple" placeholder="选择要重点关注的内容">
-              {analysis.keyMoments?.map((moment, index) => (
+              {analysis?.keyframes?.map((kf, index) => (
                 <Option key={index} value={index}>
-                  {moment.description} ({Math.floor(moment.time / 60)}:{String(moment.time % 60).padStart(2, '0')})
+                  {kf.description || `关键帧 ${index + 1}`} ({Math.floor(kf.timestamp / 60)}:{String(kf.timestamp % 60).padStart(2, '0')})
                 </Option>
               ))}
             </Select>
@@ -233,4 +253,4 @@ const ScriptGenerator: React.FC<ScriptGeneratorProps> = ({
   );
 };
 
-export default ScriptGenerator; 
+export default ScriptGenerator;

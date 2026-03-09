@@ -12,6 +12,13 @@ interface VideoUploaderProps {
   initialValue?: string;
 }
 
+interface CustomRequestOptions {
+  file: File | Blob;
+  onProgress?: (event: { percent: number }) => void;
+  onSuccess?: (response: unknown) => void;
+  onError?: (error: Error) => void;
+}
+
 const VideoUploader: React.FC<VideoUploaderProps> = ({ onUploadSuccess, initialValue }) => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -41,7 +48,7 @@ const VideoUploader: React.FC<VideoUploaderProps> = ({ onUploadSuccess, initialV
     }
   };
 
-  const customRequest = async (options: any) => {
+  const customRequest = async (options: CustomRequestOptions) => {
     const { file, onSuccess, onError, onProgress } = options;
     setUploading(true);
     setProgress(0);
@@ -57,7 +64,7 @@ const VideoUploader: React.FC<VideoUploaderProps> = ({ onUploadSuccess, initialV
             percent = 99;
           }
           setProgress(percent);
-          onProgress({ percent });
+          onProgress?.({ percent });
         }, 100);
 
         return interval;
@@ -71,11 +78,11 @@ const VideoUploader: React.FC<VideoUploaderProps> = ({ onUploadSuccess, initialV
 
       // 创建一个视频预览URL
       const reader = new FileReader();
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(file as File);
       reader.onload = () => {
         setVideoUrl(reader.result as string);
         setProgress(100);
-        onSuccess(null, null);
+        onSuccess?.(null);
         onUploadSuccess(reader.result as string);
         message.success('视频上传成功');
         setUploading(false);
@@ -84,7 +91,7 @@ const VideoUploader: React.FC<VideoUploaderProps> = ({ onUploadSuccess, initialV
       console.error('上传失败:', error);
       setUploading(false);
       setProgress(0);
-      onError(error);
+      onError?.(error as Error);
       message.error('视频上传失败');
     }
   };
@@ -92,7 +99,7 @@ const VideoUploader: React.FC<VideoUploaderProps> = ({ onUploadSuccess, initialV
   const uploadProps: UploadProps = {
     name: 'video',
     accept: 'video/*',
-    customRequest,
+    customRequest: customRequest as UploadProps['customRequest'],
     fileList,
     showUploadList: false,
     onChange(info) {
@@ -159,4 +166,4 @@ const VideoUploader: React.FC<VideoUploaderProps> = ({ onUploadSuccess, initialV
   );
 };
 
-export default VideoUploader; 
+export default VideoUploader;

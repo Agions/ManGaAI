@@ -1,0 +1,86 @@
+.confirmDialog {
+  :global(.ant-modal-content) {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  :global(.ant-modal-body) {
+    padding: 0;
+  }
+}
+
+.wrap {
+  :global(.ant-modal-mask) {
+    backdrop-filter: blur(4px);
+  }
+}
+
+.content {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.iconWrapper {
+  font-size: 48px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.iconInfo {
+  color: #1890ff;
+}
+
+.iconSuccess {
+  color: #52c41a;
+}
+
+.iconWarning {
+  color: #faad14;
+}
+
+.iconError {
+  color: #ff4d4f;
+}
+
+.iconConfirm {
+  color: #faad14;
+}
+
+.message {
+  text-align: center;
+  width: 100%;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
+  margin-bottom: 8px;
+}
+
+.description {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.65);
+  line-height: 1.6;
+}
+
+.footer {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+
+  button {
+    min-width: 80px;
+  }
+}
+
+.progress {
+  width: 100%;
+  margin-top: 16px;
+}

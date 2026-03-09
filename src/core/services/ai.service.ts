@@ -4,8 +4,9 @@
  */
 
 import { message } from 'antd';
-import type { AIModel, AIModelSettings, ScriptData, VideoAnalysis } from '@/core/types';
+import type { AIModel, AIModelSettings, ScriptData, VideoAnalysis, ScriptSegment, Scene, Keyframe } from '@/core/types';
 import { LLM_MODELS, DEFAULT_LLM_MODEL, MODEL_RECOMMENDATIONS } from '@/core/constants';
+import { getModelById } from '@/core/config/models.config';
 
 // API 响应类型
 export interface AIResponse {
@@ -18,6 +19,13 @@ export interface AIResponse {
   model: string;
 }
 
+// 流式响应回调
+export interface StreamCallbacks {
+  onChunk: (content: string, isFinal: boolean) => void;
+  onError?: (error: Error) => void;
+  onComplete?: () => void;
+}
+
 // 请求配置
 export interface RequestConfig {
   model: string;
@@ -27,8 +35,36 @@ export interface RequestConfig {
   stream?: boolean;
 }
 
+// Mock 配置选项
+export interface MockConfig {
+  delay?: number;           // 响应延迟（毫秒）
+  content?: string;        // 自定义响应内容
+  shouldFail?: boolean;    // 是否模拟失败
+  errorMessage?: string;   // 错误消息
+}
+
 class AIService {
   private abortControllers: Map<string, AbortController> = new Map();
+  private mockConfigs: Map<string, MockConfig> = new Map();
+
+  // 设置 Mock 配置
+  setMockConfig(requestId: string, config: MockConfig): void {
+    this.mockConfigs.set(requestId, config);
+  }
+
+  // 清除 Mock 配置
+  clearMockConfig(requestId: string): void {
+    this.mockConfigs.delete(requestId);
+  }
+
+  // 启用/禁用 Mock 模式
+  private useMock = false;
+  setMockMode(enabled: boolean): void {
+    this.useMock = enabled;
+  }
+  isMockMode(): boolean {
+    return this.useMock;
+  }
 
   /**
    * 通用生成方法
@@ -45,6 +81,18 @@ class AIService {
   ): Promise<string> {
     const model = this.getModelById(options.model);
     if (!model) {
+      if (this.useMock) {
+        const mockResponse = await this.mockCall({
+          model: options.model,
+          messages: [
+            { role: 'system', content: '你是一个专业的视频内容创作助手。' },
+            { role: 'user', content: prompt }
+          ],
+          temperature: options.temperature,
+          max_tokens: options.max_tokens
+        });
+        return mockResponse.content;
+      }
       throw new Error(`Model ${options.model} not found`);
     }
     
@@ -63,8 +111,7 @@ class AIService {
   }
 
   private getModelById(modelId: string): AIModel | undefined {
-    const { AI_MODELS } = require('@/core/config/models.config');
-    return AI_MODELS.find((m: AIModel) => m.id === modelId);
+    return getModelById(modelId);
   }
 
   /**
@@ -196,8 +243,27 @@ ${script}
   private async callAPI(
     model: AIModel,
     settings: AIModelSettings,
-    prompt: string
+    prompt: string,
+    requestId?: string
   ): Promise<AIResponse> {
+    if (this.useMock) {
+      return this.mockCall({
+        model: settings.model || model.id,
+        messages: [
+          {
+            role: 'system',
+            content: '你是一个专业的视频内容创作助手，擅长生成高质量的解说脚本。'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: settings.temperature ?? 0.7,
+        max_tokens: settings.maxTokens ?? 2000
+      }, requestId);
+    }
+
     // 构建请求配置
     const config: RequestConfig = {
       model: settings.model || model.id,
@@ -230,8 +296,11 @@ ${script}
       case 'zhipu':
         return this.callZhipu(settings.apiKey!, config);
       default:
-        // 模拟调用
-        return this.mockCall(config);
+        // 模拟调用或根据 mock 模式
+        if (this.useMock || !settings.apiKey) {
+          return this.mockCall(config, requestId);
+        }
+        return this.mockCall(config, requestId);
     }
   }
 
@@ -412,41 +481,167 @@ ${script}
   }
 
   /**
-   * 模拟调用（用于测试）
+   * 模拟调用（用于测试）- 增强版
    */
-  private async mockCall(config: RequestConfig): Promise<AIResponse> {
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
+  private async mockCall(config: RequestConfig, requestId?: string): Promise<AIResponse> {
+    // 获取自定义配置
+    let mockConfig: MockConfig = {};
+    if (requestId && this.mockConfigs.has(requestId)) {
+      mockConfig = this.mockConfigs.get(requestId)!;
+    } else if (this.mockConfigs.has('default')) {
+      mockConfig = this.mockConfigs.get('default')!;
+    }
+
+    const delay = mockConfig.delay ?? 1500 + Math.random() * 1000;
+    await new Promise(resolve => setTimeout(resolve, delay));
+
+    // 模拟失败
+    if (mockConfig.shouldFail) {
+      throw new Error(mockConfig.errorMessage || 'Mock API 错误');
+    }
+
+    // 使用自定义内容或默认内容
+    const content = mockConfig.content ?? this.generateMockContent(config);
+
     return {
-      content: `这是一个模拟生成的脚本内容。
-
-【开场】
-大家好！今天我们要聊的是一个非常有趣的话题。
-
-【主体内容】
-首先，让我们了解一下基本概念。这个话题涉及很多方面，包括：
-1. 核心原理
-2. 实际应用
-3. 注意事项
-
-【总结】
-希望通过这个视频，能够帮助大家更好地理解这个话题。如果你有任何问题，欢迎在评论区留言！
-
-感谢观看，我们下期再见！`,
+      content,
       usage: {
-        prompt_tokens: 500,
-        completion_tokens: 300,
-        total_tokens: 800
+        prompt_tokens: Math.floor(content.length / 4),
+        completion_tokens: Math.floor(content.length / 4),
+        total_tokens: Math.floor(content.length / 2)
       },
       model: config.model
     };
   }
 
   /**
+   * 生成模拟内容
+   */
+  private generateMockContent(config: RequestConfig): string {
+    // 根据用户输入生成相关内容
+    const userMessage = config.messages.find(m => m.role === 'user')?.content || '';
+
+    // 检测请求类型并生成相关内容
+    if (userMessage.includes('脚本') || userMessage.includes('主题')) {
+      return this.generateMockScript(userMessage);
+    } else if (userMessage.includes('分析') || userMessage.includes('视频')) {
+      return this.generateMockAnalysis();
+    } else if (userMessage.includes('翻译')) {
+      return this.generateMockTranslation(userMessage);
+    } else if (userMessage.includes('优化')) {
+      return this.generateMockOptimization(userMessage);
+    }
+
+    // 默认响应
+    return `这是一个模拟生成的回复。
+
+【开场】
+您好！我收到了您的请求，正在为您处理。
+
+【内容】
+根据您提供的信息，我已经完成了相应的分析和生成工作。
+这只是一个模拟响应，用于测试和开发目的。
+
+【结尾】
+如需实际功能，请配置真实的 API Key。
+
+感谢您的使用！`;
+  }
+
+  private generateMockScript(topic: string): string {
+    // 提取主题
+    const match = topic.match(/主题[：:](.+?)(?:\n|$)/);
+    const theme = match ? match[1] : '通用主题';
+
+    return `【${theme}】视频脚本
+
+【开场】
+大家好！欢迎来到今天的视频！我是你们的主播。
+
+今天我们要聊的话题是——${theme}。让我们一起来深入了解一下吧！
+
+【主体内容】
+首先，让我们来看一下${theme}的基本概念。
+这个话题涉及很多方面，包括：
+
+1. 第一点：核心要点解析
+   - 详细说明第一个要点的重要性
+   - 实际应用场景和案例分析
+
+2. 第二点：深度分析
+   - 从多个角度进行解读
+   - 专家观点和最新研究
+
+3. 第三点：实用建议
+   - 具体的操作步骤
+   - 常见问题解答
+
+【互动环节】
+大家对这个话题有什么看法呢？
+欢迎在评论区留言告诉我！
+
+【总结】
+希望通过今天的视频，能够帮助大家更好地理解${theme}。
+如果喜欢本期内容，请点赞、关注、收藏！
+
+感谢观看，我们下期再见！`;
+  }
+
+  private generateMockAnalysis(): string {
+    return `【视频分析报告】
+
+1. 内容摘要
+本视频涵盖了多个主题，内容丰富、结构清晰。
+
+2. 脚本风格建议
+推荐使用专业但不失活泼的风格，适合广大观众群体。
+
+3. 目标受众
+主要面向对相关话题感兴趣的中青年用户群体。
+
+4. 内容亮点
+- 开头吸引力强
+- 内容层次分明
+- 结尾互动性好
+
+5. 改进建议
+- 可以增加更多视觉元素
+- 适当加入背景音乐
+- 控制单个知识点时长`;
+  }
+
+  private generateMockTranslation(originalText: string): string {
+    return `[翻译版本]
+
+这是一个翻译后的内容示例。
+
+（原文本长度：${originalText.length} 字符）
+
+翻译说明：
+- 保持了原文的语气和风格
+- 进行了适当的本地化调整
+- 确保表达自然流畅
+
+[翻译完成]`;
+  }
+
+  private generateMockOptimization(text: string): string {
+    return `[优化后的版本]
+
+【优化说明】
+根据您的需求，已对原文进行了优化处理。
+
+【优化内容】
+${text.slice(0, 500)}...
+
+【优化完成】`;
+  }
+
+  /**
    * 获取推荐的模型
    */
   getRecommendedModels(task: keyof typeof MODEL_RECOMMENDATIONS): typeof LLM_MODELS[keyof typeof LLM_MODELS][] {
-    return MODEL_RECOMMENDATIONS[task] || [DEFAULT_LLM_MODEL];
+    return [...(MODEL_RECOMMENDATIONS[task] || [DEFAULT_LLM_MODEL])];
   }
 
   /**
@@ -475,7 +670,17 @@ ${script}
   /**
    * 构建脚本生成提示词
    */
-  private buildScriptPrompt(params: any): string {
+  private buildScriptPrompt(params: {
+    topic: string;
+    style: string;
+    tone: string;
+    length: string;
+    audience: string;
+    language: string;
+    keywords?: string[];
+    requirements?: string;
+    videoDuration?: number;
+  }): string {
     const styleMap: Record<string, string> = {
       professional: '专业正式',
       casual: '轻松随意',
@@ -522,7 +727,12 @@ ${params.videoDuration ? `视频时长：${Math.round(params.videoDuration / 60)
   /**
    * 构建视频分析提示词
    */
-  private buildAnalysisPrompt(videoInfo: any): string {
+  private buildAnalysisPrompt(videoInfo: {
+    duration: number;
+    width: number;
+    height: number;
+    format: string;
+  }): string {
     return `请分析以下视频的基本信息：
 
 时长：${Math.round(videoInfo.duration / 60)}分钟
@@ -562,7 +772,7 @@ ${script}
   /**
    * 解析脚本片段
    */
-  private parseScriptSegments(content: string): any[] {
+  private parseScriptSegments(content: string): ScriptSegment[] {
     // 简单的段落分割
     const paragraphs = content.split('\n\n').filter(p => p.trim());
     
@@ -586,7 +796,7 @@ ${script}
   /**
    * 生成模拟场景
    */
-  private generateMockScenes(duration: number): any[] {
+  private generateMockScenes(duration: number): Scene[] {
     const scenes = [];
     const sceneCount = Math.min(Math.floor(duration / 30), 10);
     
@@ -607,7 +817,7 @@ ${script}
   /**
    * 生成模拟关键帧
    */
-  private generateMockKeyframes(duration: number): any[] {
+  private generateMockKeyframes(duration: number): Keyframe[] {
     const keyframes = [];
     const count = Math.min(Math.floor(duration / 5), 20);
     
@@ -632,6 +842,171 @@ ${script}
       controller.abort();
       this.abortControllers.delete(requestId);
     }
+  }
+
+  /**
+   * 流式生成（适用于支持的 API）
+   */
+  async *streamGenerate(
+    prompt: string,
+    options: {
+      model: string;
+      provider: string;
+      signal?: AbortSignal;
+      temperature?: number;
+      max_tokens?: number;
+    }
+  ): AsyncGenerator<string> {
+    const model = this.getModelById(options.model);
+    if (!model) {
+      throw new Error(`Model ${options.model} not found`);
+    }
+
+    // 对于不支持流式的提供商，使用普通调用并分块返回
+    if (!['openai', 'anthropic', 'alibaba', 'zhipu'].includes(model.provider)) {
+      const response = await this.generate(prompt, options);
+      // 模拟流式输出
+      const chunks = this.chunkText(response, 10);
+      for (const chunk of chunks) {
+        yield chunk;
+      }
+      return;
+    }
+
+    const settings: AIModelSettings = {
+      enabled: true,
+      apiKey: '',
+      baseURL: '',
+      model: model.id,
+      temperature: options.temperature,
+      maxTokens: options.max_tokens
+    } as AIModelSettings;
+
+    // 根据提供商使用流式 API
+    switch (model.provider) {
+      case 'openai':
+        yield* this.streamOpenAI(settings.apiKey!, {
+          model: settings.model || model.id,
+          messages: [
+            { role: 'system', content: '你是一个专业的视频内容创作助手。' },
+            { role: 'user', content: prompt }
+          ],
+          temperature: settings.temperature,
+          max_tokens: settings.maxTokens
+        });
+        break;
+      default:
+        // 默认分块返回
+        const response = await this.callAPI(model, settings, prompt);
+        const chunks = this.chunkText(response.content, 10);
+        for (const chunk of chunks) {
+          yield chunk;
+        }
+    }
+  }
+
+  /**
+   * OpenAI 流式 API
+   */
+  private async *streamOpenAI(
+    apiKey: string,
+    config: RequestConfig
+  ): AsyncGenerator<string> {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ ...config, stream: true })
+    });
+
+    if (!response.ok) {
+      throw new Error(`OpenAI API 错误: ${response.status}`);
+    }
+
+    const reader = response.body?.getReader();
+    if (!reader) {
+      throw new Error('无法读取响应流');
+    }
+
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (trimmed.startsWith('data: ')) {
+            const data = trimmed.slice(6);
+            if (data === '[DONE]') return;
+
+            try {
+              const json = JSON.parse(data);
+              const content = json.choices?.[0]?.delta?.content;
+              if (content) {
+                yield content;
+              }
+            } catch {
+              // 忽略解析错误
+            }
+          }
+        }
+      }
+    } finally {
+      reader.releaseLock();
+    }
+  }
+
+  /**
+   * 将文本分块
+   */
+  private chunkText(text: string, chunkSize: number): string[] {
+    const chunks: string[] = [];
+    for (let i = 0; i < text.length; i += chunkSize) {
+      chunks.push(text.slice(i, i + chunkSize));
+    }
+    return chunks;
+  }
+
+  /**
+   * 批量生成（并行处理多个请求）
+   */
+  async batchGenerate(
+    prompts: string[],
+    options: {
+      model: string;
+      provider: string;
+      temperature?: number;
+      max_tokens?: number;
+      concurrency?: number;
+      onProgress?: (completed: number, total: number) => void;
+    }
+  ): Promise<string[]> {
+    const concurrency = options.concurrency || 3;
+    const results: string[] = new Array(prompts.length);
+    let completed = 0;
+
+    for (let i = 0; i < prompts.length; i += concurrency) {
+      const batch = prompts.slice(i, i + concurrency);
+      const batchPromises = batch.map((prompt, batchIndex) =>
+        this.generate(prompt, options).then(result => {
+          results[i + batchIndex] = result;
+          completed++;
+          options.onProgress?.(completed, prompts.length);
+        })
+      );
+      await Promise.all(batchPromises);
+    }
+
+    return results;
   }
 }
 

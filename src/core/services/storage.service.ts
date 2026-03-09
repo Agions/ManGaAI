@@ -8,12 +8,12 @@ import type { AppState } from '@/core/stores/app.store';
 
 // 存储键名
 const STORAGE_KEYS = {
-  PROJECTS: 'nova_projects',
-  APP_STATE: 'nova_app_state',
-  USER_PREFERENCES: 'nova_preferences',
-  RECENT_FILES: 'nova_recent_files',
-  MODEL_SETTINGS: 'nova_model_settings',
-  EXPORT_HISTORY: 'nova_export_history'
+  PROJECTS: 'mangaai_projects',
+  APP_STATE: 'mangaai_app_state',
+  USER_PREFERENCES: 'mangaai_preferences',
+  RECENT_FILES: 'mangaai_recent_files',
+  MODEL_SETTINGS: 'mangaai_model_settings',
+  EXPORT_HISTORY: 'mangaai_export_history'
 };
 
 class StorageService {
@@ -160,12 +160,12 @@ class StorageService {
    * 模型设置
    */
   modelSettings = {
-    get: (provider: string): any => {
+    get: (provider: string): unknown => {
       const data = localStorage.getItem(`${STORAGE_KEYS.MODEL_SETTINGS}_${provider}`);
       return data ? JSON.parse(data) : null;
     },
 
-    set: (provider: string, settings: any): void => {
+    set: (provider: string, settings: unknown): void => {
       localStorage.setItem(`${STORAGE_KEYS.MODEL_SETTINGS}_${provider}`, JSON.stringify(settings));
     },
 
@@ -190,14 +190,15 @@ class StorageService {
    * 导出历史
    */
   exportHistory = {
-    get: (): any[] => {
+    get: (): unknown[] => {
       const data = localStorage.getItem(STORAGE_KEYS.EXPORT_HISTORY);
       return data ? JSON.parse(data) : [];
     },
 
-    add: (record: any): void => {
+    add: (record: unknown): void => {
       const history = this.exportHistory.get();
-      history.unshift({ ...record, timestamp: new Date().toISOString() });
+      const recordObj = typeof record === 'object' && record !== null ? record as Record<string, unknown> : {};
+      history.unshift({ ...recordObj, timestamp: new Date().toISOString() });
       localStorage.setItem(STORAGE_KEYS.EXPORT_HISTORY, JSON.stringify(history.slice(0, 100)));
     },
 
@@ -210,16 +211,16 @@ class StorageService {
    * 通用存储
    */
   set<T>(key: string, value: T): void {
-    localStorage.setItem(`reelforge_${key}`, JSON.stringify(value));
+    localStorage.setItem(`mangaai_${key}`, JSON.stringify(value));
   }
 
   get<T>(key: string, defaultValue?: T): T | undefined {
-    const data = localStorage.getItem(`reelforge_${key}`);
+    const data = localStorage.getItem(`mangaai_${key}`);
     return data ? JSON.parse(data) : defaultValue;
   }
 
   remove(key: string): void {
-    localStorage.removeItem(`reelforge_${key}`);
+    localStorage.removeItem(`mangaai_${key}`);
   }
 
   /**
@@ -230,11 +231,11 @@ class StorageService {
       localStorage.removeItem(key);
     });
 
-    // 清理所有 reelforge_ 前缀的数据
+    // 清理所有 mangaai_ 前缀的数据
     const keysToRemove: string[] = [];
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
-      if (key?.startsWith('reelforge_')) {
+      if (key?.startsWith('mangaai_')) {
         keysToRemove.push(key);
       }
     }
@@ -249,7 +250,7 @@ class StorageService {
 
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
-      if (key?.startsWith('reelforge_')) {
+      if (key?.startsWith('mangaai_')) {
         const value = localStorage.getItem(key);
         data[key] = value ? JSON.parse(value) : null;
       }
@@ -280,7 +281,7 @@ class StorageService {
     let used = 0;
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
-      if (key?.startsWith('reelforge_')) {
+      if (key?.startsWith('mangaai_')) {
         const value = localStorage.getItem(key);
         if (value) {
           used += key.length + value.length;

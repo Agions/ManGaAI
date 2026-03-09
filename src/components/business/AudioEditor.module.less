@@ -1,0 +1,336 @@
+.audioEditor {
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  :global(.ant-card-head) {
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  :global(.ant-tabs-nav) {
+    margin-bottom: 16px;
+  }
+
+  :global(.ant-tabs-tab) {
+    padding: 12px 16px;
+  }
+}
+
+.masterVolumeControl {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .masterSlider {
+    width: 100px;
+    margin: 0 8px;
+  }
+}
+
+.tabContent {
+  min-height: 200px;
+}
+
+.toolbar {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.trackTable {
+  :global(.ant-table-thead > tr > th) {
+    background-color: #fafafa;
+    font-weight: 500;
+  }
+
+  :global(.ant-slider) {
+    margin: 0 8px;
+  }
+
+  :global(.ant-slider-rail) {
+    background-color: #f0f0f0;
+  }
+}
+
+// 背景音乐样式
+.musicSection {
+  width: 100%;
+}
+
+.musicCard {
+  :global(.ant-card-body) {
+    padding: 16px;
+  }
+}
+
+.musicInfo {
+  margin-bottom: 16px;
+}
+
+.musicName {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.musicMeta {
+  display: flex;
+  gap: 16px;
+  color: #8c8c8c;
+  font-size: 13px;
+}
+
+.musicControls {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.volumeControl {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+
+  span:first-child {
+    min-width: 40px;
+    color: #8c8c8c;
+  }
+
+  span:last-child {
+    min-width: 40px;
+    text-align: right;
+    color: #8c8c8c;
+  }
+
+  :global(.ant-slider) {
+    flex: 1;
+    margin: 0;
+  }
+}
+
+.fadeControl {
+  display: flex;
+  gap: 24px;
+}
+
+.fadeItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+
+  span:first-child {
+    min-width: 32px;
+    color: #8c8c8c;
+    font-size: 13px;
+  }
+
+  span:last-child {
+    min-width: 32px;
+    text-align: right;
+    color: #8c8c8c;
+    font-size: 12px;
+  }
+
+  :global(.ant-slider) {
+    flex: 1;
+    margin: 0;
+  }
+}
+
+.musicSelectArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 24px;
+}
+
+.selectButtons {
+  display: flex;
+  gap: 12px;
+}
+
+.presetSection,
+.presetSfxSection {
+  width: 100%;
+  max-width: 600px;
+}
+
+.presetTitle {
+  font-size: 14px;
+  color: #8c8c8c;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.presetList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.presetTag {
+  cursor: pointer;
+  padding: 6px 12px;
+  transition: all 0.3s;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .presetMeta {
+    font-size: 11px;
+    opacity: 0.7;
+    margin-left: 4px;
+  }
+}
+
+// 混音设置样式
+.mixCard {
+  text-align: center;
+
+  :global(.ant-card-body) {
+    padding: 16px;
+  }
+
+  :global(.ant-progress) {
+    margin-bottom: 8px;
+  }
+
+  :global(.ant-slider) {
+    margin: 8px 0 0 0;
+  }
+}
+
+.mixTitle {
+  font-weight: 500;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.masterIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background-color: #1890ff;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.summaryCard {
+  margin-top: 24px;
+
+  :global(.ant-card-body) {
+    padding: 16px;
+  }
+}
+
+.summaryItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+
+  strong {
+    color: #1890ff;
+    font-size: 16px;
+  }
+}
+
+// 录音按钮动画
+:global(.recording) {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+// 响应式布局
+@media (max-width: 768px) {
+  .masterVolumeControl {
+    .masterSlider {
+      width: 60px;
+    }
+  }
+
+  .fadeControl {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .mixCard {
+    :global(.ant-card-body) {
+      padding: 12px;
+    }
+  }
+}
+
+// 暗黑模式适配
+:global(.dark) {
+  .audioEditor {
+    :global(.ant-card-head) {
+      border-bottom-color: #303030;
+    }
+
+    :global(.ant-tabs-nav)::before {
+      border-bottom-color: #303030;
+    }
+  }
+
+  .toolbar {
+    border-bottom-color: #303030;
+  }
+
+  .trackTable {
+    :global(.ant-table-thead > tr > th) {
+      background-color: #1f1f1f;
+    }
+
+    :global(.ant-table-tbody > tr > td) {
+      background-color: #141414;
+    }
+  }
+
+  .musicMeta {
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  .volumeControl {
+    span:first-child,
+    span:last-child {
+      color: rgba(255, 255, 255, 0.45);
+    }
+  }
+
+  .fadeItem {
+    span:first-child,
+    span:last-child {
+      color: rgba(255, 255, 255, 0.45);
+    }
+  }
+
+  .presetTitle {
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  .mixTitle {
+    color: rgba(255, 255, 255, 0.85);
+  }
+}

@@ -29,7 +29,7 @@ interface CardProps {
   /** body样式 */
   bodyStyle?: React.CSSProperties;
   /** 其他 antd Card 属性 */
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export const Card: React.FC<CardProps> = ({

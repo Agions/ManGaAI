@@ -4,7 +4,7 @@ import { UploadOutlined, DeleteOutlined, PlayCircleOutlined } from '@ant-design/
 import { open } from '@tauri-apps/api/dialog';
 import { invoke } from '@tauri-apps/api/tauri';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
-import { analyzeVideo, VideoMetadata, formatDuration, formatResolution } from '@/core/services/legacy/videoService';
+import { analyzeVideo, VideoMetadata, formatDuration, formatResolution } from '@/core/services/legacy';
 import styles from './VideoSelector.module.less';
 
 interface VideoSelectorProps {

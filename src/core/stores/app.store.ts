@@ -98,7 +98,7 @@ export const useAppStore = create<AppState>()(
       clearAllNotifications: () => set({ notifications: [] })
     }),
     {
-      name: 'reelforge-app-storage',
+      name: 'mangaai-app-storage',
       partialize: (state) => ({
         sidebarCollapsed: state.sidebarCollapsed,
         theme: state.theme,

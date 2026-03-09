@@ -1,0 +1,205 @@
+.container {
+  padding: 16px;
+}
+
+.header {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.emptyCard {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-width: 500px;
+  margin: 0 auto;
+
+  h5 {
+    margin: 0;
+  }
+}
+
+.characterCard {
+  height: 100%;
+
+  .ant-card-meta-description {
+    margin-top: 8px;
+  }
+}
+
+/* 模板库样式 */
+.templateGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.templateCard {
+  height: 100%;
+
+  .ant-card-meta-title {
+    font-size: 14px;
+  }
+
+  .ant-card-meta-description {
+    font-size: 12px;
+  }
+}
+
+.templateThumb {
+  height: 120px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.templatePreview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 16px;
+}
+
+.expressionUpload {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .exprList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    .exprThumb {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 4px;
+      border: 1px solid #d9d9d9;
+    }
+  }
+}
+
+/* 服装编辑器 */
+.clothingEditor {
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  padding: 16px;
+  background: #fafafa;
+
+  .clothingAddPanel {
+    margin-top: 12px;
+    padding: 12px;
+    background: white;
+    border-radius: 6px;
+    border: 1px dashed #d9d9d9;
+  }
+
+  .quickClothing {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #f0f0f0;
+  }
+
+  .clothingPreview {
+    margin-top: 16px;
+  }
+
+  .clothingItemCard {
+    text-align: center;
+    transition: all 0.2s;
+
+    &:hover {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .ant-card-body {
+      padding: 8px 12px;
+    }
+  }
+
+  .colorSwatch {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    border: 1px solid #d9d9d9;
+    display: inline-block;
+    vertical-align: middle;
+  }
+}
+
+/* 关键帧编辑器样式 */
+.keyframeEditor {
+  .keyframeList {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    padding: 8px;
+  }
+
+  .keyframeItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding: 8px;
+    background: #f5f5f5;
+    border-radius: 4px;
+  }
+}
+
+/* 转场预览样式 */
+.transitionPreview {
+  width: 100%;
+  height: 200px;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+
+  .preview-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+    font-weight: bold;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+}
+
+/* 模态框内表单调整 */
+:global(.ant-modal-body) {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .templateGrid {
+    grid-template-columns: 1fr;
+  }
+}

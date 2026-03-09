@@ -1,0 +1,156 @@
+.container {
+  padding: 0;
+}
+
+.previewArea {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.previewFrame {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+}
+
+.frameIndicator {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.controls {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.tableContainer {
+  flex: 1;
+  overflow: auto;
+  max-height: 400px;
+}
+
+:global(.ant-card-body) {
+  padding: 16px;
+}
+
+/* 关键帧编辑器 */
+.keyframeEditor {
+  .keyframeList {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #f0f0f0;
+    border-radius: 8px;
+    padding: 16px;
+    background: #fafafa;
+  }
+
+  .keyframeItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    background: white;
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    transition: all 0.2s;
+
+    &:hover {
+      border-color: #1890ff;
+      box-shadow: 0 2px 8px rgba(24, 144, 255, 0.1);
+    }
+  }
+}
+
+/* 转场预览 */
+.transitionPreview {
+  width: 100%;
+  height: 250px;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .preview-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: white;
+    font-weight: bold;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transition: all 0.5s ease;
+  }
+
+  .preview-label {
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* 表格列宽调整 */
+.ant-table-tbody > tr > td {
+  padding: 8px 12px;
+}
+
+/* 空状态 */
+.emptyCard {
+  text-align: center;
+  padding: 60px 20px;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  .ant-empty-image {
+    margin-bottom: 16px;
+  }
+}
+
+/* 工具按钮样式 */
+.actionButtons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* 响应式 */
+@media (max-width: 1200px) {
+  .container :global(.ant-row) {
+    flex-wrap: wrap;
+  }
+  
+  .container :global(.ant-col) {
+    margin-bottom: 16px;
+  }
+}

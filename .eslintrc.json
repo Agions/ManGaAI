@@ -1,0 +1,108 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2024,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "project": "./tsconfig.json"
+  },
+  "env": {
+    "browser": true,
+    "es2024": true,
+    "node": true,
+    "jest": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:jsx-a11y/recommended",
+    "prettier"
+  ],
+  "plugins": [
+    "@typescript-eslint",
+    "react",
+    "react-hooks",
+    "jsx-a11y",
+    "import"
+  ],
+  "rules": {
+    // TypeScript
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-empty-interface": "warn",
+    "@typescript-eslint/ban-ts-comment": "warn",
+    "@typescript-eslint/ban-types": "warn",
+    "@typescript-eslint/prefer-optional-chain": "warn",
+    "@typescript-eslint/prefer-nullish-coalescing": "warn",
+
+    // React
+    "react/prop-types": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/display-name": "off",
+    "react-hooks/exhaustive-deps": "warn",
+
+    // Import
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          "parent",
+          "sibling",
+          "index"
+        ],
+        "newlines-between": "always",
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
+      }
+    ],
+    "import/no-unresolved": "off",
+    "import/named": "off",
+
+    // JSX
+    "jsx-a11y/alt-text": "warn",
+    "jsx-a1/anchor-has-content": "warn",
+
+    // General
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "no-debugger": "warn",
+    "no-unused-vars": "off"
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    },
+    "import/resolver": {
+      "typescript": {}
+    }
+  },
+  "overrides": [
+    {
+      "files": ["*.test.ts", "*.test.tsx", "*.spec.ts", "*.spec.tsx"],
+      "env": {
+        "jest": true
+      },
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-unused-vars": "off"
+      }
+    },
+    {
+      "files": ["src/__tests__/**/*"],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off"
+      }
+    }
+  ]
+}

@@ -13,11 +13,13 @@ const { TabPane } = Tabs;
 
 const WORKFLOW_STEPS = [
   { key: 'import', title: '导入', description: '小说/剧本' },
-  { key: 'generate', title: '生成', description: 'AI 剧本' },
+  { key: 'analysis', title: 'AI解析', description: '智能分析' },
+  { key: 'script', title: '剧本', description: '生成剧本' },
   { key: 'storyboard', title: '分镜', description: '漫画分镜' },
   { key: 'character', title: '角色', description: '角色形象' },
   { key: 'render', title: '渲染', description: '场景渲染' },
   { key: 'animate', title: '合成', description: '动态效果' },
+  { key: 'audio', title: '配音', description: '配音配乐' },
   { key: 'export', title: '导出', description: '视频导出' },
 ];
 
@@ -28,7 +30,7 @@ const WorkflowPage: React.FC = () => {
 
   const handleStartWorkflow = () => {
     message.info('开始创建工作流...');
-    navigate('/video-studio');
+    navigate('/project/new');
   };
 
   return (

@@ -529,4 +529,250 @@ label {
       color: rgba(255, 255, 255, 0.45) !important;
     }
   }
-} 
+}
+
+/* ==================== 动效系统 ==================== */
+
+/* 淡入 */
+@keyframes m-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 淡出 */
+@keyframes m-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* 上浮 */
+@keyframes m-slide-up-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 下滑 */
+@keyframes m-slide-down-in {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 左滑入 */
+@keyframes m-slide-left-in {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 右滑入 */
+@keyframes m-slide-right-in {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 缩放淡入 */
+@keyframes m-zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 弹性出现 */
+@keyframes m-bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 脉冲 */
+@keyframes m-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* 摇晃 */
+@keyframes m-shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* 旋转 */
+@keyframes m-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 浮动 */
+@keyframes m-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* 呼吸 */
+@keyframes m-breathe {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* 闪光 */
+@keyframes m-shine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* 渐变流动 */
+@keyframes m-gradient-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ==================== 动效类 ==================== */
+
+/* 淡入 */
+.m-fade-in {
+  animation: m-fade-in 0.3s cubic-bezier(0, 0, 0.2, 1) forwards;
+}
+
+.m-fade-out {
+  animation: m-fade-out 0.3s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+/* 滑动 */
+.m-slide-up-in {
+  animation: m-slide-up-in 0.3s cubic-bezier(0, 0, 0.2, 1) forwards;
+}
+
+.m-slide-down-in {
+  animation: m-slide-down-in 0.3s cubic-bezier(0, 0, 0.2, 1) forwards;
+}
+
+.m-slide-left-in {
+  animation: m-slide-left-in 0.3s cubic-bezier(0, 0, 0.2, 1) forwards;
+}
+
+.m-slide-right-in {
+  animation: m-slide-right-in 0.3s cubic-bezier(0, 0, 0.2, 1) forwards;
+}
+
+/* 缩放 */
+.m-zoom-in {
+  animation: m-zoom-in 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.m-bounce-in {
+  animation: m-bounce-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+/* 循环动画 */
+.m-pulse {
+  animation: m-pulse 2s ease-in-out infinite;
+}
+
+.m-shake {
+  animation: m-shake 0.5s ease-in-out;
+}
+
+.m-spin {
+  animation: m-spin 1s linear infinite;
+}
+
+.m-float {
+  animation: m-float 3s ease-in-out infinite;
+}
+
+.m-breathe {
+  animation: m-breathe 2s ease-in-out infinite;
+}
+
+/* 闪光按钮 */
+.m-shine-button {
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    bottom: -50%;
+    left: -50%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0) 100%);
+    transform: rotateZ(60deg) translate(-5em, 7.5em);
+    animation: m-shine 3s infinite;
+  }
+}
+
+/* 渐变背景动画 */
+.m-gradient-flow {
+  background-size: 200% 200%;
+  animation: m-gradient-flow 3s ease infinite;
+}
+
+/* 延迟动画 */
+.m-delay-100 { animation-delay: 0.1s; }
+.m-delay-200 { animation-delay: 0.2s; }
+.m-delay-300 { animation-delay: 0.3s; }
+.m-delay-400 { animation-delay: 0.4s; }
+.m-delay-500 { animation-delay: 0.5s; }
+
+/* 页面切换过渡 */
+.page-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.page-exit {
+  opacity: 1;
+}
+
+.page-exit-active {
+  opacity: 0;
+  transition: opacity 0.2s;
+}

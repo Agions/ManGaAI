@@ -1,0 +1,309 @@
+.container {
+  display: flex;
+  height: 100%;
+  min-height: 600px;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+// 左侧场景列表
+.sidebar {
+  width: 280px;
+  min-width: 280px;
+  border-right: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  background: #fafafa;
+}
+
+.sidebarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.sidebarTitle {
+  margin: 0 !important;
+}
+
+.sceneList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.sceneItem {
+  padding: 12px !important;
+  margin-bottom: 8px !important;
+  border-radius: 8px !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent !important;
+
+  &:hover {
+    background: #fff !important;
+    border-color: #d9d9d9 !important;
+  }
+
+  &.selected {
+    background: #e6f7ff !important;
+    border-color: #1890ff !important;
+  }
+}
+
+.sceneItemContent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.sceneIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  font-size: 16px;
+}
+
+.sceneInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sceneName {
+  margin: 0 !important;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.atmosphereTag {
+  font-size: 12px;
+  padding: 0 6px;
+}
+
+.sceneActions {
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.sceneItem:hover .sceneActions {
+  opacity: 1;
+}
+
+.sidebarFooter {
+  padding: 12px 16px;
+  border-top: 1px solid #f0f0f0;
+  text-align: center;
+}
+
+.emptyState {
+  padding: 40px 16px;
+}
+
+// 中间场景预览
+.preview {
+  flex: 1;
+  min-width: 400px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  overflow-y: auto;
+}
+
+.previewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.previewName {
+  margin: 0 !important;
+}
+
+.previewImage {
+  flex: 1;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+  border-radius: 12px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.previewPlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 40px;
+}
+
+.previewInfo {
+  margin-top: 16px;
+}
+
+.infoItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: #fafafa;
+  border-radius: 6px;
+
+  .anticon {
+    color: #1890ff;
+  }
+}
+
+.adjustmentPanel {
+  background: #fafafa;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.propsPreview {
+  margin-top: 8px;
+}
+
+.propsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.propTag {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.emptyPreview {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// 右侧属性编辑
+.editor {
+  width: 400px;
+  min-width: 400px;
+  border-left: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+
+.editorHeader {
+  padding: 16px;
+  border-bottom: 1px solid #f0f0f0;
+
+  h5 {
+    margin: 0 !important;
+  }
+}
+
+.editorContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.formSection {
+  .sectionTitle {
+    display: block;
+    margin-bottom: 16px;
+    font-size: 14px;
+    color: #1890ff;
+    font-weight: 500;
+  }
+}
+
+.formGroup {
+  margin-bottom: 16px;
+
+  > .ant-typography {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 12px;
+  }
+}
+
+.propCollapseHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.propEditor {
+  padding: 8px 0;
+}
+
+.emptyEditor {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// 响应式设计
+@media (max-width: 1400px) {
+  .editor {
+    width: 350px;
+    min-width: 350px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    min-width: unset;
+    max-height: 250px;
+    border-right: none;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .preview {
+    min-width: unset;
+    padding: 16px;
+  }
+
+  .editor {
+    width: 100%;
+    min-width: unset;
+    border-left: none;
+    border-top: 1px solid #f0f0f0;
+    max-height: 400px;
+  }
+}

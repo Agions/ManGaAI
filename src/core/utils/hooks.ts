@@ -33,14 +33,17 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T 
   return [storedValue, setValue];
 }
 
+// 定义函数类型
+type GenericFunction = (...args: unknown[]) => unknown;
+
 /**
  * 使用防抖
  */
-export function useDebounce<T extends (...args: any[]) => any>(
+export function useDebounce<T extends GenericFunction>(
   callback: T,
   delay: number
 ): (...args: Parameters<T>) => void {
-  const callbackRef = useRef(callback);
+  const callbackRef = useRef<T>(callback);
 
   useEffect(() => {
     callbackRef.current = callback;
@@ -55,11 +58,11 @@ export function useDebounce<T extends (...args: any[]) => any>(
 /**
  * 使用节流
  */
-export function useThrottle<T extends (...args: any[]) => any>(
+export function useThrottle<T extends GenericFunction>(
   callback: T,
   limit: number
 ): (...args: Parameters<T>) => void {
-  const callbackRef = useRef(callback);
+  const callbackRef = useRef<T>(callback);
 
   useEffect(() => {
     callbackRef.current = callback;
@@ -72,10 +75,18 @@ export function useThrottle<T extends (...args: any[]) => any>(
 }
 
 /**
+ * 窗口大小类型
+ */
+export interface WindowSize {
+  width: number;
+  height: number;
+}
+
+/**
  * 使用窗口大小
  */
-export function useWindowSize() {
-  const [windowSize, setWindowSize] = useState({
+export function useWindowSize(): WindowSize {
+  const [windowSize, setWindowSize] = useState<WindowSize>({
     width: window.innerWidth,
     height: window.innerHeight
   });
@@ -101,7 +112,7 @@ export function useWindowSize() {
 export function useClickOutside<T extends HTMLElement>(
   ref: React.RefObject<T>,
   handler: () => void
-) {
+): void {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (ref.current && !ref.current.contains(event.target as Node)) {
@@ -115,12 +126,17 @@ export function useClickOutside<T extends HTMLElement>(
 }
 
 /**
+ * 倒计时返回值类型
+ */
+type CountdownReturn = [number, () => void, () => void, () => void];
+
+/**
  * 使用倒计时
  */
-export function useCountdown(initialSeconds: number): [number, () => void, () => void, () => void] {
+export function useCountdown(initialSeconds: number): CountdownReturn {
   const [seconds, setSeconds] = useState(initialSeconds);
   const [isActive, setIsActive] = useState(false);
-  const intervalRef = useRef<NodeJS.Timeout>();
+  const intervalRef = useRef<ReturnType<typeof setInterval>>();
 
   const start = useCallback(() => setIsActive(true), []);
   const pause = useCallback(() => setIsActive(false), []);
@@ -132,7 +148,7 @@ export function useCountdown(initialSeconds: number): [number, () => void, () =>
   useEffect(() => {
     if (isActive && seconds > 0) {
       intervalRef.current = setInterval(() => {
-        setSeconds(s => s - 1);
+        setSeconds((s) => s - 1);
       }, 1000);
     } else if (seconds === 0) {
       setIsActive(false);
@@ -149,17 +165,19 @@ export function useCountdown(initialSeconds: number): [number, () => void, () =>
 }
 
 /**
- * 使用异步操作
+ * 异步操作返回类型
  */
-export function useAsync<T>(
-  asyncFunction: () => Promise<T>,
-  immediate: boolean = false
-): {
+interface UseAsyncReturn<T> {
   data: T | null;
   error: Error | null;
   loading: boolean;
   execute: () => Promise<void>;
-} {
+}
+
+/**
+ * 使用异步操作
+ */
+export function useAsync<T>(asyncFunction: () => Promise<T>, immediate = false): UseAsyncReturn<T> {
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState(false);
@@ -216,7 +234,7 @@ export function useMounted(): boolean {
 /**
  * 使用更新效果（跳过首次渲染）
  */
-export function useUpdateEffect(effect: React.EffectCallback, deps?: React.DependencyList) {
+export function useUpdateEffect(effect: React.EffectCallback, deps?: React.DependencyList): void {
   const isFirstRender = useRef(true);
 
   useEffect(() => {
@@ -231,10 +249,7 @@ export function useUpdateEffect(effect: React.EffectCallback, deps?: React.Depen
 /**
  * 使用键盘事件
  */
-export function useKeyPress(
-  targetKey: string,
-  callback: () => void
-) {
+export function useKeyPress(targetKey: string, callback: () => void): void {
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === targetKey) {
@@ -287,10 +302,18 @@ export function useMediaQuery(query: string): boolean {
 }
 
 /**
+ * 滚动位置类型
+ */
+interface ScrollPosition {
+  x: number;
+  y: number;
+}
+
+/**
  * 使用滚动位置
  */
-export function useScrollPosition(): { x: number; y: number } {
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+export function useScrollPosition(): ScrollPosition {
+  const [position, setPosition] = useState<ScrollPosition>({ x: 0, y: 0 });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -325,11 +348,7 @@ export function useVisibility(): boolean {
 /**
  * 使用自动保存
  */
-export function useAutoSave<T>(
-  data: T,
-  saveFunction: (data: T) => void | Promise<void>,
-  delay: number = 30000
-) {
+export function useAutoSave<T>(data: T, saveFunction: (data: T) => void | Promise<void>, delay = 30000): void {
   const dataRef = useRef(data);
 
   useEffect(() => {

@@ -14,7 +14,7 @@ interface RequestConfig extends AxiosRequestConfig {
 }
 
 // 响应数据
-interface ApiResponse<T = any> {
+interface ApiResponse<T = unknown> {
   code: number;
   data: T;
   message: string;
@@ -117,7 +117,7 @@ class ApiClient {
   /**
    * GET 请求
    */
-  async get<T = any>(url: string, config?: RequestConfig): Promise<T> {
+  async get<T = unknown>(url: string, config?: RequestConfig): Promise<T> {
     const response = await this.client.get<ApiResponse<T>>(url, config);
     return response.data.data;
   }
@@ -125,7 +125,7 @@ class ApiClient {
   /**
    * POST 请求
    */
-  async post<T = any>(url: string, data?: any, config?: RequestConfig): Promise<T> {
+  async post<T = unknown>(url: string, data?: unknown, config?: RequestConfig): Promise<T> {
     const response = await this.client.post<ApiResponse<T>>(url, data, config);
     return response.data.data;
   }
@@ -133,7 +133,7 @@ class ApiClient {
   /**
    * PUT 请求
    */
-  async put<T = any>(url: string, data?: any, config?: RequestConfig): Promise<T> {
+  async put<T = unknown>(url: string, data?: unknown, config?: RequestConfig): Promise<T> {
     const response = await this.client.put<ApiResponse<T>>(url, data, config);
     return response.data.data;
   }
@@ -141,7 +141,7 @@ class ApiClient {
   /**
    * DELETE 请求
    */
-  async delete<T = any>(url: string, config?: RequestConfig): Promise<T> {
+  async delete<T = unknown>(url: string, config?: RequestConfig): Promise<T> {
     const response = await this.client.delete<ApiResponse<T>>(url, config);
     return response.data.data;
   }
@@ -149,7 +149,7 @@ class ApiClient {
   /**
    * PATCH 请求
    */
-  async patch<T = any>(url: string, data?: any, config?: RequestConfig): Promise<T> {
+  async patch<T = unknown>(url: string, data?: unknown, config?: RequestConfig): Promise<T> {
     const response = await this.client.patch<ApiResponse<T>>(url, data, config);
     return response.data.data;
   }
@@ -157,7 +157,7 @@ class ApiClient {
   /**
    * 上传文件
    */
-  async upload<T = any>(
+  async upload<T = unknown>(
     url: string,
     file: File,
     onProgress?: (progress: number) => void,

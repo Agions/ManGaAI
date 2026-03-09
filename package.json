@@ -3,7 +3,7 @@
   "private": true,
   "version": "2.0.0",
   "description": "ManGa AI - AI-Powered Comic Drama Video Creation Platform",
-  "author": "ClipAiMan <inkmotion@example.com>",
+  "author": "Agions <agions@qq.com>",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -15,7 +15,15 @@
     "docs": "npm run docs:api && ts-node scripts/generate-docs.ts",
     "docs:api": "typedoc --out docs/api src/",
     "docs:check": "ts-node scripts/check-docs.ts",
-    "docs:dev": "docsify serve docs"
+    "docs:dev": "docsify serve docs",
+    "evaluate:regression": "ts-node scripts/run-evaluation.ts",
+    "test": "jest",
+    "test:pages": "jest --runInBand src/__tests__/pages/project-edit.test.tsx src/__tests__/pages/project-detail.test.tsx",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:ci": "npm run test:ci:core",
+    "test:ci:core": "npm run test:pages && npm test -- --runInBand src/__tests__/services/review-export.service.test.ts src/__tests__/services/collaboration.service.test.ts src/__tests__/services/cost.service.test.ts src/__tests__/services/evaluation.service.test.ts src/__tests__/services/quality-gate.service.test.ts src/__tests__/utils/idle.test.ts src/__tests__/router/page-preload.test.ts && npm run build:check",
+    "test:ci:full": "jest --ci --reporters=default"
   },
   "dependencies": {
     "@ant-design/icons": "^5.2.6",

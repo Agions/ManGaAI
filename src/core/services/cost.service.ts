@@ -30,6 +30,20 @@ export interface CostStats {
   byModel: Record<string, number>;
 }
 
+export interface BudgetStatus {
+  daily: { used: number; limit: number; percent: number };
+  weekly: { used: number; limit: number; percent: number };
+  monthly: { used: number; limit: number; percent: number };
+}
+
+export interface CostAlert {
+  id: string;
+  period: 'daily' | 'weekly' | 'monthly';
+  percent: number;
+  threshold: number;
+  timestamp: string;
+}
+
 // 成本预算
 export interface CostBudget {
   daily: number;
@@ -92,6 +106,16 @@ class CostService {
     }
   };
   private listeners: Set<(stats: CostStats) => void> = new Set();
+  private alertListeners: Set<(alert: CostAlert) => void> = new Set();
+  private alertCooldown: Record<'daily' | 'weekly' | 'monthly', number> = {
+    daily: 0,
+    weekly: 0,
+    monthly: 0
+  };
+
+  constructor() {
+    this.loadFromStorage();
+  }
 
   /**
    * 记录 LLM 成本
@@ -156,48 +180,88 @@ class CostService {
   }
 
   /**
+   * 记录音频生成成本
+   */
+  recordAudioCost(
+    provider: string,
+    duration: number, // seconds
+    metadata?: Record<string, any>
+  ): CostRecord {
+    const costPerMinute = 0.06; // 统一估算，后续可按 provider 细分
+    const cost = (duration / 60) * costPerMinute;
+
+    const record: CostRecord = {
+      id: `audio_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+      type: 'audio',
+      provider,
+      cost,
+      duration: duration * 1000,
+      timestamp: new Date().toISOString(),
+      metadata
+    };
+
+    this.records.push(record);
+    this.checkBudgetAlert();
+    this.notifyListeners();
+
+    return record;
+  }
+
+  /**
+   * 记录导出/存储成本
+   */
+  recordStorageCost(
+    provider: string,
+    sizeMB: number,
+    metadata?: Record<string, any>
+  ): CostRecord {
+    const costPerGB = 0.02;
+    const cost = (sizeMB / 1024) * costPerGB;
+
+    const record: CostRecord = {
+      id: `storage_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+      type: 'storage',
+      provider,
+      cost,
+      timestamp: new Date().toISOString(),
+      metadata: { ...metadata, sizeMB }
+    };
+
+    this.records.push(record);
+    this.checkBudgetAlert();
+    this.notifyListeners();
+
+    return record;
+  }
+
+  /**
    * 获取成本统计
    */
   getStats(): CostStats {
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-    const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+    return this.calculateStats(this.records);
+  }
 
-    const stats: CostStats = {
-      total: 0,
-      today: 0,
-      thisWeek: 0,
-      thisMonth: 0,
-      byType: {},
-      byProvider: {},
-      byModel: {}
+  /**
+   * 获取指定项目成本统计
+   */
+  getProjectStats(projectId: string): CostStats {
+    const scopedRecords = this.records.filter(record => record.metadata?.projectId === projectId);
+    return this.calculateStats(scopedRecords);
+  }
+
+  /**
+   * 获取预算使用状态
+   */
+  getBudgetStatus(stats: CostStats = this.getStats()): BudgetStatus {
+    const dailyPercent = this.budget.daily > 0 ? (stats.today / this.budget.daily) * 100 : 0;
+    const weeklyPercent = this.budget.weekly > 0 ? (stats.thisWeek / this.budget.weekly) * 100 : 0;
+    const monthlyPercent = this.budget.monthly > 0 ? (stats.thisMonth / this.budget.monthly) * 100 : 0;
+
+    return {
+      daily: { used: stats.today, limit: this.budget.daily, percent: dailyPercent },
+      weekly: { used: stats.thisWeek, limit: this.budget.weekly, percent: weeklyPercent },
+      monthly: { used: stats.thisMonth, limit: this.budget.monthly, percent: monthlyPercent }
     };
-
-    for (const record of this.records) {
-      const recordDate = new Date(record.timestamp);
-      const cost = record.cost;
-
-      stats.total += cost;
-      stats.byType[record.type] = (stats.byType[record.type] || 0) + cost;
-      stats.byProvider[record.provider] = (stats.byProvider[record.provider] || 0) + cost;
-
-      if (record.model) {
-        stats.byModel[record.model] = (stats.byModel[record.model] || 0) + cost;
-      }
-
-      if (recordDate >= today) {
-        stats.today += cost;
-      }
-      if (recordDate >= weekAgo) {
-        stats.thisWeek += cost;
-      }
-      if (recordDate >= monthAgo) {
-        stats.thisMonth += cost;
-      }
-    }
-
-    return stats;
   }
 
   /**
@@ -205,20 +269,30 @@ class CostService {
    */
   private checkBudgetAlert(): void {
     const stats = this.getStats();
+    const budgetStatus = this.getBudgetStatus(stats);
+    const now = Date.now();
+    const cooldownMs = 10 * 60 * 1000;
 
-    const dailyPercent = (stats.today / this.budget.daily) * 100;
-    const weeklyPercent = (stats.thisWeek / this.budget.weekly) * 100;
-    const monthlyPercent = (stats.thisMonth / this.budget.monthly) * 100;
+    const checks: Array<{ period: 'daily' | 'weekly' | 'monthly'; percent: number; threshold: number }> = [
+      { period: 'daily', percent: budgetStatus.daily.percent, threshold: this.budget.alerts.daily },
+      { period: 'weekly', percent: budgetStatus.weekly.percent, threshold: this.budget.alerts.weekly },
+      { period: 'monthly', percent: budgetStatus.monthly.percent, threshold: this.budget.alerts.monthly }
+    ];
 
-    if (dailyPercent >= this.budget.alerts.daily) {
-      console.warn(`⚠️ 日预算告警: ${dailyPercent.toFixed(1)}%`);
-    }
-    if (weeklyPercent >= this.budget.alerts.weekly) {
-      console.warn(`⚠️ 周预算告警: ${weeklyPercent.toFixed(1)}%`);
-    }
-    if (monthlyPercent >= this.budget.alerts.monthly) {
-      console.warn(`⚠️ 月预算告警: ${monthlyPercent.toFixed(1)}%`);
-    }
+    checks.forEach((check) => {
+      if (check.percent >= check.threshold && now - this.alertCooldown[check.period] >= cooldownMs) {
+        this.alertCooldown[check.period] = now;
+        const alert: CostAlert = {
+          id: `alert_${check.period}_${now}`,
+          period: check.period,
+          percent: check.percent,
+          threshold: check.threshold,
+          timestamp: new Date().toISOString()
+        };
+        console.warn(`⚠️ ${check.period} 预算告警: ${check.percent.toFixed(1)}%`);
+        this.notifyAlertListeners(alert);
+      }
+    });
   }
 
   /**
@@ -331,7 +405,7 @@ class CostService {
     const suggestions = this.getOptimizationSuggestions();
 
     return `
-# ClipAiMan 成本报告
+# ManGa AI 成本报告
 
 生成时间: ${new Date().toLocaleString('zh-CN')}
 
@@ -360,7 +434,7 @@ ${Object.entries(stats.byModel).map(([model, cost]) => `- ${model}: $${cost.toFi
 ${suggestions.join('\n\n')}
 
 ---
-*报告由 ClipAiMan 成本追踪服务生成*
+*报告由 ManGa AI 成本追踪服务生成*
     `.trim();
   }
 
@@ -372,12 +446,22 @@ ${suggestions.join('\n\n')}
     return () => this.listeners.delete(listener);
   }
 
+  subscribeAlert(listener: (alert: CostAlert) => void): () => void {
+    this.alertListeners.add(listener);
+    return () => this.alertListeners.delete(listener);
+  }
+
   /**
    * 通知订阅者
    */
   private notifyListeners(): void {
     const stats = this.getStats();
     this.listeners.forEach(listener => listener(stats));
+    this.saveToStorage();
+  }
+
+  private notifyAlertListeners(alert: CostAlert): void {
+    this.alertListeners.forEach(listener => listener(alert));
   }
 
   /**
@@ -386,6 +470,13 @@ ${suggestions.join('\n\n')}
   clear(): void {
     this.records = [];
     this.notifyListeners();
+  }
+
+  getRecords(projectId?: string): CostRecord[] {
+    if (!projectId) return [...this.records].sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+    return this.records
+      .filter(record => record.metadata?.projectId === projectId)
+      .sort((a, b) => b.timestamp.localeCompare(a.timestamp));
   }
 
   /**
@@ -420,6 +511,42 @@ ${suggestions.join('\n\n')}
       console.error('加载成本记录失败:', error);
       return false;
     }
+  }
+
+  private calculateStats(records: CostRecord[]): CostStats {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+    const stats: CostStats = {
+      total: 0,
+      today: 0,
+      thisWeek: 0,
+      thisMonth: 0,
+      byType: {},
+      byProvider: {},
+      byModel: {}
+    };
+
+    for (const record of records) {
+      const recordDate = new Date(record.timestamp);
+      const cost = record.cost;
+
+      stats.total += cost;
+      stats.byType[record.type] = (stats.byType[record.type] || 0) + cost;
+      stats.byProvider[record.provider] = (stats.byProvider[record.provider] || 0) + cost;
+
+      if (record.model) {
+        stats.byModel[record.model] = (stats.byModel[record.model] || 0) + cost;
+      }
+
+      if (recordDate >= today) stats.today += cost;
+      if (recordDate >= weekAgo) stats.thisWeek += cost;
+      if (recordDate >= monthAgo) stats.thisMonth += cost;
+    }
+
+    return stats;
   }
 }
 

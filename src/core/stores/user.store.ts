@@ -136,7 +136,7 @@ export const useUserStore = create<UserState>()(
       }
     }),
     {
-      name: 'reelforge-user-storage',
+      name: 'mangaai-user-storage',
       partialize: (state) => ({
         userId: state.userId,
         username: state.username,

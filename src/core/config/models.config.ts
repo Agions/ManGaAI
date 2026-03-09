@@ -94,6 +94,14 @@ export const MODEL_PROVIDERS: Record<ModelProvider, {
     keyFormat: 'api-key',
     keyPlaceholder: 'xxxxxxxxxxxxxxxx'
   },
+  kling: {
+    name: '快手可灵',
+    icon: 'https://www.kuaishou.com/favicon.ico',
+    website: 'https://app.klingai.com',
+    apiDocs: 'https://app.klingai.com/global/dev/document-api',
+    keyFormat: 'api-key',
+    keyPlaceholder: 'xxxxxxxxxxxxxxxx'
+  },
   bytedance: {
     name: '字节跳动',
     icon: 'https://www.bytedance.com/favicon.ico',
@@ -361,13 +369,25 @@ export const AI_MODELS: AIModel[] = [
   {
     id: 'kling-1.6',
     name: '可灵 1.6',
-    provider: 'bytedance',
+    provider: 'kling',
     category: ['image', 'video'],
     description: '快手可灵 1.6，2026年发布，图像+视频生成',
     features: ['图像生成', '视频生成', 'AI增强'],
     tokenLimit: 4096,
     contextWindow: 4096,
     pricing: { input: 0.02, output: 0.1, unit: '1K tokens' }
+  },
+  // 快手可灵 3.0
+  {
+    id: 'kling-3.0',
+    name: '可灵 3.0',
+    provider: 'kling',
+    category: ['image', 'video'],
+    description: '快手可灵 3.0 Omni，2026年发布，图像理解和物理世界模拟增强，叙事感增强',
+    features: ['图像生成', '视频生成', '多镜头', '15秒时长', '原生音视频同步'],
+    tokenLimit: 4096,
+    contextWindow: 4096,
+    pricing: { input: 0.015, output: 0.08, unit: '1K tokens' }
   },
   // 生数 Vidu
   {
@@ -412,9 +432,9 @@ export const MODEL_RECOMMENDATIONS: Record<string, string[]> = {
   // 高质量
   highQuality: ['gpt-4o', 'claude-3-opus', 'kimi-k2.5', 'qwen-2.5'],
   // 图像生成
-  imageGeneration: ['seedream-5.0', 'kling-1.6', 'vidu-2.0'],
+  imageGeneration: ['seedream-5.0', 'kling-3.0', 'kling-1.6', 'vidu-2.0'],
   // 视频生成
-  videoGeneration: ['seedance-2.0', 'kling-1.6', 'vidu-2.0'],
+  videoGeneration: ['kling-3.0', 'seedance-2.0', 'kling-1.6', 'vidu-2.0'],
   // 国内首选
   domestic: ['glm-5', 'minimax-m2.5', 'qwen-2.5', 'kimi-k2.5', 'ernie-5.0', 'doubao-2.0']
 };

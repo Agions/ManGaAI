@@ -20,11 +20,20 @@ import {
 } from '@ant-design/icons';
 import styles from './Timeline.module.less';
 
+// 时间轴片段类型
+export interface TimelineClip {
+  id: string;
+  startTime: number;
+  endTime: number;
+  type: 'video' | 'audio' | 'text';
+  content?: string;
+}
+
 interface Track {
   id: string;
   name: string;
   type: 'video' | 'audio' | 'text';
-  clips: any[];
+  clips: TimelineClip[];
 }
 
 interface TimelineProps {

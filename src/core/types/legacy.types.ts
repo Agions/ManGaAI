@@ -102,9 +102,9 @@ export interface ProjectData {
   videoPath: string;
   createdAt: string;
   updatedAt: string;
-  metadata?: any;
+  metadata?: unknown;
   keyFrames?: string[];
-  script?: any[];
+  script?: unknown[];
 }
 
 /**
@@ -157,7 +157,7 @@ export interface TimelineSegment {
   startTime: number;
   endTime: number;
   type: 'video' | 'audio' | 'text';
-  data: any;
+  data: unknown;
 }
 
 /**

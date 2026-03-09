@@ -14,7 +14,7 @@ interface Translations {
 const translations: Translations = {
   zh: {
     // 通用
-    'app.name': 'ClipAiMan',
+    'app.name': 'ManGa AI',
     'app.save': '保存',
     'app.cancel': '取消',
     'app.confirm': '确认',
@@ -77,7 +77,7 @@ const translations: Translations = {
   },
   en: {
     // 通用
-    'app.name': 'ClipAiMan',
+    'app.name': 'ManGa AI',
     'app.save': 'Save',
     'app.cancel': 'Cancel',
     'app.confirm': 'Confirm',

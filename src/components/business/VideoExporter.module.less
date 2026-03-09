@@ -1,0 +1,223 @@
+.exportPanel {
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: #fff;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.titleSection {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.titleIcon {
+  font-size: 20px;
+  color: #1890ff;
+}
+
+.title {
+  margin: 0 !important;
+  color: #262626;
+}
+
+.projectName {
+  font-size: 14px;
+  padding-left: 28px;
+}
+
+.divider {
+  margin: 16px 0;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #595959;
+}
+
+.filenameInput {
+  max-width: 400px;
+
+  @media (max-width: 576px) {
+    max-width: 100%;
+  }
+}
+
+.formatGroup,
+.frameRateGroup,
+.qualityGroup {
+  width: 100%;
+}
+
+.formatRadio,
+.frameRateRadio,
+.qualityRadio {
+  width: 100%;
+  margin-right: 0 !important;
+
+  :global(.ant-radio) {
+    margin-top: 2px;
+  }
+}
+
+.formatLabel,
+.frameRateLabel,
+.qualityLabel {
+  font-weight: 500;
+  min-width: 40px;
+}
+
+.formatDesc,
+.frameRateDesc,
+.qualityDesc {
+  font-size: 12px;
+  color: #8c8c8c;
+}
+
+.optionDesc {
+  font-size: 12px;
+}
+
+.bitrate {
+  font-size: 12px;
+  padding: 2px 6px;
+  background: #f5f5f5;
+  border-radius: 4px;
+}
+
+.select {
+  width: 200px;
+
+  @media (max-width: 576px) {
+    width: 100%;
+  }
+}
+
+.infoAlert {
+  margin-top: 8px;
+}
+
+.progressSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  background: #f6ffed;
+  border-radius: 8px;
+  border: 1px solid #b7eb8f;
+}
+
+.progress {
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 8px;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* 导出完成状态 */
+.completeSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px;
+  text-align: center;
+}
+
+.successIcon {
+  font-size: 64px;
+  color: #52c41a;
+  margin-bottom: 16px;
+}
+
+.successTitle {
+  color: #52c41a !important;
+  margin-bottom: 8px !important;
+}
+
+.filePath {
+  font-size: 13px;
+  word-break: break-all;
+  max-width: 100%;
+}
+
+.exportSummary {
+  margin: 24px 0;
+  padding: 16px 24px;
+  background: #fafafa;
+  border-radius: 8px;
+  text-align: left;
+  min-width: 280px;
+}
+
+.completeActions {
+  display: flex;
+  gap: 12px;
+}
+
+/* 响应式调整 */
+@media (max-width: 576px) {
+  .exportPanel {
+    margin-bottom: 12px;
+  }
+
+  .sectionHeader {
+    font-size: 14px;
+  }
+
+  .formatRadio,
+  .frameRateRadio,
+  .qualityRadio {
+    :global(.ant-space) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  .formatDesc,
+  .frameRateDesc,
+  .qualityDesc,
+  .optionDesc,
+  .bitrate {
+    display: block;
+    margin-left: 20px;
+  }
+
+  .infoAlert {
+    :global(.ant-alert-message) {
+      font-size: 12px;
+    }
+  }
+
+  .progressSection {
+    padding: 12px;
+  }
+
+  .exportSummary {
+    width: 100%;
+    min-width: auto;
+  }
+}

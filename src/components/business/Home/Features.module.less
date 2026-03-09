@@ -1,0 +1,68 @@
+.features {
+  margin-bottom: 48px;
+}
+
+.sectionTitle {
+  margin-bottom: 24px !important;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  :global(.anticon) {
+    color: #6366f1;
+    font-size: 28px;
+  }
+}
+
+.featureCard {
+  text-align: center;
+  padding: 30px 24px;
+  height: 100%;
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+
+    .featureIcon {
+      transform: scale(1.1);
+    }
+  }
+}
+
+.featureIcon {
+  font-size: 36px;
+  margin-bottom: 16px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.featureTitle {
+  margin-bottom: 12px !important;
+  font-weight: 600;
+}
+
+.featureDesc {
+  color: rgba(0, 0, 0, 0.65);
+  line-height: 1.6;
+  margin-bottom: 0 !important;
+}
+
+.darkCard {
+  background-color: #1f1f1f;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+
+  &:hover {
+    background-color: #252525;
+  }
+
+  .featureDesc {
+    color: rgba(255, 255, 255, 0.65);
+  }
+}

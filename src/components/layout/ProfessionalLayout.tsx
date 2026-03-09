@@ -128,7 +128,7 @@ const ProfessionalLayout: React.FC<ProfessionalLayoutProps> = ({ children }) => 
           </div>
           {!collapsed && (
             <div className={styles.logoText}>
-              <span className={styles.logoTitle}>ClipAiMan</span>
+              <span className={styles.logoTitle}>ManGa AI</span>
               <span className={styles.logoSubtitle}>AI 漫剧创作</span>
             </div>
           )}

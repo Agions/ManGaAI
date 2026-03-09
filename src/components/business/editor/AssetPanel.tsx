@@ -1,27 +1,26 @@
 import React, { useState } from 'react';
-import { 
-  Tabs, 
-  Button, 
-  Upload, 
-  Card, 
-  List, 
-  Input, 
-  Empty, 
-  Tooltip, 
+import {
+  Tabs,
+  Button,
+  Upload,
+  Card,
+  List,
+  Input,
+  Empty,
+  Tooltip,
   Space,
   Dropdown,
   Typography,
-  Tag
+  Tag,
+  MenuProps
 } from 'antd';
-import { 
-  UploadOutlined, 
-  VideoCameraAddOutlined, 
-  AudioOutlined, 
+import {
+  UploadOutlined,
+  VideoCameraAddOutlined,
+  AudioOutlined,
   FileImageOutlined,
   FileTextOutlined,
   DeleteOutlined,
-  SearchOutlined,
-  FilterOutlined,
   MoreOutlined
 } from '@ant-design/icons';
 import styles from './AssetPanel.module.less';
@@ -97,33 +96,33 @@ const AssetPanel: React.FC<AssetPanelProps> = () => {
   const [activeTab, setActiveTab] = useState('all');
   const [assets, setAssets] = useState<Asset[]>(mockAssets);
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   // 过滤显示的素材
   const filteredAssets = assets.filter(asset => {
     // 按类型过滤
     if (activeTab !== 'all' && asset.type !== activeTab) {
       return false;
     }
-    
+
     // 按搜索词过滤
     if (searchQuery && !asset.name.toLowerCase().includes(searchQuery.toLowerCase())) {
       return false;
     }
-    
+
     return true;
   });
-  
+
   // 删除素材
   const handleDelete = (id: string) => {
     setAssets(assets.filter(asset => asset.id !== id));
   };
-  
+
   // 添加到时间轴
   const addToTimeline = (asset: Asset) => {
     console.log('添加到时间轴', asset);
     // 这里将来会实现与Timeline组件的交互
   };
-  
+
   // 格式化时长显示
   const formatDuration = (seconds?: number): string => {
     if (!seconds) return '';
@@ -131,12 +130,12 @@ const AssetPanel: React.FC<AssetPanelProps> = () => {
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
-  
+
   // 格式化文件大小
   const formatSize = (mb: number): string => {
     return mb < 1 ? `${Math.round(mb * 1000)} KB` : `${mb.toFixed(1)} MB`;
   };
-  
+
   // 渲染素材缩略图或图标
   const renderThumbnail = (asset: Asset) => {
     switch (asset.type) {
@@ -172,43 +171,41 @@ const AssetPanel: React.FC<AssetPanelProps> = () => {
         return null;
     }
   };
-  
+
   // 上传素材
-  const handleUpload = (info: any) => {
+  const handleUpload = (info: unknown) => {
     console.log('上传文件', info);
     // 实际项目中会处理文件上传和转码
   };
-  
+
   // 素材项操作菜单
-  const assetMenu = (id: string): any => ({
-    items: [
-      {
-        key: '1',
-        label: '重命名',
-        onClick: () => console.log('重命名', id)
-      },
-      {
-        key: '2',
-        label: '下载',
-        onClick: () => console.log('下载', id)
-      },
-      {
-        key: '3',
-        label: '复制',
-        onClick: () => console.log('复制', id)
-      },
-      {
-        type: 'divider',
-      },
-      {
-        key: '4',
-        label: '删除',
-        danger: true,
-        onClick: () => handleDelete(id)
-      }
-    ],
-  });
-  
+  const getAssetMenuItems = (id: string): MenuProps['items'] => [
+    {
+      key: '1',
+      label: '重命名',
+      onClick: () => console.log('重命名', id)
+    },
+    {
+      key: '2',
+      label: '下载',
+      onClick: () => console.log('下载', id)
+    },
+    {
+      key: '3',
+      label: '复制',
+      onClick: () => console.log('复制', id)
+    },
+    {
+      type: 'divider'
+    },
+    {
+      key: '4',
+      label: '删除',
+      danger: true,
+      onClick: () => handleDelete(id)
+    }
+  ];
+
   return (
     <div className={styles.assetPanelContainer}>
       <div className={styles.assetSearch}>
@@ -218,9 +215,9 @@ const AssetPanel: React.FC<AssetPanelProps> = () => {
           allowClear
         />
       </div>
-      
-      <Tabs 
-        activeKey={activeTab} 
+
+      <Tabs
+        activeKey={activeTab}
         onChange={setActiveTab}
         className={styles.assetTabs}
       >
@@ -230,27 +227,27 @@ const AssetPanel: React.FC<AssetPanelProps> = () => {
         <TabPane tab="图片" key="image" />
         <TabPane tab="文本" key="text" />
       </Tabs>
-      
+
       <div className={styles.uploadContainer}>
         <Upload
           multiple
           showUploadList={false}
           customRequest={handleUpload}
         >
-          <Button 
-            icon={<UploadOutlined />} 
+          <Button
+            icon={<UploadOutlined />}
             block
           >
             上传素材
           </Button>
         </Upload>
       </div>
-      
+
       <div className={styles.assetList}>
         {filteredAssets.length > 0 ? (
           filteredAssets.map(asset => (
             <div key={asset.id} className={styles.assetItem}>
-              <div 
+              <div
                 className={styles.assetContent}
                 onClick={() => addToTimeline(asset)}
               >
@@ -274,9 +271,9 @@ const AssetPanel: React.FC<AssetPanelProps> = () => {
                   </div>
                 </div>
               </div>
-              <Dropdown menu={assetMenu(asset.id)} trigger={['click']} placement="bottomRight">
-                <Button 
-                  type="text" 
+              <Dropdown menu={{ items: getAssetMenuItems(asset.id) }} trigger={['click']} placement="bottomRight">
+                <Button
+                  type="text"
                   className={styles.assetMenuButton}
                   icon={<MoreOutlined />}
                   onClick={(e) => e.stopPropagation()}
@@ -285,14 +282,14 @@ const AssetPanel: React.FC<AssetPanelProps> = () => {
             </div>
           ))
         ) : (
-          <Empty 
+          <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             description={
               <span>
-                {searchQuery 
-                  ? "没有找到匹配的素材" 
-                  : activeTab === 'all' 
-                    ? "没有素材" 
+                {searchQuery
+                  ? "没有找到匹配的素材"
+                  : activeTab === 'all'
+                    ? "没有素材"
                     : `没有${activeTab === 'video' ? '视频' : activeTab === 'audio' ? '音频' : activeTab === 'image' ? '图片' : '文本'}素材`
                 }
               </span>
@@ -304,4 +301,4 @@ const AssetPanel: React.FC<AssetPanelProps> = () => {
   );
 };
 
-export default AssetPanel; 
+export default AssetPanel;

@@ -3,18 +3,17 @@
  * 用于管理漫剧/解说工作流的状态
  */
 import { useState, useCallback } from 'react';
-import { dramaWorkflowService } from '@/core/services';
 import type { ScriptTemplate, AIModel, DramaWorkflowStep } from '@/core/types';
 
-export type WorkflowStep = 
-  | 'upload' 
-  | 'analyze' 
-  | 'template-select' 
-  | 'script-generate' 
-  | 'script-dedup' 
-  | 'script-edit' 
-  | 'timeline-edit' 
-  | 'preview' 
+export type WorkflowStep =
+  | 'upload'
+  | 'analyze'
+  | 'template-select'
+  | 'script-generate'
+  | 'script-dedup'
+  | 'script-edit'
+  | 'timeline-edit'
+  | 'preview'
   | 'export';
 
 export interface WorkflowState {
@@ -27,24 +26,30 @@ export interface WorkflowState {
 
 export interface WorkflowData {
   projectId?: string;
-  script?: any;
-  timeline?: any;
+  script?: unknown;
+  timeline?: unknown;
   exportUrl?: string;
-  duplicates?: any[];
-  suggestions?: any[];
-  uniquenessReport?: any;
-  uniqueScript?: any;
-  videoAnalysis?: any;
-  videoInfo?: any;
-  editedScript?: any;
-  generatedScript?: any;
-  originalityReport?: any;
+  duplicates?: unknown[];
+  suggestions?: unknown[];
+  uniquenessReport?: unknown;
+  uniqueScript?: unknown;
+  videoAnalysis?: unknown;
+  videoInfo?: unknown;
+  editedScript?: unknown;
+  generatedScript?: unknown;
+  originalityReport?: unknown;
 }
 
 export interface WorkflowCallbacks {
   onStepChange?: (step: WorkflowStep) => void;
   onError?: (error: string) => void;
   onComplete?: () => void;
+}
+
+export interface WorkflowConfig {
+  autoAnalyze?: boolean;
+  autoGenerateScript?: boolean;
+  preferredTemplate?: string;
 }
 
 export interface UseWorkflowReturn {
@@ -57,14 +62,14 @@ export interface UseWorkflowReturn {
   currentStep: WorkflowStep;
   progress: number;
   data: WorkflowData;
-  start: (projectId: string, file: File, config: any) => Promise<void>;
+  start: (projectId: string, file: File, config?: WorkflowConfig) => Promise<void>;
   analyze: () => Promise<void>;
   selectTemplate: (template: ScriptTemplate) => void;
-  generateScript: (model: AIModel, params: any) => Promise<void>;
+  generateScript: (model: AIModel, params: unknown) => Promise<void>;
   dedupScript: () => Promise<void>;
-  ensureUniqueness: (content: string) => Promise<{ isUnique: boolean; duplicates: any[]; suggestions: any[] }>;
+  ensureUniqueness: (content: string) => Promise<{ isUnique: boolean; duplicates: unknown[]; suggestions: unknown[] }>;
   editScript: (content: string) => void;
-  editTimeline: (timeline: any) => void;
+  editTimeline: (timeline: unknown) => void;
   preview: () => Promise<void>;
   export: () => Promise<void>;
   pause: () => void;
@@ -99,17 +104,17 @@ export function useWorkflow(callbacks?: WorkflowCallbacks): UseWorkflowReturn {
     }
   }, [callbacks]);
 
-  const start = useCallback(async (projectId: string, file: File, config: any) => {
+  const start = useCallback(async (projectId: string, file: File, config?: WorkflowConfig) => {
     updateStatus('running');
     setState(prev => ({
       ...prev,
       data: { ...prev.data, projectId }
     }));
-    
-    if (config.autoAnalyze) {
+
+    if (config?.autoAnalyze) {
       await analyze();
     }
-    if (config.autoGenerateScript && config.preferredTemplate) {
+    if (config?.autoGenerateScript && config?.preferredTemplate) {
       updateStep('script-generate');
     }
   }, [updateStep, updateStatus]);
@@ -127,7 +132,7 @@ export function useWorkflow(callbacks?: WorkflowCallbacks): UseWorkflowReturn {
     updateStep('template-select');
   }, [updateStep]);
 
-  const generateScript = useCallback(async (model: AIModel, params: any) => {
+  const generateScript = useCallback(async (model: AIModel, params: unknown) => {
     updateStep('script-generate');
     setState(prev => ({ ...prev, progress: 40 }));
   }, [updateStep]);
@@ -154,7 +159,7 @@ export function useWorkflow(callbacks?: WorkflowCallbacks): UseWorkflowReturn {
     }));
   }, [updateStep]);
 
-  const editTimeline = useCallback((timeline: any) => {
+  const editTimeline = useCallback((timeline: unknown) => {
     updateStep('timeline-edit');
     setState(prev => ({
       ...prev,

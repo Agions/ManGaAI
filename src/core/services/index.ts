@@ -1,43 +1,99 @@
 /**
  * Services 统一导出
  */
+
+// 图像/视频生成服务
+export { imageGenerationService, default as ImageGenerationService } from './image-generation.service';
+export type { ImageGenerationOptions, ImageGenerationResult, VideoGenerationOptions, VideoGenerationResult, ImageModel } from './image-generation.service';
+
+// 唇同步服务
+export { lipSyncService, default as LipSyncService } from './lip-sync.service';
+export type { LipSyncOptions, LipSyncResult, TalkingFaceOptions, TalkingFaceResult } from './lip-sync.service';
+
+// 视频合成服务
+export { videoCompositorService, default as VideoCompositorService } from './video-compositor.service';
+export type { Scene, SubtitleTrack as VideoSubtitleTrack, Subtitle as VideoSubtitle, BackgroundMusic, CompositionOptions, CompositionResult, ExportProgress as VideoExportProgress } from './video-compositor.service';
+
+// 漫剧流水线服务
+export { mangaPipelineService, default as MangaPipelineService } from './manga-pipeline.service';
+export type { PipelineConfig, PipelineScene, PipelineResult, PipelineProgress } from './manga-pipeline.service';
+
+// 核心服务
+export { aiService, type AIResponse, type RequestConfig } from './ai.service';
+export { novelService, default as NovelService } from './novel.service';
+export { novelAnalyzer, default as NovelAnalyzer } from './novel-analyze.service';
+export { scriptImportService, default as ScriptImportService } from './script-import.service';
+export { storyAnalysisService, default as StoryAnalysisService } from './story-analysis.service';
+export { renderQueueService, default as RenderQueueService } from './render-queue.service';
+export { audioPipelineService, default as AudioPipelineService } from './audio-pipeline.service';
+export { evaluationService, default as EvaluationService } from './evaluation.service';
+export { qualityGateService, default as QualityGateService } from './quality-gate.service';
+export { collaborationService, default as CollaborationService } from './collaboration.service';
+export { reviewExportService, default as ReviewExportService } from './review-export.service';
 export { videoService } from './video.service';
 export { storageService } from './storage.service';
-export { visionService } from './vision.service';
-export { dramaWorkflowService, default as DramaWorkflowService } from './drama.workflow.service';
 export { costService, default as CostService } from './cost.service';
-export { consistencyService, default as ConsistencyService } from './consistency.service';
-export { enhancedConsistencyService, default as EnhancedConsistencyService } from './enhanced-consistency.service';
-export { novelService, default as NovelService } from './novel.service';
-export { scriptTemplateService, ScriptTemplateService } from './scriptTemplate.service';
-export { lipSyncService, default as LipSyncService } from './lip-sync.service';
-export { enhancedDramaWorkflowService, default as EnhancedDramaWorkflowService } from './enhanced-drama-workflow.service';
-export { originalityService, default as OriginalityService } from './originality.service';
-export { dramaTemplateService, default as DramaTemplateService } from './drama-template.service';
+export { ttsService, DEFAULT_TTS_CONFIG, TTS_VOICES } from './tts.service';
+export { videoAnalysisService, DEFAULT_ANALYSIS_CONFIG, SCENE_TYPES } from './video-analysis.service';
+export type { VideoAnalysisConfig, SceneType } from './video-analysis.service';
+export { subtitleService, DEFAULT_SUBTITLE_STYLE, ASS_STYLE_PRESETS } from './subtitle.service';
+export type { SubtitleStyle, SubtitleItem, SubtitleTrack, SubtitleFormat } from './subtitle.service';
+export { projectImportExportService } from './project-import-export.service';
+export type { ExportFormat, ProjectExportData, ImportOptions, ExportOptions } from './project-import-export.service';
+export { desktopAppService } from './desktop-app.service';
+export type { ShortcutDefinition, TrayMenuItem, NotificationOptions, WindowState } from './desktop-app.service';
 
-// 工作流增强
+// 增强服务
+
+// Tauri 服务
+export { default as TauriService, tauriService } from './tauri.service';
+export type { OpenFileOptions, SaveFileOptions, VideoClipOptions, PreviewOptions, ExportProgress, DirInfo } from './tauri.service';
+
+// ========== n8n 风格工作流引擎 ==========
 export {
-  withRetry,
-  withTimeout,
-  withRetryAndTimeout,
-  workflowCache,
-  checkpointStorage,
-  createCheckpoint,
-  LocalCheckpointStorage
-} from './workflow-enhance.service';
-export type { RetryConfig, Checkpoint, CheckpointStorage, CacheEntry } from './workflow-enhance.service';
+  workflowManager,
+  projectManager,
+  executeWorkflow,
+  createWorkflowExecutor,
+  workflowExecutionManager,
+  NODE_TEMPLATES,
+  getNodeTemplate,
+  CATEGORY_INFO,
+  getWorkflowTemplates,
+  getWorkflowTemplate,
+  createWorkflowFromTemplate
+} from './n8n-workflow';
+export type {
+  // 工作流
+  WorkflowDefinition,
+  WorkflowNode,
+  WorkflowConnection,
+  WorkflowExecutionState,
+  NodeExecutionResult,
+  NodeExecutionStatus,
+  NodeCategory,
+  MangaNodeType,
+  NodeConfig,
+  NodeTemplate,
+  WorkflowSettings,
+  // 项目
+  Project,
+  Episode,
+  ProjectSettings
+} from './n8n-workflow';
 
-// Legacy services (to be migrated)
-export * from './legacy/aiService';
-export * from './legacy/videoService';
-export * from './legacy/exportService';
-export * from './legacy/projectService';
-export * from './legacy/tauriService';
-export * from './legacy/api';
-
-// 重新导出类型
-export { aiService, type AIResponse, type RequestConfig } from './ai.service';
-export type { DramaWorkflowStep, DramaWorkflowState, DramaWorkflowData, DramaWorkflowConfig, DramaWorkflowCallbacks } from './drama.workflow.service';
-export type { CostRecord, CostStats, CostBudget } from './cost.service';
-export type { Character, DramaStyle, ConsistencyRule, ConsistencyCheckpoint, ConsistencyIssue, CharacterLibrary } from './consistency.service';
+// 类型
+export type { CostRecord, CostStats, CostBudget, BudgetStatus, CostAlert } from './cost.service';
+export type { BenchmarkSample, EvaluationCaseResult, EvaluationScores, EvaluationItemReport, EvaluationReport } from './evaluation.service';
+export type { QualityGateIssueLevel, QualityGateIssue, QualityGateThresholds, QualityGateInput, QualityGateMetrics, QualityGateResult } from './quality-gate.service';
+export type { FrameComment, StoryboardVersion, VersionDiffSummary } from './collaboration.service';
+export type {
+  ReviewExportInput,
+  ReviewExportProjectMeta,
+  ReviewExportActivity,
+  ReviewExportSource,
+  ReviewExportStatus,
+  SaveReviewMarkdownOptions,
+} from './review-export.service';
 export type { NovelChapter, ScriptScene, Script, NovelParseResult, Storyboard } from './novel.service';
+export type { TTSProvider, TTSVoice, TTSConfig, TTSRequest, TTSResponse, TTSStreamChunk } from '@/core/types';

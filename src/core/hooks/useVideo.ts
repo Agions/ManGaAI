@@ -211,16 +211,11 @@ export function useVideo(): UseVideoReturn {
       }
       
       // 生成模拟分析结果
-      const analysisResult: any = {
+      const analysisResult: VideoAnalysis = {
         id: uuidv4(),
         videoId,
         scenes: generateMockScenes(video.duration),
         keyframes: generateMockKeyframes(video.duration),
-        audioTranscript: {
-          segments: [],
-          fullText: '',
-          language: 'zh'
-        },
         objects: [],
         emotions: [],
         summary: `视频时长 ${formatDuration(video.duration)}，分辨率 ${video.width}x${video.height}，包含 ${Math.floor(video.duration / 30)} 个场景。`,

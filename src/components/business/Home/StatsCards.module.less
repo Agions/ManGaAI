@@ -1,0 +1,36 @@
+.stats {
+  margin-bottom: 48px;
+}
+
+.statsCard {
+  padding: 8px;
+  transition: all 0.3s ease;
+  height: 100%;
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+
+  :global(.ant-card-body) {
+    padding: 20px;
+  }
+}
+
+.statIcon {
+  font-size: 24px;
+  margin-right: 8px;
+  color: #6366f1;
+}
+
+.darkCard {
+  background-color: #1f1f1f;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+  &:hover {
+    background-color: #252525;
+  }
+}

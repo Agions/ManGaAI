@@ -2,8 +2,16 @@
  * 核心类型定义
  */
 
+export type {
+  ScriptChapter,
+  ScriptFileFormat,
+  ScriptSource,
+  ScriptValidationResult,
+  StoryAnalysis,
+} from './novel.types';
+
 // AI 模型类型
-export type ModelProvider = 'openai' | 'anthropic' | 'google' | 'baidu' | 'alibaba' | 'zhipu' | 'iflytek' | 'tencent' | 'minimax' | 'moonshot' | 'bytedance';
+export type ModelProvider = 'openai' | 'anthropic' | 'google' | 'baidu' | 'alibaba' | 'zhipu' | 'iflytek' | 'tencent' | 'minimax' | 'moonshot' | 'bytedance' | 'kling';
 export type ModelCategory = 'text' | 'code' | 'image' | 'video' | 'audio' | 'all';
 
 // TTS 提供商类型
@@ -242,6 +250,8 @@ export interface ProjectData {
   videos: VideoInfo[];
   scripts: ScriptData[];
   analysis?: VideoAnalysis;
+  characters?: Character[]; // 角色库
+  composition?: CompositionProject; // 动态合成配置
   settings?: ProjectSettings;
   createdAt: string;
   updatedAt: string;
@@ -363,6 +373,17 @@ export interface TaskStatus {
   completedAt?: string;
 }
 
+export type DramaWorkflowStep =
+  | 'upload'
+  | 'analyze'
+  | 'template-select'
+  | 'script-generate'
+  | 'script-dedup'
+  | 'script-edit'
+  | 'timeline-edit'
+  | 'preview'
+  | 'export';
+
 // 视频剪辑
 export interface VideoClip {
   id: string;
@@ -378,31 +399,196 @@ export interface VideoClip {
   effects?: string[];
 }
 
-// 工作流步骤
-export type WorkflowStep = 
-  | 'upload'
-  | 'analyze'
-  | 'template'
-  | 'generate'
-  | 'dedup'
-  | 'polish'
-  | 'preview'
-  | 'edit'
-  | 'export';
+// ========== 漫剧工作流基础类型 ==========
 
-export type { Timeline, TimelineSegment } from './legacy.types';
-
-
-// 漫剧工作流步骤
-export interface DramaWorkflowStep {
+// 分镜帧
+export interface StoryboardFrame {
   id: string;
-  name: string;
-  status: 'pending' | 'running' | 'completed' | 'failed';
-  progress: number;
-  error?: string;
-  startedAt?: string;
-  completedAt?: string;
+  title: string;
+  sceneDescription: string;
+  composition: string;
+  cameraType: string;
+  dialogue: string;
+  duration: number;
+  imageUrl?: string;
 }
 
-export type StepStatus = DramaWorkflowStep['status'];
+// ========== 角色设计相关类型 ==========
 
+// 角色外观配置
+export interface CharacterAppearance {
+  gender: 'male' | 'female' | 'other';
+  age: number;
+  hairStyle: string;
+  hairColor: string;
+  eyeColor: string;
+  skinTone: string;
+  bodyType: 'slim' | 'average' | 'athletic' | 'heavy';
+  height?: number; // cm
+  weight?: number; // kg
+  features?: string[]; // 特殊特征，如疤痕、纹身等
+}
+
+// 服装装备
+export interface ClothingItem {
+  type: 'head' | 'top' | 'bottom' | 'shoes' | 'accessory';
+  name: string;
+  style: string;
+  color: string;
+  pattern?: string;
+  material?: string;
+}
+
+// 角色表情
+export interface CharacterExpression {
+  id: string;
+  name: string;
+  description?: string;
+  imageUrl?: string;
+  intensity?: 'subtle' | 'neutral' | 'strong' | 'exaggerated';
+}
+
+// 角色一致性设置
+export interface CharacterConsistency {
+  seed?: number; // 随机种子，保证生成一致
+  weights?: {
+    appearance: number; // 0-1
+    voice: number;
+    behavior: number;
+  };
+  referenceImages?: string[]; // 参考图片 URL
+}
+
+// 角色完整定义
+export interface Character {
+  id: string;
+  name: string;
+  role?: 'protagonist' | 'antagonist' | 'supporting' | 'minor';
+  description: string;
+  appearance: CharacterAppearance;
+  clothing: ClothingItem[];
+  expressions: CharacterExpression[];
+  consistency: CharacterConsistency;
+  voice?: {
+    provider: TTSProvider;
+    voiceId: string;
+    pitch?: number;
+    speed?: number;
+  };
+  tags: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ========== 动态合成相关类型 ==========
+
+// 镜头运动类型
+export type CameraMotion = 
+  | 'static'
+  | 'pan-left' | 'pan-right'
+  | 'tilt-up' | 'tilt-down'
+  | 'dolly-in' | 'dolly-out'
+  | 'zoom-in' | 'zoom-out'
+  | 'shake' | 'sway'
+  | 'follow';
+
+// 转场效果
+export type TransitionEffect = 
+  | 'none'
+  | 'fade' | 'crossfade'
+  | 'dissolve'
+  | 'wipe-left' | 'wipe-right' | 'wipe-up' | 'wipe-down'
+  | 'slide-left' | 'slide-right'
+  | 'zoom'
+  | 'blur';
+
+// 动画关键帧属性
+export type AnimationProperty = 
+  | 'position-x' 
+  | 'position-y' 
+  | 'scale' 
+  | 'rotation' 
+  | 'opacity' 
+  | 'zoom' 
+  | 'blur'
+  | 'brightness'
+  | 'contrast'
+  | 'saturation'
+  | 'pan-x'
+  | 'pan-y';
+
+// 动画关键帧
+export interface AnimationKeyframe {
+  time: number; // 秒
+  property: AnimationProperty;
+  value: number; // 0-1 或角度等
+  easing?: 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out';
+}
+
+// 动画轨道
+export interface AnimationTrack {
+  property: 'position-x' | 'position-y' | 'scale' | 'rotation' | 'opacity';
+  keyframes: AnimationKeyframe[];
+}
+
+// 镜头运动配置
+export interface CameraMotionConfig {
+  type: CameraMotion;
+  duration: number;
+  intensity: number; // 0-1
+  easing?: string;
+  startPoint?: { x: number; y: number };
+  endPoint?: { x: number; y: number };
+}
+
+// 转场配置
+export interface TransitionConfig {
+  effect: TransitionEffect;
+  duration: number;
+  easing?: string;
+  color?: string; // 某些转场需要颜色
+}
+
+// 分镜动画配置
+export interface FrameAnimation {
+  frameId: string;
+  cameraMotion: CameraMotionConfig | null;
+  keyframes?: AnimationKeyframe[];
+  zoom?: number; // 缩放倍数
+  pan?: { x: number; y: number }; // 平移偏移
+  rotation?: number; // 旋转角度
+  opacity?: number; // 透明度
+  filters?: {
+    blur?: number;
+    brightness?: number;
+    contrast?: number;
+    saturation?: number;
+  };
+}
+
+// 动态合成项目配置
+export interface CompositionProject {
+  id: string;
+  projectId: string;
+  frames: FrameAnimation[]; // 每个分镜的动画配置
+  transitions: TransitionConfig[]; // 分镜间的转场
+  masterSettings: {
+    frameDuration: number; // 每帧默认时长
+    defaultTransition: TransitionConfig;
+    globalEffects?: string[];
+  };
+  previewState?: {
+    currentFrameIndex: number;
+    isPlaying: boolean;
+    playbackSpeed: number;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ========== 导出最终类型到 ProjectData ==========
+
+// 扩展 ProjectData 接口（通过声明合并）
+// 新增字段：
+// - characters?: Character[]
+// - composition?: CompositionProject

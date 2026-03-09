@@ -1,0 +1,80 @@
+.workflow {
+  margin-bottom: 48px;
+}
+
+.sectionTitle {
+  margin-bottom: 24px !important;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  :global(.anticon) {
+    color: #6366f1;
+    font-size: 28px;
+  }
+}
+
+.steps {
+  padding: 20px 0;
+}
+
+.stepCard {
+  height: 100%;
+  text-align: center;
+  padding: 24px;
+  background-color: #fff;
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+
+  h4 {
+    margin: 16px 0;
+    color: rgba(0, 0, 0, 0.85);
+  }
+
+  p {
+    color: rgba(0, 0, 0, 0.65);
+    margin-bottom: 0;
+  }
+}
+
+.stepNumber {
+  width: 48px;
+  height: 48px;
+  line-height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #ec4899);
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0 auto 16px;
+}
+
+.stepIcon {
+  font-size: 32px;
+  color: #6366f1;
+  margin-bottom: 8px;
+}
+
+.darkCard {
+  background-color: #1f1f1f;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+
+  &:hover {
+    background-color: #252525;
+  }
+
+  h4 {
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  p {
+    color: rgba(255, 255, 255, 0.65);
+  }
+}

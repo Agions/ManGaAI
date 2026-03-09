@@ -864,7 +864,7 @@ fn random_id() -> String {
 }
 
 fn main() {
-    println!("启动 ClipAiMan 应用");
+    println!("启动 ManGa AI 应用");
     
     tauri::Builder::default()
         .setup(|_app| {

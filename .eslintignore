@@ -1,0 +1,29 @@
+# dependencies
+node_modules
+dist
+build
+
+# build outputs
+.eslintcache
+*.min.js
+
+# testing
+coverage
+
+# docs
+docs
+
+# Tauri
+src-tauri/target
+src-tauri/src-tauri
+
+# IDE
+.vscode
+.idea
+
+# logs
+*.log
+
+# temp
+*.tmp
+.temp

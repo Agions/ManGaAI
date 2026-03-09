@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [2.0.0] - 2026-02-22
 
 ### 🎉 项目重命名
-- 漫剧师 (Manjushi) → **ClipAiMan (ClipAiMan)**
+- 项目名称统一为 **ManGaAI**
 - 全新品牌标识、ASCII Art Logo
 - 更新所有配置、代码注释、文档引用
 
@@ -29,10 +29,10 @@ All notable changes to this project will be documented in this file.
 ## [1.1.0] - 2026-02-17
 
 ### Renamed
-- **Project Name**: Nova → 漫剧师 (Manjushi)
+- **Project Name**: Nova → **ManGaAI**
   - New ASCII art logo
   - Updated all documentation references
-  - GitHub: https://github.com/Agions/Manjushi
+  - GitHub: https://github.com/Agions/ManGaAI
 
 ### Added
 - **8-Step Drama Workflow**: Novel → Script → Storyboard → Character → Scene → Animation → Voiceover → Export
@@ -65,7 +65,7 @@ All notable changes to this project will be documented in this file.
 ## [1.0.0] - 2026-02-17
 
 ### Added
-- Initial release of 漫剧师
+- Initial release of **ManGaAI**
 - AI-powered video content creation platform
 - Support for 8 major AI providers (OpenAI, Anthropic, Google, Baidu, Alibaba, Zhipu, iFlytek, Tencent)
 - Professional video upload and analysis

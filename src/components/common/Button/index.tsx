@@ -31,7 +31,7 @@ interface ButtonProps {
   /** className */
   className?: string;
   /** 其他 antd Button 属性 */
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export const Button: React.FC<ButtonProps> = ({

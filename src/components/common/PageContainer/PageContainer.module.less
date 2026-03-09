@@ -1,0 +1,272 @@
+@import '../../../styles/variables.less';
+
+/* ==================== 页面容器 ==================== */
+
+.container {
+  max-width: @layout-content-max-width;
+  margin: 0 auto;
+
+  &.compact {
+    padding: 0;
+  }
+}
+
+.animated {
+  animation: slideUpIn 0.3s ease-out;
+}
+
+@keyframes slideUpIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: @spacing-lg;
+  flex-wrap: wrap;
+  gap: @spacing-md;
+}
+
+.headerLeft {
+  flex: 1;
+  min-width: 200px;
+}
+
+.title {
+  margin-bottom: @spacing-xs !important;
+}
+
+.description {
+  margin-bottom: 0 !important;
+}
+
+.extra {
+  flex-shrink: 0;
+}
+
+.content {
+  min-height: 200px;
+}
+
+.footer {
+  margin-top: @spacing-lg;
+  padding-top: @spacing-lg;
+  border-top: 1px solid @border-color-base;
+}
+
+/* ==================== 页面区块 ==================== */
+
+.section {
+  margin-bottom: @spacing-lg;
+}
+
+.sectionPlain {
+  margin-bottom: @spacing-lg;
+
+  &.bordered {
+    padding: @spacing-lg;
+    background: @component-background;
+    border-radius: @border-radius-base;
+    border: 1px solid @border-color-base;
+  }
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: @spacing-sm;
+}
+
+.sectionExtra {
+  font-weight: normal;
+}
+
+.sectionDesc {
+  margin-bottom: @spacing-md !important;
+}
+
+.sectionFooter {
+  margin-top: @spacing-md;
+  padding-top: @spacing-md;
+  border-top: 1px solid @border-color-base;
+}
+
+/* ==================== 统计卡片 ==================== */
+
+.statCard {
+  height: 100%;
+
+  &.clickable {
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+}
+
+.statContent {
+  display: flex;
+  align-items: center;
+  gap: @spacing-md;
+}
+
+.statIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: @border-radius-base;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.statInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.statValue {
+  font-size: @font-size-h2;
+  font-weight: @font-weight-bold;
+  line-height: 1.2;
+  margin-top: @spacing-xs;
+}
+
+.statTrend {
+  font-size: @font-size-small;
+  margin-top: @spacing-xs;
+}
+
+/* ==================== 操作卡片 ==================== */
+
+.actionCard {
+  height: 100%;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &.clickable {
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+}
+
+.actionContent {
+  display: flex;
+  align-items: center;
+  gap: @spacing-md;
+}
+
+.actionIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: @border-radius-base;
+  background: linear-gradient(135deg, rgba(24, 144, 255, 0.1), rgba(114, 46, 209, 0.1));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: @primary-color;
+  flex-shrink: 0;
+}
+
+.actionInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.actionTitle {
+  font-weight: @font-weight-medium;
+  font-size: @font-size-base;
+}
+
+.actionDesc {
+  color: @text-color-secondary;
+  font-size: @font-size-small;
+  margin-top: @spacing-xs;
+}
+
+.actionButtons {
+  display: flex;
+  gap: @spacing-sm;
+  flex-shrink: 0;
+}
+
+.actionFooter {
+  margin-top: @spacing-md;
+  padding-top: @spacing-md;
+  border-top: 1px solid @border-color-base;
+}
+
+/* ==================== 暗色模式 ==================== */
+
+.dark {
+  .sectionFooter,
+  .footer {
+    border-color: @dark-border-color;
+  }
+
+  .sectionPlain.bordered {
+    background: @dark-component-background;
+    border-color: @dark-border-color;
+  }
+
+  .actionFooter {
+    border-color: @dark-border-color;
+  }
+}
+
+/* ==================== 响应式 ==================== */
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .headerLeft {
+    min-width: 100%;
+  }
+
+  .extra {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: @spacing-sm;
+  }
+
+  .statContent,
+  .actionContent {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .statIcon,
+  .actionIcon {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+
+  .actionButtons {
+    width: 100%;
+    justify-content: flex-start;
+    margin-top: @spacing-sm;
+  }
+}

@@ -1,0 +1,58 @@
+.novelImporter {
+  width: 100%;
+
+  .uploadArea {
+    padding: 20px;
+
+    .uploadOptions {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+
+      .uploadOption {
+        text-align: center;
+
+        h4 {
+          margin-bottom: 8px;
+          color: #333;
+        }
+
+        p {
+          color: #666;
+          margin-bottom: 16px;
+        }
+      }
+
+      .divider {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        color: #999;
+
+        &::before,
+        &::after {
+          content: '';
+          flex: 1;
+          height: 1px;
+          background: #eee;
+        }
+      }
+    }
+  }
+
+  .contentPreview {
+    .ant-card-head-title {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .contentPreviewBox {
+      margin-top: 16px;
+
+      textarea {
+        font-family: 'Courier New', Courier, monospace;
+      }
+    }
+  }
+}

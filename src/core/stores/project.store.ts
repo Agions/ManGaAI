@@ -3,9 +3,10 @@
  */
 
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import type { ProjectData, ScriptData, VideoInfo, ExportRecord } from '@/core/types';
 import { storageService } from '@/core/services';
+import { createDebouncedStorage } from './middlewares/persistWithDebounce';
 
 export interface ProjectState {
   // 项目列表
@@ -363,7 +364,8 @@ export const useProjectStore = create<ProjectState>()(
       }
     }),
     {
-      name: 'reelforge-project-storage',
+      name: 'mangaai-project-storage',
+      storage: createJSONStorage(() => createDebouncedStorage(localStorage, 1500)),
       partialize: (state) => ({
         projects: state.projects,
         exportHistory: state.exportHistory

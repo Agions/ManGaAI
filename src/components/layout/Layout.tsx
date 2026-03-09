@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Layout as AntLayout, Menu, Button, Tooltip, Avatar, Typography, Dropdown, Badge, Space, theme } from 'antd';
-import { 
-  HomeOutlined, 
-  VideoCameraOutlined, 
+import type { MenuProps } from 'antd';
+import {
+  HomeOutlined,
+  VideoCameraOutlined,
   SettingOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -36,7 +37,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { isDarkMode, toggleTheme } = useTheme();
   const [notifications, setNotifications] = useState<number>(3);
   const [browserWidth, setBrowserWidth] = useState(window.innerWidth);
-  
+
   // 响应式折叠控制
   useEffect(() => {
     const handleResize = () => {
@@ -47,11 +48,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         setCollapsed(false);
       }
     };
-    
+
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, [collapsed]);
-  
+
   // 判断当前路径是否匹配
   const isActive = (path: string) => {
     if (path === '/') {
@@ -75,24 +76,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       onClick: () => navigate('/')
     },
     {
-      key: '/editor',
-      icon: <ScissorOutlined />,
-      label: '视频剪辑',
-      onClick: () => navigate('/editor')
-    },
-    {
-      key: '/templates',
-      icon: <AppstoreOutlined />,
-      label: '模板中心',
-      onClick: () => navigate('/templates')
-    },
-    {
-      key: '/scripts',
-      icon: <BookOutlined />,
-      label: '脚本库',
-      onClick: () => navigate('/scripts')
-    },
-    {
       key: '/settings',
       icon: <SettingOutlined />,
       label: '设置',
@@ -106,7 +89,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   // 用户下拉菜单
-  const userMenu: any = {
+  const userMenu: MenuProps = {
     items: [
       {
         key: 'profile',
@@ -127,18 +110,19 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         danger: true
       }
     ],
-    onClick: (e: any) => {
-      if (e.key === 'preferences') {
+    onClick: (e) => {
+      const key = e.key;
+      if (key === 'preferences') {
         navigate('/settings');
-      } else if (e.key === 'logout') {
+      } else if (key === 'logout') {
         // 实现登出逻辑
         console.log('用户登出');
       }
     }
   };
-  
+
   // 通知菜单
-  const notificationMenu: any = {
+  const notificationMenu: MenuProps = {
     items: [
       {
         key: '1',
@@ -169,8 +153,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         label: <Text type="secondary">查看全部通知</Text>
       }
     ],
-    onClick: (e: any) => {
-      if (e.key === 'all') {
+    onClick: (e) => {
+      const key = e.key;
+      if (key === 'all') {
         navigate('/notifications');
       } else {
         // 标记通知为已读
@@ -181,8 +166,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <AntLayout className={`${styles.layout} ${collapsed ? styles.siderCollapsed : ''}`}>
-      <Sider 
-        className={styles.sider} 
+      <Sider
+        className={styles.sider}
         theme="light"
         trigger={null}
         collapsible
@@ -194,18 +179,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           {!collapsed ? (
             <Space>
               <FireOutlined style={{ fontSize: '24px', color: '#FF5252' }} />
-              <Title level={4} style={{ margin: 0 }}>ClipAiMan</Title>
+              <Title level={4} style={{ margin: 0 }}>ManGa AI</Title>
             </Space>
           ) : (
             <FireOutlined style={{ fontSize: '24px', color: '#FF5252' }} />
           )}
         </div>
-        
+
         <Menu
           mode="inline"
           className={styles.menu}
           selectedKeys={[
-            isActive('/') && !isActive('/project') && !isActive('/editor') ? '/' : 
+            isActive('/') && !isActive('/project') && !isActive('/editor') ? '/' :
             isActive('/project') ? '/project' :
             isActive('/templates') ? '/templates' :
             isActive('/editor') ? '/editor' :
@@ -214,7 +199,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           ]}
           items={menuItems}
         />
-        
+
         <div className={styles.collapseButton}>
           <Tooltip title={collapsed ? '展开菜单' : '收起菜单'} placement="right">
             <Button
@@ -225,11 +210,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </Tooltip>
         </div>
       </Sider>
-      
+
       <AntLayout>
         <Header className={styles.header}>
           <div className={styles.headerTitle}>
-            {location.pathname === '/' && '欢迎使用ClipAiMan'}
+            {location.pathname === '/' && '欢迎使用ManGa AI'}
             {location.pathname.startsWith('/project') && '项目管理'}
             {location.pathname.startsWith('/templates') && '模板中心'}
             {location.pathname.startsWith('/editor') && '视频剪辑工作台'}
@@ -240,13 +225,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <Tooltip title="帮助中心">
               <Button type="text" shape="circle" icon={<QuestionCircleOutlined />} />
             </Tooltip>
-            
+
             <Dropdown menu={notificationMenu} trigger={['click']} placement="bottomRight" arrow>
               <Badge count={notifications} overflowCount={99} size="small">
                 <Button type="text" shape="circle" icon={<BellOutlined />} />
               </Badge>
             </Dropdown>
-            
+
             <Dropdown menu={userMenu} placement="bottomRight" trigger={['click']} arrow>
               <Button type="text" className={styles.userButton}>
                 <Space>
@@ -257,7 +242,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </Dropdown>
           </div>
         </Header>
-        
+
         <Content className={styles.content}>
           <div className={styles.contentWrapper}>
             {children}
@@ -268,4 +253,4 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   );
 };
 
-export default Layout; 
+export default Layout;

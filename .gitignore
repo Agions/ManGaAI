@@ -12,3 +12,30 @@ node_modules
 .DS_Store
 **/.DS_Store
 package-lock.json
+.claude
+
+# Build outputs
+dist/
+docs-site/
+
+# Rust build
+src-tauri/target/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test coverage
+coverage/
+
+# Temporary files
+*.tmp
+*.temp
+
+dist/

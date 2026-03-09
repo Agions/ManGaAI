@@ -192,11 +192,27 @@ ${chapter.content.slice(0, 5000)}${chapter.content.length > 5000 ? '...' : ''}
 
     try {
       const scenes = JSON.parse(aiResponse);
-      return scenes.map((scene: any, index: number) => ({
-        id: `scene_${chapter.id}_${index}`,
-        chapterId: chapter.id,
-        ...scene
-      })) as ScriptScene[];
+      return scenes.map((scene: unknown, index: number) => {
+        if (typeof scene === 'object' && scene !== null) {
+          return {
+            id: `scene_${chapter.id}_${index}`,
+            chapterId: chapter.id,
+            ...(scene as Record<string, unknown>)
+          } as ScriptScene;
+        }
+        return {
+          id: `scene_${chapter.id}_${index}`,
+          chapterId: chapter.id,
+          sceneNumber: index + 1,
+          location: '',
+          time: '',
+          characters: [],
+          action: '',
+          dialogue: [],
+          description: '',
+          duration: 0
+        } as ScriptScene;
+      });
     } catch (error) {
       throw new Error('场景转换失败：AI 返回格式错误');
     }
@@ -312,12 +328,15 @@ ${chapter.content.slice(0, 5000)}${chapter.content.length > 5000 ? '...' : ''}
 
     try {
       const panels = JSON.parse(aiResponse);
-      return panels.map((panel: any, index: number) => ({
-        id: `storyboard_${scene.id}_${index}`,
-        sceneId: scene.id,
-        ...panel,
-        prompt: this.generatePanelPrompt(panel, scene)
-      })) as Storyboard[];
+      return panels.map((panel: unknown, index: number) => {
+        const panelObj = typeof panel === 'object' && panel !== null ? panel as Record<string, unknown> : {};
+        return {
+          id: `storyboard_${scene.id}_${index}`,
+          sceneId: scene.id,
+          ...panelObj,
+          prompt: this.generatePanelPrompt(panel, scene)
+        } as Storyboard;
+      });
     } catch (error) {
       throw new Error('分镜生成失败：AI 返回格式错误');
     }
@@ -326,7 +345,7 @@ ${chapter.content.slice(0, 5000)}${chapter.content.length > 5000 ? '...' : ''}
   /**
    * 生成分镜提示词
    */
-  private generatePanelPrompt(panel: any, scene: ScriptScene): string {
+  private generatePanelPrompt(panel: unknown, scene: ScriptScene): string {
     const shotTypeMap: Record<string, string> = {
       wide: '全景',
       medium: '中景',
@@ -342,13 +361,22 @@ ${chapter.content.slice(0, 5000)}${chapter.content.length > 5000 ? '...' : ''}
       dutch: '倾斜'
     };
 
+    const panelObj = typeof panel === 'object' && panel !== null ? panel as Record<string, unknown> : {};
+    const shotType = String(panelObj.shotType || '');
+    const angle = String(panelObj.angle || '');
+    const description = String(panelObj.description || '');
+    const characters = Array.isArray(panelObj.characters) ? panelObj.characters.join('、') : '';
+    const background = String(panelObj.background || '');
+    const lighting = String(panelObj.lighting || '');
+    const mood = String(panelObj.mood || '');
+
     return `
-${shotTypeMap[panel.shotType]}，${angleMap[panel.angle]}，
-画面：${panel.description}，
-角色：${panel.characters.join('、')}，
-背景：${panel.background}，
-光线：${panel.lighting}，
-氛围：${panel.mood}，
+${shotTypeMap[shotType] || shotType}，${angleMap[angle] || angle}，
+画面：${description}，
+角色：${characters}，
+背景：${background}，
+光线：${lighting}，
+氛围：${mood}，
 漫画风格，高质量，细节丰富
     `.trim();
   }

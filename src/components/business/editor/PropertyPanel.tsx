@@ -43,7 +43,7 @@ interface PropertyPanelProps {
     cropAlignment: string;
     smartCropEnabled: boolean;
   };
-  onExportSettingsChange?: (settings: any) => void;
+  onExportSettingsChange?: (settings: Record<string, unknown>) => void;
   onSaveSegment?: () => void;
 }
 
@@ -226,7 +226,7 @@ const ExportSettings = ({
   onChange 
 }: { 
   exportSettings?: PropertyPanelProps['exportSettings'];
-  onChange?: (settings: any) => void;
+  onChange?: (settings: Record<string, unknown>) => void;
 }) => (
   <div className={styles.settingsGroup}>
     <Title level={5} className={styles.groupTitle}>

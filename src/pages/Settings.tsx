@@ -263,7 +263,7 @@ const Settings: React.FC = () => {
             <Form layout="vertical">
               <Form.Item label="项目保存路径">
                 <Input 
-                  placeholder="/Users/username/ClipAiMan/projects" 
+                  placeholder="/Users/username/ManGa AI/projects" 
                   suffix={<Button type="text" size="small">浏览</Button>}
                 />
               </Form.Item>
@@ -440,7 +440,7 @@ const Settings: React.FC = () => {
         <div className={styles.tabContent}>
           <Card className={styles.aboutCard}>
             <div className={styles.aboutHeader}>
-              <Title level={2}>🎬 ClipAiMan</Title>
+              <Title level={2}>🎬 ManGa AI</Title>
               <Text type="secondary">AI 漫剧视频智能创作平台</Text>
             </div>
             
@@ -464,7 +464,7 @@ const Settings: React.FC = () => {
             <Alert
               type="info"
               showIcon
-              message="感谢使用 ClipAiMan"
+              message="感谢使用 ManGa AI"
               description="如有问题或建议，请提交 Issue 或联系开发者。"
             />
           </Card>

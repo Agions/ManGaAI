@@ -9,15 +9,15 @@ import {
   VIDEO_CONFIG,
   EXPORT_CONFIG,
   THEME_CONFIG
-} from '@core/config/app.config';
+} from '@/core/config/app.config';
 
 describe('APP_CONFIG', () => {
   it('should have correct app name', () => {
-    expect(APP_CONFIG.name).toBe('ClipAiMan');
+    expect(APP_CONFIG.name).toBe('ManGa AI');
   });
 
   it('should have correct Chinese name', () => {
-    expect(APP_CONFIG.nameZh).toBe('墨动');
+    expect(APP_CONFIG.nameZh).toBe('ManGa AI');
   });
 
   it('should have valid version format', () => {
@@ -51,8 +51,9 @@ describe('STORAGE_CONFIG', () => {
   });
 
   it('should use prefix in all keys', () => {
-    Object.values(STORAGE_CONFIG.keys).forEach(key => {
-      expect(key.startsWith(STORAGE_CONFIG.prefix)).toBe(true);
+    const keys = Object.values(STORAGE_CONFIG.keys) as unknown[];
+    keys.forEach((key: unknown) => {
+      expect((key as string).startsWith(STORAGE_CONFIG.prefix)).toBe(true);
     });
   });
 
@@ -105,13 +106,15 @@ describe('AI_MODELS', () => {
   });
 
   it('should have baseUrl for all models', () => {
-    Object.values(AI_MODELS).forEach(model => {
+    const models = Object.values(AI_MODELS) as Array<{ baseUrl: string }>;
+    models.forEach(model => {
       expect(model.baseUrl).toMatch(/^https?:\/\/.+/);
     });
   });
 
   it('should have defaultModel for all models', () => {
-    Object.values(AI_MODELS).forEach(model => {
+    const models = Object.values(AI_MODELS) as Array<{ defaultModel: string }>;
+    models.forEach(model => {
       expect(model.defaultModel).toBeTruthy();
     });
   });

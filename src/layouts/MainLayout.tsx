@@ -45,7 +45,7 @@ const Footer = () => (
         <a href="/terms" target="_blank">使用条款</a>
       </div>
       <div className={styles.copyright}>
-        <Text type="secondary">ClipAiMan © {new Date().getFullYear()} Created by ClipAiMan团队</Text>
+        <Text type="secondary">ManGa AI © {new Date().getFullYear()} Created by ManGa AI团队</Text>
       </div>
     </div>
   </div>
@@ -150,7 +150,7 @@ const MainLayout: React.FC = () => {
     if (path.startsWith('/scripts')) return '剧本管理';
     if (path.startsWith('/templates')) return '模板中心';
     if (path.startsWith('/settings')) return '系统设置';
-    return 'ClipAiMan';
+    return 'ManGa AI';
   };
 
   const renderMenu = () => (
@@ -170,7 +170,7 @@ const MainLayout: React.FC = () => {
         <div className={styles.headerLeft}>
           <div className={styles.logo} onClick={() => navigate('/')}>
             <FireOutlined className={styles.logoIcon} />
-            <span className={styles.logoText}>ClipAiMan</span>
+            <span className={styles.logoText}>ManGa AI</span>
           </div>
           <div className={styles.pageTitle}>
             {getPageTitle()}

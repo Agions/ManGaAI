@@ -1,30 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Card, 
-  Button, 
-  Table, 
-  Space, 
-  Form, 
-  Input, 
-  Select, 
-  Modal, 
-  Tooltip, 
-  Dropdown, 
-  Menu, 
-  message 
+import {
+  Card,
+  Button,
+  Table,
+  Space,
+  Form,
+  Input,
+  Select,
+  Modal,
+  Tooltip,
+  Dropdown,
+  Menu,
+  message
 } from 'antd';
-import { 
-  EditOutlined, 
-  DeleteOutlined, 
-  PlayCircleOutlined, 
-  PlusOutlined, 
-  SaveOutlined, 
-  ExportOutlined, 
-  DownOutlined 
+import {
+  EditOutlined,
+  DeleteOutlined,
+  PlayCircleOutlined,
+  PlusOutlined,
+  SaveOutlined,
+  ExportOutlined,
+  DownOutlined
 } from '@ant-design/icons';
-import { VideoSegment, formatDuration, previewSegment } from '@/core/services/legacy/videoService';
+import { formatDuration, previewSegment } from '@/core/services/legacy';
+import type { ScriptData, ScriptMetadata } from '@/core/types';
 import { convertFileSrc } from '@tauri-apps/api/tauri';
 import styles from './ScriptEditor.module.less';
+
+// 定义 VideoSegment 类型（兼容旧接口）
+interface VideoSegment {
+  id: string;
+  start: number;
+  end: number;
+  type: string;
+  content?: string;
+}
 
 // 兼容两种接口
 interface ScriptEditorProps {
@@ -34,9 +44,9 @@ interface ScriptEditorProps {
   onSave?: (segments: VideoSegment[]) => void;
   onExport?: (format: string) => void;
   // 新接口 (来自 VideoStudio)
-  script?: any;
-  metadata?: any;
-  onScriptUpdate?: (updatedScript: any) => void;
+  script?: ScriptData;
+  metadata?: ScriptMetadata;
+  onScriptUpdate?: (updatedScript: ScriptData) => void;
   // VideoStudio 使用的 segments
   segments?: VideoSegment[];
   onSegmentsChange?: (newSegments: VideoSegment[]) => void;
@@ -63,7 +73,7 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({
   const [aiModalVisible, setAiModalVisible] = useState(false);
   const [exportMenuVisible, setExportMenuVisible] = useState(false);
   const [totalDuration, setTotalDuration] = useState(0);
-  
+
   // 当段落变化时重新计算总时长
   useEffect(() => {
     const duration = segments.reduce((sum, segment) => sum + (segment.end - segment.start), 0);
@@ -76,7 +86,7 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({
     const lastSegment = segments.length > 0 ? segments[segments.length - 1] : null;
     const startTime = lastSegment ? lastSegment.end : 0;
     const endTime = startTime + 30; // 默认片段长度30秒
-    
+
     // 初始化表单值
     editForm.setFieldsValue({
       start: startTime,
@@ -84,7 +94,7 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({
       type: 'narration',
       content: ''
     });
-    
+
     // 设置编辑索引为新片段
     setEditingIndex(segments.length);
   };
@@ -92,7 +102,7 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({
   // 编辑片段
   const handleEditSegment = (index: number) => {
     const segment = segments[index];
-    
+
     // 初始化表单值
     editForm.setFieldsValue({
       start: segment.start,
@@ -100,7 +110,7 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({
       type: segment.type || 'narration',
       content: segment.content || ''
     });
-    
+
     // 设置编辑索引
     setEditingIndex(index);
   };
@@ -110,16 +120,17 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({
     editForm.validateFields().then(values => {
       const start = parseFloat(values.start);
       const end = parseFloat(values.end);
-      
+
       // 创建新的片段数组，更新编辑的片段
       const newSegments = [...segments];
       const segment: VideoSegment = {
+        id: newSegments[editingIndex as number]?.id || `seg_${Date.now()}`,
         start,
         end,
         type: values.type,
         content: values.content
       };
-      
+
       if (editingIndex !== null) {
         if (editingIndex < segments.length) {
           // 更新现有片段
@@ -129,7 +140,7 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({
           newSegments.push(segment);
         }
       }
-      
+
       // 更新状态并关闭编辑
       setSegments(newSegments);
       setEditingIndex(null);
@@ -161,10 +172,10 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({
     try {
       setPreviewLoading(true);
       const segment = segments[index];
-      
+
       // 使用服务函数生成预览
-      const previewPath = await previewSegment(videoPath, segment);
-      
+      const previewPath = await previewSegment(videoPath || '', segment.start, segment.end);
+
       // 设置预览源并显示预览
       setPreviewSrc(convertFileSrc(previewPath));
       setPreviewVisible(true);
@@ -190,13 +201,13 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({
   const handleAIImprove = async () => {
     try {
       message.info('正在使用 AI 优化脚本...');
-      
+
       // 这里应该实现调用 AI API 优化脚本的功能
       // 当前是模拟实现
-      
+
       // 关闭模态框
       setAiModalVisible(false);
-      
+
       // 模拟优化完成
       setTimeout(() => {
         message.success('脚本优化完成');
@@ -212,35 +223,36 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({
     try {
       const lines = text.split('\n').filter(line => line.trim().length > 0);
       const resultSegments: VideoSegment[] = [];
-      
+
       let currentSegment: VideoSegment | null = null;
-      
+
       for (const line of lines) {
         // 尝试匹配时间轴格式 [00:00 - 00:00] 文本内容
         const timeMatch = line.match(/\[(\d{1,2}:\d{2}(?::\d{2})?) - (\d{1,2}:\d{2}(?::\d{2})?)\]/);
-        
+
         if (timeMatch) {
           // 解析时间
           const startTime = parseTimeString(timeMatch[1]);
           const endTime = parseTimeString(timeMatch[2]);
-          
+
           // 提取内容（时间轴后面的文本）
           const content = line.substring(timeMatch[0].length).trim();
-          
+
           currentSegment = {
+            id: `seg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
             start: startTime,
             end: endTime,
             type: 'narration',
             content
           };
-          
+
           resultSegments.push(currentSegment);
         } else if (currentSegment) {
           // 如果没有匹配到时间轴，但有当前片段，将这行添加到当前片段的内容中
           currentSegment.content += '\n' + line.trim();
         }
       }
-      
+
       return resultSegments;
     } catch (error) {
       console.error('解析脚本失败:', error);
@@ -251,7 +263,7 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({
   // 解析时间字符串为秒数
   const parseTimeString = (timeString: string): number => {
     const parts = timeString.split(':').map(Number);
-    
+
     if (parts.length === 3) {
       // 格式: HH:MM:SS
       return parts[0] * 3600 + parts[1] * 60 + parts[2];
@@ -259,7 +271,7 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({
       // 格式: MM:SS
       return parts[0] * 60 + parts[1];
     }
-    
+
     return 0;
   };
 
@@ -269,7 +281,7 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({
       title: '时间',
       key: 'time',
       width: 180,
-      render: (_: any, record: VideoSegment, index: number) => (
+      render: (_: unknown, record: VideoSegment, index: number) => (
         <span>
           {formatDuration(record.start)} - {formatDuration(record.end)}
         </span>
@@ -280,7 +292,7 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({
       dataIndex: 'duration',
       key: 'duration',
       width: 80,
-      render: (_: any, record: VideoSegment) => (
+      render: (_: unknown, record: VideoSegment) => (
         <span>{formatDuration(record.end - record.start)}</span>
       )
     },
@@ -291,9 +303,9 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({
       width: 100,
       render: (type: string) => (
         <span>
-          {type === 'narration' ? '旁白' : 
-           type === 'dialogue' ? '对白' : 
-           type === 'action' ? '动作' : 
+          {type === 'narration' ? '旁白' :
+           type === 'dialogue' ? '对白' :
+           type === 'action' ? '动作' :
            type === 'transition' ? '转场' : type}
         </span>
       )
@@ -312,27 +324,27 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({
       title: '操作',
       key: 'action',
       width: 180,
-      render: (_: any, record: VideoSegment, index: number) => (
+      render: (_: unknown, record: VideoSegment, index: number) => (
         <Space size="small">
           <Tooltip title="编辑">
-            <Button 
-              type="text" 
-              icon={<EditOutlined />} 
+            <Button
+              type="text"
+              icon={<EditOutlined />}
               onClick={() => handleEditSegment(index)}
             />
           </Tooltip>
           <Tooltip title="预览">
-            <Button 
-              type="text" 
-              icon={<PlayCircleOutlined />} 
+            <Button
+              type="text"
+              icon={<PlayCircleOutlined />}
               onClick={() => handlePreviewSegment(index)}
             />
           </Tooltip>
           <Tooltip title="删除">
-            <Button 
-              type="text" 
+            <Button
+              type="text"
               danger
-              icon={<DeleteOutlined />} 
+              icon={<DeleteOutlined />}
               onClick={() => handleDeleteSegment(index)}
             />
           </Tooltip>
@@ -343,19 +355,19 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({
 
   return (
     <div className={styles.scriptEditor}>
-      <Card 
+      <Card
         title="脚本编辑"
         className={styles.editorCard}
         extra={
           <Space>
-            <Button 
-              icon={<EditOutlined />} 
+            <Button
+              icon={<EditOutlined />}
               onClick={handleOpenAIModal}
             >
               AI优化
             </Button>
-            <Button 
-              type="primary" 
+            <Button
+              type="primary"
               icon={<SaveOutlined />}
               onClick={() => onSave(segments)}
             >
@@ -385,7 +397,7 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({
           <div>总片段: {segments.length}</div>
           <div>总时长: {formatDuration(totalDuration)}</div>
         </div>
-        
+
         <Table
           rowKey={(record, index) => String(index)}
           dataSource={segments}
@@ -393,9 +405,9 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({
           pagination={false}
           className={styles.segmentsTable}
           footer={() => (
-            <Button 
-              type="dashed" 
-              icon={<PlusOutlined />} 
+            <Button
+              type="dashed"
+              icon={<PlusOutlined />}
               block
               onClick={handleAddSegment}
             >
@@ -403,7 +415,7 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({
             </Button>
           )}
         />
-        
+
         {editingIndex !== null && (
           <div className={styles.editForm}>
             <Card title={`编辑片段 #${editingIndex + 1}`} className={styles.editCard}>
@@ -419,7 +431,7 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({
                   >
                     <Input type="number" step="0.1" min="0" />
                   </Form.Item>
-                  
+
                   <Form.Item
                     name="end"
                     label="结束时间 (秒)"
@@ -438,7 +450,7 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({
                     <Input type="number" step="0.1" min="0" />
                   </Form.Item>
                 </div>
-                
+
                 <Form.Item
                   name="type"
                   label="类型"
@@ -451,7 +463,7 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({
                     <Select.Option value="transition">转场</Select.Option>
                   </Select>
                 </Form.Item>
-                
+
                 <Form.Item
                   name="content"
                   label="内容"
@@ -459,7 +471,7 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({
                 >
                   <Input.TextArea rows={4} />
                 </Form.Item>
-                
+
                 <div className={styles.formActions}>
                   <Space>
                     <Button onClick={handleCancelEdit}>取消</Button>
@@ -471,10 +483,10 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({
           </div>
         )}
       </Card>
-      
+
       <Modal
         title="预览片段"
-        visible={previewVisible}
+        open={previewVisible}
         onCancel={() => setPreviewVisible(false)}
         footer={null}
         width={700}
@@ -486,7 +498,7 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({
               <p>正在生成预览...</p>
             </div>
           ) : (
-            <video 
+            <video
               src={previewSrc}
               controls
               autoPlay
@@ -495,10 +507,10 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({
           )}
         </div>
       </Modal>
-      
+
       <Modal
         title="AI 优化脚本"
-        visible={aiModalVisible}
+        open={aiModalVisible}
         onCancel={() => setAiModalVisible(false)}
         onOk={handleAIImprove}
       >
@@ -509,4 +521,4 @@ const ScriptEditor: React.FC<ScriptEditorProps> = ({
   );
 };
 
-export default ScriptEditor; 
+export default ScriptEditor;

@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "ManGa AI",
-    "version": "0.1.0"
+    "version": "2.1.0"
   },
   "tauri": {
     "allowlist": {
@@ -19,7 +19,11 @@
         "readDir": true,
         "exists": true,
         "createDir": true,
-        "scope": ["$APPDATA/*", "$APPDATA/blazecut/*", "$APPCONFIG/*", "$TEMP/*", "$RESOURCE/*"]
+        "removeDir": true,
+        "removeFile": true,
+        "renameFile": true,
+        "copyFile": true,
+        "scope": ["$APPDATA/**", "$APPDATA/*", "$APPCONFIG/**", "$TEMP/**", "$RESOURCE/**", "$DOWNLOAD/**", "$DOCUMENT/**", "$VIDEO/**"]
       },
       "path": {
         "all": true
@@ -28,21 +32,61 @@
         "all": true
       },
       "dialog": {
-        "all": true
+        "all": true,
+        "ask": true,
+        "confirm": true,
+        "message": true
       },
       "window": {
-        "all": true
+        "all": true,
+        "create": true,
+        "close": true,
+        "setTitle": true,
+        "setSize": true,
+        "setMinSize": true,
+        "setMaxSize": true,
+        "setPosition": true,
+        "setFullscreen": true,
+        "setFocus": true,
+        "setAlwaysOnTop": true,
+        "minimize": true,
+        "maximize": true,
+        "unmaximize": true,
+        "show": true,
+        "hide": true,
+        "requestUserAttention": true
       },
       "shell": {
-        "open": true
+        "all": false,
+        "open": true,
+        "execute": false,
+        "sidecar": false,
+        "scope": []
+      },
+      "globalShortcut": {
+        "all": true
+      },
+      "notification": {
+        "all": true
+      },
+      "process": {
+        "all": true,
+        "exit": true,
+        "relaunch": true
+      },
+      "os": {
+        "all": true
+      },
+      "app": {
+        "all": true
       }
     },
     "bundle": {
       "active": true,
-      "category": "DeveloperTool",
-      "copyright": "",
+      "category": "Video",
+      "copyright": "Copyright © 2024 ManGa AI",
       "deb": {
-        "depends": []
+        "depends": ["libwebkit2gtk-4.1-0", "libgtk-3-0"]
       },
       "externalBin": [],
       "icon": [
@@ -53,41 +97,62 @@
         "icons/icon.ico"
       ],
       "identifier": "com.mangaai.app",
-      "longDescription": "",
+      "longDescription": "ManGa AI - AI 漫剧视频智能创作平台，将小说/剧本自动转化为高质量动态漫剧视频",
       "macOS": {
         "entitlements": null,
         "exceptionDomain": "",
         "frameworks": [],
         "providerShortName": null,
-        "signingIdentity": null
+        "signingIdentity": null,
+        "minimumSystemVersion": "10.15"
       },
       "resources": [],
-      "shortDescription": "",
+      "shortDescription": "AI 漫剧视频创作平台",
       "targets": "all",
       "windows": {
         "certificateThumbprint": null,
         "digestAlgorithm": "sha256",
-        "timestampUrl": ""
+        "timestampUrl": "",
+        "wix": null,
+        "nsis": {
+          "languages": ["SimpChinese", "English"],
+          "displayLanguageSelector": true,
+          "installerIcon": "icons/icon.ico"
+        }
       }
     },
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: asset: https://asset.localhost; media-src 'self' blob: asset: https://asset.localhost; connect-src 'self' ipc: https://ipc.localhost https://api.openai.com https://api.anthropic.com https://generativelanguage.googleapis.com https://aip.baidubce.com https://dashscope.aliyuncs.com https://open.bigmodel.cn https://api.minimax.io"
     },
     "updater": {
-      "active": false
+      "active": false,
+      "pubkey": "",
+      "endpoints": []
     },
     "windows": [
       {
         "title": "ManGa AI - AI 漫剧视频智能创作平台",
-        "width": 1200,
+        "width": 1280,
         "height": 800,
-        "minWidth": 800,
-        "minHeight": 600,
+        "minWidth": 960,
+        "minHeight": 640,
         "center": true,
         "fullscreen": false,
         "resizable": true,
-        "theme": "Light"
+        "decorations": true,
+        "transparent": false,
+        "alwaysOnTop": false,
+        "visible": true,
+        "focus": true,
+        "fileDropEnabled": true,
+        "maximized": false,
+        "skipTaskbar": false
       }
-    ]
+    ],
+    "systemTray": {
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": true,
+      "menuOnLeftClick": false
+    }
   }
 }

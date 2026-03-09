@@ -1,0 +1,22 @@
+[
+  {"id":"S001","title":"雨夜重逢","genre":"都市情感","text":"林雨晴在雨夜便利店重逢旧友王思远，两人误会未解又被迫合作解决债务危机。","targetDurationSec":45,"targetCostUSD":0.35},
+  {"id":"S002","title":"末班地铁","genre":"悬疑","text":"程序员赵衡在末班地铁收到来自未来的短信，要求他在三站内阻止一场爆炸。","targetDurationSec":50,"targetCostUSD":0.4},
+  {"id":"S003","title":"山城小馆","genre":"治愈","text":"返乡青年接手外婆小面馆，通过一碗面修复与父亲多年裂痕。","targetDurationSec":40,"targetCostUSD":0.3},
+  {"id":"S004","title":"镜中人","genre":"奇幻","text":"少女意外进入镜中世界，必须在日出前找回被偷走的名字。","targetDurationSec":55,"targetCostUSD":0.45},
+  {"id":"S005","title":"最后一封信","genre":"校园","text":"高三毕业前夜，班长发现匿名信指向一场误判，她决定在散伙宴前澄清真相。","targetDurationSec":48,"targetCostUSD":0.36},
+  {"id":"S006","title":"深海灯塔","genre":"冒险","text":"潜水员姐弟寻找失踪科研船，在深海热泉区发现被掩盖的实验事故。","targetDurationSec":60,"targetCostUSD":0.5},
+  {"id":"S007","title":"折纸社","genre":"青春","text":"内向少年在折纸社结识转学生，二人用作品参加市展并面对家庭压力。","targetDurationSec":42,"targetCostUSD":0.32},
+  {"id":"S008","title":"云端法庭","genre":"科幻","text":"AI法官上线后首次重大误判，实习律师必须证明数据被篡改。","targetDurationSec":58,"targetCostUSD":0.48},
+  {"id":"S009","title":"青石巷","genre":"古风","text":"捕快与药铺掌柜联手追查连环失窃案，线索都指向一只青铜铃。","targetDurationSec":52,"targetCostUSD":0.42},
+  {"id":"S010","title":"零号病房","genre":"惊悚","text":"夜班护士在废弃病房听到呼叫铃，调查后发现是二十年前未结案事件。","targetDurationSec":57,"targetCostUSD":0.46},
+  {"id":"S011","title":"风筝节","genre":"亲情","text":"父子在风筝节争执后走散，儿子用母亲留下的图纸重新找到彼此。","targetDurationSec":38,"targetCostUSD":0.28},
+  {"id":"S012","title":"临时搭档","genre":"喜剧","text":"社恐插画师与话痨销售被迫组队直播带货，意外爆火却引发抄袭风波。","targetDurationSec":44,"targetCostUSD":0.33},
+  {"id":"S013","title":"边境邮差","genre":"历史","text":"战乱年代邮差护送一封密信穿越封锁线，途中不断在职责与良知间抉择。","targetDurationSec":62,"targetCostUSD":0.52},
+  {"id":"S014","title":"无人便利店","genre":"社会","text":"深夜顾客接连丢失记忆片段，店员通过监控拼出共同创伤。","targetDurationSec":47,"targetCostUSD":0.37},
+  {"id":"S015","title":"潮汐日记","genre":"女性成长","text":"海岛女孩记录潮汐与情绪变化，在离岛求学和照顾家人之间做决定。","targetDurationSec":43,"targetCostUSD":0.34},
+  {"id":"S016","title":"重启按钮","genre":"动作","text":"退役特警被卷入城市停电阴谋，必须在90分钟内夺回电网控制权。","targetDurationSec":64,"targetCostUSD":0.55},
+  {"id":"S017","title":"一人乐队","genre":"音乐","text":"街头鼓手用循环器组建一人乐队，最终在地下赛击败昔日搭档。","targetDurationSec":41,"targetCostUSD":0.31},
+  {"id":"S018","title":"纸飞机航线","genre":"群像","text":"同航班四位陌生人因纸飞机留言相互影响，在降落前改变人生决定。","targetDurationSec":53,"targetCostUSD":0.43},
+  {"id":"S019","title":"北纬三十度","genre":"探险","text":"纪录片团队深入溶洞寻找古壁画，面对设备失灵与队内信任危机。","targetDurationSec":59,"targetCostUSD":0.49},
+  {"id":"S020","title":"候车室23点","genre":"现实主义","text":"暴雨夜高铁停运，候车室里三代人因一把旧伞展开短暂却深刻的对话。","targetDurationSec":39,"targetCostUSD":0.29}
+]

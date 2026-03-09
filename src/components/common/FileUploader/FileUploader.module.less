@@ -1,0 +1,81 @@
+.uploader {
+  width: 100%;
+
+  :global(.ant-upload-drag) {
+    border: 2px dashed #d9d9d9;
+    border-radius: 8px;
+    background: #fafafa;
+    transition: all 0.3s;
+
+    &:hover {
+      border-color: #1890ff;
+    }
+  }
+
+  &.dragging {
+    :global(.ant-upload-drag) {
+      border-color: #1890ff;
+      background: rgba(24, 144, 255, 0.05);
+    }
+  }
+
+  &.disabled {
+    :global(.ant-upload-drag) {
+      opacity: 0.5;
+      cursor: not-allowed;
+
+      &:hover {
+        border-color: #d9d9d9;
+      }
+    }
+  }
+}
+
+.icon {
+  font-size: 48px;
+  color: #1890ff;
+  margin-bottom: 16px;
+}
+
+.dragIcon {
+  font-size: 48px;
+  color: #52c41a;
+  margin-bottom: 16px;
+}
+
+.text {
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 14px;
+}
+
+.dragText {
+  color: #52c41a;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.hint {
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.dragActive {
+  padding: 20px 0;
+}
+
+.normalTrigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px dashed #d9d9d9;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover {
+    border-color: #1890ff;
+    color: #1890ff;
+  }
+}

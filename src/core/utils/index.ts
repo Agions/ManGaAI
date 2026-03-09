@@ -5,6 +5,17 @@
 // 重新导出 hooks
 export * from './hooks';
 
+// 导出请求缓存和重试
+export * from './requestCache';
+export * from './retryRequest';
+
+// 导出动效工具
+export * from './motion';
+
+// 定义通用函数类型
+type GenericFunction = (...args: unknown[]) => unknown;
+type GenericReturn = unknown;
+
 /**
  * 格式化时长
  */
@@ -29,13 +40,13 @@ export function formatFileSize(bytes: number): string {
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 }
 
 /**
  * 格式化日期
  */
-export function formatDate(date: string | Date, format: string = 'YYYY-MM-DD HH:mm'): string {
+export function formatDate(date: string | Date, format = 'YYYY-MM-DD HH:mm'): string {
   const d = typeof date === 'string' ? new Date(date) : date;
 
   const year = d.getFullYear();
@@ -57,11 +68,11 @@ export function formatDate(date: string | Date, format: string = 'YYYY-MM-DD HH:
 /**
  * 防抖函数
  */
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends GenericFunction>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout;
+  let timeout: ReturnType<typeof setTimeout>;
 
   return function (...args: Parameters<T>) {
     clearTimeout(timeout);
@@ -72,7 +83,7 @@ export function debounce<T extends (...args: any[]) => any>(
 /**
  * 节流函数
  */
-export function throttle<T extends (...args: any[]) => any>(
+export function throttle<T extends GenericFunction>(
   func: T,
   limit: number
 ): (...args: Parameters<T>) => void {
@@ -82,7 +93,7 @@ export function throttle<T extends (...args: any[]) => any>(
     if (!inThrottle) {
       func(...args);
       inThrottle = true;
-      setTimeout(() => (inThrottle = false), limit);
+      setTimeout(() => { inThrottle = false; }, limit);
     }
   };
 }
@@ -108,7 +119,7 @@ export function deepClone<T>(obj: T): T {
  * 生成唯一 ID
  */
 export function generateId(): string {
-  return `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  return `${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 }
 
 /**
@@ -201,9 +212,9 @@ export function randomColor(): string {
  * 颜色对比度
  */
 export function getContrastColor(hexColor: string): string {
-  const r = parseInt(hexColor.substr(1, 2), 16);
-  const g = parseInt(hexColor.substr(3, 2), 16);
-  const b = parseInt(hexColor.substr(5, 2), 16);
+  const r = parseInt(hexColor.substring(1, 3), 16);
+  const g = parseInt(hexColor.substring(3, 5), 16);
+  const b = parseInt(hexColor.substring(5, 7), 16);
   const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
   return yiq >= 128 ? '#000000' : '#FFFFFF';
 }
@@ -211,7 +222,7 @@ export function getContrastColor(hexColor: string): string {
 /**
  * 截断文本
  */
-export function truncateText(text: string, maxLength: number, suffix: string = '...'): string {
+export function truncateText(text: string, maxLength: number, suffix = '...'): string {
   if (text.length <= maxLength) return text;
   return text.substring(0, maxLength - suffix.length) + suffix;
 }
@@ -234,7 +245,7 @@ export function camelToKebab(str: string): string {
  * 短横线转驼峰
  */
 export function kebabToCamel(str: string): string {
-  return str.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+  return str.replace(/-([a-z])/g, (_match, letter) => letter.toUpperCase());
 }
 
 /**
@@ -276,14 +287,14 @@ export function sortBy<T>(
 /**
  * 对象过滤
  */
-export function filterObject<T extends Record<string, any>>(
+export function filterObject<T extends Record<string, unknown>>(
   obj: T,
-  predicate: (key: string, value: any) => boolean
+  predicate: (key: string, value: unknown) => boolean
 ): Partial<T> {
   const result: Partial<T> = {};
   for (const [key, value] of Object.entries(obj)) {
     if (predicate(key, value)) {
-      result[key as keyof T] = value;
+      (result as Record<string, unknown>)[key as string] = value;
     }
   }
   return result;
@@ -315,8 +326,8 @@ export function delay(ms: number): Promise<void> {
  */
 export async function retry<T>(
   fn: () => Promise<T>,
-  attempts: number = 3,
-  delayMs: number = 1000
+  attempts = 3,
+  delayMs = 1000
 ): Promise<T> {
   let lastError: Error;
 

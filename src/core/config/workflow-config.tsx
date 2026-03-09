@@ -84,7 +84,7 @@ export interface StepSetting {
   options?: { value: string; label: string }[];
   min?: number;
   max?: number;
-  default: any;
+  default: unknown;
 }
 
 // 导入步骤配置

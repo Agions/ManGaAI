@@ -1,0 +1,184 @@
+@import '../../../styles/variables.less';
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: @spacing-md;
+}
+
+/* ==================== 预览区域 ==================== */
+
+.previewArea {
+  display: flex;
+  justify-content: center;
+  padding: @spacing-md;
+  background: @background-color-base;
+  border-radius: @border-radius-base;
+}
+
+.preview {
+  position: relative;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: @border-radius-base;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.previewBg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.previewSubtitle {
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  padding: 8px 16px;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* ==================== 编辑区域 ==================== */
+
+.editorArea {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: @spacing-md;
+
+  @media (max-width: 992px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==================== 字幕列表 ==================== */
+
+.subtitleList {
+  max-height: 400px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  :global(.ant-card-body) {
+    padding: 0;
+    overflow-y: auto;
+    flex: 1;
+  }
+}
+
+.subtitleItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: @spacing-sm @spacing-md !important;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 1px solid @border-color-base;
+
+  &:hover {
+    background: @background-color-light;
+  }
+
+  &.selected {
+    background: rgba(24, 144, 255, 0.1);
+    border-left: 3px solid @primary-color;
+  }
+
+  &.active {
+    background: rgba(82, 196, 26, 0.1);
+  }
+}
+
+.subtitleInfo {
+  display: flex;
+  align-items: center;
+  gap: @spacing-sm;
+  flex: 1;
+  min-width: 0;
+}
+
+.subtitleText {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ==================== 字幕编辑 ==================== */
+
+.subtitleEditor {
+  :global(.ant-card-body) {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+}
+
+.timeRow {
+  display: flex;
+  align-items: center;
+  gap: @spacing-sm;
+  flex-wrap: wrap;
+}
+
+.styleRow {
+  display: flex;
+  align-items: center;
+  gap: @spacing-sm;
+  flex-wrap: wrap;
+
+  :global(.ant-typography) {
+    min-width: 60px;
+  }
+}
+
+/* ==================== 暗色模式 ==================== */
+
+:global(.dark-theme) {
+  .previewArea {
+    background: @dark-background;
+  }
+
+  .subtitleItem {
+    border-bottom-color: @dark-border-color;
+
+    &:hover {
+      background: @dark-component-background;
+    }
+
+    &.selected {
+      background: rgba(24, 144, 255, 0.15);
+    }
+
+    &.active {
+      background: rgba(82, 196, 26, 0.15);
+    }
+  }
+
+  .subtitleEditor {
+    :global(.ant-card) {
+      background: @dark-component-background;
+      border-color: @dark-border-color;
+    }
+  }
+}
+
+/* ==================== 响应式 ==================== */
+
+@media (max-width: 768px) {
+  .editorArea {
+    grid-template-columns: 1fr;
+  }
+
+  .subtitleList,
+  .subtitleEditor {
+    max-height: 300px;
+  }
+}

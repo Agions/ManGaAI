@@ -1,0 +1,282 @@
+/**
+ * n8n 风格工作流编辑器样式
+ */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #f5f5f5;
+}
+
+.toolbar {
+  padding: 12px 16px;
+  background: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  display: flex;
+  align-items: center;
+}
+
+.editor {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+// 侧边栏
+.sidebar {
+  width: 280px;
+  background: #fff;
+  border-right: 1px solid #e8e8e8;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+
+  :global(.ant-tabs-content) {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  :global(.ant-tabs-tabpane) {
+    height: 100%;
+  }
+}
+
+.sidebarHeader {
+  padding: 16px;
+  border-bottom: 1px solid #e8e8e8;
+
+  h5 {
+    margin: 0;
+  }
+}
+
+.nodeList {
+  padding: 8px;
+}
+
+.nodeItem {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  margin-bottom: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #f0f0f0;
+  }
+}
+
+.nodeItemIcon {
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.nodeItemName {
+  font-size: 13px;
+}
+
+// 画布
+.canvas {
+  flex: 1;
+  position: relative;
+  background: #fafafa;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+  overflow: auto;
+}
+
+.emptyCanvas {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+// 节点
+.node {
+  position: absolute;
+  width: 200px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: move;
+  transition: box-shadow 0.2s;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &.selected {
+    box-shadow: 0 0 0 2px #1890ff;
+  }
+
+  // 类别颜色
+  &.input {
+    border-left: 3px solid #52c41a;
+  }
+
+  &.ai {
+    border-left: 3px solid #1890ff;
+  }
+
+  &.media {
+    border-left: 3px solid #722ed1;
+  }
+
+  &.output {
+    border-left: 3px solid #fa541c;
+  }
+
+  &.logic {
+    border-left: 3px solid #faad14;
+  }
+
+  &.utility {
+    border-left: 3px solid #8c8c8c;
+  }
+
+  // 执行状态
+  &.running {
+    animation: pulse 1s infinite;
+  }
+
+  &.success {
+    border-left-color: #52c41a;
+  }
+
+  &.error {
+    border-left-color: #ff4d4f;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(24, 144, 255, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(24, 144, 255, 0);
+  }
+}
+
+.nodeHeader {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 8px 8px 0 0;
+  color: #fff;
+}
+
+.nodeIcon {
+  margin-right: 8px;
+  font-size: 14px;
+}
+
+.nodeName {
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nodeBody {
+  padding: 8px 0;
+}
+
+.nodePorts {
+  display: flex;
+  justify-content: space-between;
+}
+
+.inputPorts,
+.outputPorts {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.inputPorts {
+  align-items: flex-start;
+}
+
+.outputPorts {
+  align-items: flex-end;
+}
+
+.port {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: #666;
+  padding: 2px 8px;
+
+  span {
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.portDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #d9d9d9;
+  cursor: crosshair;
+
+  &:hover {
+    background: #1890ff;
+    transform: scale(1.2);
+  }
+}
+
+.deleteBtn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border-radius: 50%;
+}
+
+// 配置面板
+.configPanel {
+  width: 320px;
+  background: #fff;
+  border-left: 1px solid #e8e8e8;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.configHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+
+  h5 {
+    margin: 0;
+  }
+}
+
+// 模板网格
+.templateGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.templateCard {
+  cursor: pointer;
+
+  &:hover {
+    border-color: #1890ff;
+  }
+}

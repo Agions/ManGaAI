@@ -7,7 +7,6 @@ import React, { useState, useMemo } from 'react';
 import { MODEL_PROVIDERS } from '@/core/config/models.config';
 import {
   Card,
-  Radio,
   Space,
   Typography,
   Tag,
@@ -31,17 +30,12 @@ import {
   ThunderboltOutlined,
   StarOutlined,
   DollarOutlined,
-  GlobalOutlined,
-  CodeOutlined,
-  VideoCameraOutlined,
-  EditOutlined,
-  SettingOutlined,
-  ExperimentOutlined
+  SettingOutlined
 } from '@ant-design/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useModel, useModelCost, useRecommendedModel } from '@/core/hooks/useModel';
-import { LLM_MODELS, MODEL_RECOMMENDATIONS, DEFAULT_LLM_MODEL } from '@/core/constants';
-import type { AIModel, ModelCategory, ModelProvider } from '@/core/types';
+import { LLM_MODELS } from '@/core/constants';
+import type { ModelCategory, ModelProvider } from '@/core/types';
 import styles from './index.module.less';
 
 const { Title, Text, Paragraph } = Typography;
@@ -49,18 +43,10 @@ const { Title, Text, Paragraph } = Typography;
 // 分类选项
 const CATEGORY_OPTIONS = [
   { label: '全部', value: 'all', icon: <RobotOutlined /> },
-  { label: '文本', value: 'text', icon: <EditOutlined /> },
-  { label: '代码', value: 'code', icon: <CodeOutlined /> },
-  { label: '图像', value: 'image', icon: <ExperimentOutlined /> },
-  { label: '视频', value: 'video', icon: <VideoCameraOutlined /> }
-];
-
-// 任务推荐标签
-const TASK_RECOMMENDATIONS = [
-  { key: 'script', label: '脚本生成', icon: <EditOutlined />, desc: '生成高质量视频脚本' },
-  { key: 'analysis', label: '视频分析', icon: <VideoCameraOutlined />, desc: '深度分析视频内容' },
-  { key: 'code', label: '代码辅助', icon: <CodeOutlined />, desc: '编程和调试辅助' },
-  { key: 'fast', label: '快速响应', icon: <ThunderboltOutlined />, desc: '低延迟快速响应' }
+  { label: '文本', value: 'text' },
+  { label: '代码', value: 'code' },
+  { label: '图像', value: 'image' },
+  { label: '视频', value: 'video' }
 ];
 
 interface ModelSelectorProps {
@@ -69,6 +55,21 @@ interface ModelSelectorProps {
   compact?: boolean;
   showCost?: boolean;
   taskType?: 'script' | 'analysis' | 'code' | 'fast';
+}
+
+// 模型卡片数据接口
+interface ModelCardData {
+  id: string;
+  name: string;
+  provider: ModelProvider;
+  category: string[];
+  description: string;
+  version: string;
+  contextWindow: number;
+  maxTokens: number;
+  recommended: boolean;
+  pricing?: { input: number; output: number; unit: string };
+  features: string[];
 }
 
 export const ModelSelector: React.FC<ModelSelectorProps> = ({
@@ -80,8 +81,6 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
 }) => {
   const {
     selectedModel,
-    selectedProvider,
-
     isConfigured,
     availableModels,
     selectModel,
@@ -98,19 +97,22 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [testing, setTesting] = useState(false);
 
-  // 转换 LLM_MODELS 为组件格式
+  // 转换 LLM_MODELS 为组件格式 - 使用类型断言绕过复杂类型推断
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const allModels = useMemo(() => {
-    return Object.values(LLM_MODELS).map(m => ({
+    const models = Object.values(LLM_MODELS) as any[];
+    return models.map((m: any) => ({
       id: m.modelId,
       name: m.name,
       provider: m.provider as ModelProvider,
-      category: m.capabilities as string[],
+      category: Array.from(m.capabilities) as string[],
       description: `${m.name} - ${m.version}`,
       version: m.version,
       contextWindow: m.contextWindow,
       maxTokens: m.maxTokens,
       recommended: m.recommended,
-      pricing: m.pricing
+      pricing: m.pricing,
+      features: Array.from(m.capabilities) as string[]
     }));
   }, []);
 
@@ -138,7 +140,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
       );
     }
 
-    return models;
+    return models as ModelCardData[];
   }, [allModels, category, provider, searchQuery]);
 
   // 处理模型选择
@@ -167,7 +169,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
   };
 
   // 渲染模型卡片
-  const renderModelCard = (model: AIModel) => {
+  const renderModelCard = (model: ModelCardData) => {
     const isSelected = selectedModel?.id === model.id;
     const isAvailable = availableModels.some(m => m.id === model.id);
     const cost = model.pricing ? formatCost(estimateScriptCost(500)) : null;
@@ -205,8 +207,8 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
               </div>
             </div>
             <Space>
-              {model.isPro && (
-                <Tooltip title="专业版模型">
+              {model.recommended && (
+                <Tooltip title="推荐模型">
                   <StarOutlined className={styles.proIcon} />
                 </Tooltip>
               )}

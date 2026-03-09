@@ -4,7 +4,7 @@ import { Card, Button, Typography, Space, Spin, message, Divider, Modal, Tag } f
 import { ArrowLeftOutlined, SaveOutlined, DeleteOutlined, ExportOutlined, RobotOutlined } from '@ant-design/icons';
 import { useProjectStore } from '@/core/stores';
 import ScriptEditor from '@/components/business/ScriptEditor';
-import { exportScriptToFile, saveProjectToFile } from '@/core/services/legacy/tauriService';
+import { exportScriptToFile, saveProjectToFile } from '@/core/services/legacy';
 import styles from './ScriptDetail.module.less';
 
 const { Title, Text } = Typography;
@@ -41,11 +41,11 @@ const ScriptDetail: React.FC = () => {
 
     setProject(currentProject);
     setScript(currentScript);
-    setSegments(currentScript.content || []);
+    setSegments(Array.isArray(currentScript.content) ? currentScript.content : []);
     setLoading(false);
   }, [projectId, scriptId, projects, navigate]);
 
-  const handleSegmentsChange = (newSegments: any[]) => {
+  const handleSegmentsChange = (newSegments: unknown[]) => {
     setSegments(newSegments);
   };
 
@@ -63,7 +63,7 @@ const ScriptDetail: React.FC = () => {
       };
 
       // 更新项目中的脚本
-      const updatedScripts = project.scripts.map((s: any) => 
+      const updatedScripts = project.scripts.map((s: any) =>
         s.id === script.id ? updatedScript : s
       );
 
@@ -77,11 +77,11 @@ const ScriptDetail: React.FC = () => {
       // 更新状态和store
       setProject(updatedProject);
       setScript(updatedScript);
-      updateProject(updatedProject);
+      updateProject(updatedProject.id, updatedProject);
 
       // 保存到文件
-      await saveProjectToFile(updatedProject);
-      
+      await saveProjectToFile(updatedProject.id, JSON.stringify(updatedProject));
+
       message.success('保存成功');
     } catch (error) {
       console.error('保存失败:', error);
@@ -95,13 +95,16 @@ const ScriptDetail: React.FC = () => {
     if (!project || !script) return;
 
     try {
+      // Create script content
+      const scriptContent = segments
+        ?.map((segment: any, index: number) => {
+          return `【第${index + 1}幕】\n${segment.text || ''}\n`;
+        })
+        .join('\n') || '';
+
       await exportScriptToFile(
-        {
-          projectName: project.name,
-          createdAt: script.createdAt,
-          segments: segments
-        },
-        `${project.name}_脚本_${new Date().toISOString().slice(0, 10)}.txt`
+        `${project.name}_脚本_${new Date().toISOString().slice(0, 10)}.txt`,
+        scriptContent
       );
     } catch (error) {
       console.error('导出脚本失败:', error);
@@ -122,7 +125,7 @@ const ScriptDetail: React.FC = () => {
         try {
           // 过滤掉要删除的脚本
           const updatedScripts = project.scripts.filter((s: any) => s.id !== script.id);
-          
+
           // 更新项目
           const updatedProject = {
             ...project,
@@ -131,11 +134,11 @@ const ScriptDetail: React.FC = () => {
           };
 
           // 更新store
-          updateProject(updatedProject);
+          updateProject(updatedProject.id, updatedProject);
 
           // 保存到文件
-          await saveProjectToFile(updatedProject);
-          
+          await saveProjectToFile(updatedProject.id, JSON.stringify(updatedProject));
+
           message.success('删除成功');
           navigate(`/projects/${project.id}`);
         } catch (error) {
@@ -164,7 +167,7 @@ const ScriptDetail: React.FC = () => {
           >
             返回项目
           </Button>
-          
+
           <Button
             type="primary"
             icon={<SaveOutlined />}
@@ -172,7 +175,7 @@ const ScriptDetail: React.FC = () => {
           >
             保存
           </Button>
-          
+
           <Button
             icon={<ExportOutlined />}
             onClick={handleExport}
@@ -180,7 +183,7 @@ const ScriptDetail: React.FC = () => {
           >
             导出
           </Button>
-          
+
           <Button
             danger
             icon={<DeleteOutlined />}
@@ -205,11 +208,11 @@ const ScriptDetail: React.FC = () => {
         <div className={styles.stats}>
           <Space>
             <Text>片段数量: {segments.length}</Text>
-            <Text>总时长: {segments.reduce((total, seg) => total + (seg.endTime - seg.startTime), 0)} 秒</Text>
+            <Text>总时长: {segments.reduce((total, seg) => total + ((seg.endTime || 0) - (seg.startTime || 0)), 0)} 秒</Text>
           </Space>
         </div>
       </Card>
-      
+
       <div className={styles.editorContainer}>
         <ScriptEditor
           segments={segments}
@@ -220,4 +223,4 @@ const ScriptDetail: React.FC = () => {
   );
 };
 
-export default ScriptDetail; 
+export default ScriptDetail;
