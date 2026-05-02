@@ -6,17 +6,11 @@ import {
   Settings as SettingsIcon, 
   User, 
   Bell, 
-  Shield, 
-  Cloud, 
   Zap, 
   Key, 
   CheckCircle, 
-  XCircle, 
-  HelpCircle, 
   Info, 
   Edit, 
-  Plus, 
-  Trash2, 
   Lightbulb
 } from 'lucide-react';
 import React, { useState } from 'react';
@@ -25,7 +19,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -80,7 +74,7 @@ const apiProviders = [
 
 const Settings: React.FC = () => {
   const [activeTab, setActiveTab] = useState('general');
-  const [apiKeys, setApiKeys] = useState<Record<string, string>>({
+  const [apiKeys] = useState<Record<string, string>>({
     openai: '',
     anthropic: '',
     baidu: '',

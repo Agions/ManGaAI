@@ -1,7 +1,6 @@
 import { invoke } from '@tauri-apps/api/core';
 import { open, save } from '@tauri-apps/plugin-dialog';
 import {
-  Play, Pause,
   Save, Undo, Redo, Download,
   Upload, Trash2, Plus,
   Maximize,
@@ -26,7 +25,7 @@ import {
   Dropdown,
 } from '@/components/ui/antd-compat';
 import { Tabs, TabPane } from '@/components/ui/tabs';
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ui/tooltip';
 
 // 导入组件和服务
 import { tauriService } from '@/core/services';

@@ -12,7 +12,7 @@ import {
   Download,
   AlertTriangle,
 } from 'lucide-react';
-import React, { Suspense, lazy, useEffect, useMemo, useState } from 'react';
+import React, { Suspense, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 
@@ -21,9 +21,6 @@ import { useForm } from '@/components/ui/antd-compat';
 import { Button } from '@/components/ui/button';
 import {
   Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { aiService, tauriService , audioPipelineService, collaborationService, costService, qualityGateService, reviewExportService, storyAnalysisService } from '@/core/services';

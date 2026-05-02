@@ -17,7 +17,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Modal, Spin, Space, Empty, List , Alert , Select , Input , Button , Card } from '@/components/ui/antd-compat';
-import { Tabs, TabsContent, TabsList, TabsTrigger, TabPane } from '@/components/ui/tabs';
+import { Tabs, TabPane } from '@/components/ui/tabs';
 import { Title, Text, Paragraph } from '@/components/ui/typography';
 import { collaborationService, costService, qualityGateService, reviewExportService , tauriService } from '@/core/services';
 import type { EvaluationScores, FrameComment, StoryboardVersion, VersionDiffSummary } from '@/core/services';
@@ -25,7 +25,7 @@ import { runWhenIdle } from '@/core/utils/idle';
 import { logger } from '@/core/utils/logger';
 import type { NovelMetadata } from '@/features/script/components/NovelImporter';
 import type { StoryboardFrame } from '@/features/storyboard/components/StoryboardEditor';
-import { ConfirmDialog } from '@/shared/components/ui/ConfirmDialog';
+
 import { toast } from '@/shared/components/ui/Toast';
 import { useProjectStore } from '@/shared/stores';
 import type { ProjectData } from '@/shared/types';
@@ -60,7 +60,7 @@ const ProjectDetail: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('novel');
   const [novelMetadata, setNovelMetadata] = useState<NovelMetadata | null>(null);
   const [selectedFrameId, setSelectedFrameId] = useState<string | undefined>(undefined);
-  const [_storyboardComments, setStoryboardComments] = useState<FrameComment[]>([]);
+  const [, setStoryboardComments] = useState<FrameComment[]>([]);
   const [storyboardVersions, setStoryboardVersions] = useState<StoryboardVersion[]>([]);
   const [commentDraft, setCommentDraft] = useState('');
   const [versionLabel, setVersionLabel] = useState('');

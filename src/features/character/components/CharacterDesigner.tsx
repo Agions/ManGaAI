@@ -29,7 +29,6 @@ import {
   Collapse,
   Text,
   Title,
-  Paragraph,
   Option,
   TextArea,
   FormItem,
@@ -41,7 +40,6 @@ import {
 
 // 使用项目中定义的类型
 import {
-  CHARACTER_TEMPLATES,
   getTemplatesByCategory,
   templateToCharacter,
   type CharacterTemplate
@@ -50,7 +48,6 @@ import type {
   Character,
   CharacterAppearance,
   ClothingItem,
-  CharacterExpression,
 } from '@/core/types';
 import { logger } from '@/core/utils/logger';
 import type { CharacterConsistency } from '@/shared/types';

@@ -1242,7 +1242,7 @@ interface DropdownProps {
   placement?: any;
 }
 
-const AntDDropdown: React.FC<DropdownProps> = ({ menu, children, trigger }) => {
+const AntDDropdown: React.FC<DropdownProps> = ({ menu, children }) => {
   const [open, setOpen] = React.useState(false);
   
   return (

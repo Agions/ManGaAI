@@ -14,22 +14,17 @@ import {
   CheckCircle,
   Loader,
   Settings,
-  DollarSign
 } from 'lucide-react';
 import React, { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 
-import { Alert, AlertTitle } from '@/components/ui/alert';
+import { Alert } from '@/components/ui/alert';
 import { Form, FormItem, useForm, Input, Select, Space, Divider, RadioGroup, Radio, RadioButton } from '@/components/ui/antd-compat';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card as CardBase } from '@/components/ui/card';
-import { Empty } from '@/components/ui/empty';
 import { Progress } from '@/components/ui/progress';
-import { Separator } from '@/components/ui/separator';
-import { Slider } from '@/components/ui/slider';
 import { Tag } from '@/components/ui/tag';
-import { Tooltip as TooltipRoot, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Text, Title, Paragraph } from '@/components/ui/typography';
 import { useModel, useModelCost } from '@/core/hooks/useModel';
 import { useProject } from '@/core/hooks/useProject';
@@ -95,7 +90,7 @@ interface ScriptGeneratorProps {
 
 export const ScriptGenerator: React.FC<ScriptGeneratorProps> = ({
   projectId,
-  videoDuration,
+  videoDuration: _videoDuration,
   onGenerate,
   onSave
 }) => {
@@ -173,7 +168,7 @@ export const ScriptGenerator: React.FC<ScriptGeneratorProps> = ({
       setGeneratedScript(script);
       onGenerate?.(script);
       toast.success('脚本生成成功');
-    } catch (error) {
+    } catch {
       toast.error('脚本生成失败');
     } finally {
       setIsGenerating(false);
