@@ -841,13 +841,13 @@ export interface VideoMetadata {
   bitrate?: number;
 }
 
-export interface KeyMoment {
-  time: number;
-  description: string;
-  type: 'action' | 'transition' | 'highlight';
-  importance?: number;
-  timestamp?: number;
-}
+// export interface KeyMoment {
+//   time: number;
+//   description: string;
+//   type: 'action' | 'transition' | 'highlight';
+//   importance?: number;
+//   timestamp?: number;
+// }
 
 export interface SceneInfo {
   startTime: number;
