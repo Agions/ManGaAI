@@ -1,8 +1,8 @@
+import { ttsService, DEFAULT_TTS_CONFIG } from '../../../../../core/services/tts.service';
+import type { TTSConfig } from '../../../../../shared/types/index';
 import { Script, ScriptScene } from '../../step1-script-generation/types/script';
 
 import { VoiceAssignment } from './voice-assigner';
-import { ttsService, DEFAULT_TTS_CONFIG } from '../../../../../core/services/tts.service';
-import type { TTSConfig } from '../../../../../shared/types/index';
 
 export interface DialogueSegment {
   id: string;

@@ -10,15 +10,15 @@
  */
 
 import { StepInput, StepOutput } from '@/core/pipeline/step.interface';
-
-import { BasePipelineController } from '../../base/BasePipelineController';
-
 import {
   generateImage,
   generateVideo,
   type ImageGenerationOptions,
   type VideoGenerationOptions
 } from '@/core/services/image-generation.service';
+
+import { BasePipelineController } from '../../base/BasePipelineController';
+
 
 export enum MotionType {
   FADE = 'fade',           // 淡入淡出

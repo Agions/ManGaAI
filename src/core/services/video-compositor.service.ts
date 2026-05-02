@@ -7,9 +7,11 @@
  * - 自动检测可用模式并使用最优方案
  */
 
-import { saveAs } from 'file-saver';
 import { fetchFile } from '@ffmpeg/util';
+import { saveAs } from 'file-saver';
+
 import { logger } from '@/core/utils/logger';
+
 import {
   ffmpegWasmService,
   loadFFmpeg,
