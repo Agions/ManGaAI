@@ -58,10 +58,10 @@ jobs:
 
             | Platform | Architecture | Download |
             |----------|-------------|----------|
-            | Windows | x64 | `.exe` installer |
-            | Windows | x64 (MSI) | `.msi` installer |
-            | macOS | Universal | `.dmg` |
-            | Linux | x64 | `.AppImage` / `.deb` |
+            | Windows | x64 | [.zip](PanelFlow-${{ steps.version.outputs.version }}-windows-x64.zip) |
+            | Windows | ARM64 | [.zip](PanelFlow-${{ steps.version.outputs.version }}-windows-arm64.zip) |
+            | macOS | Universal | [.tar.gz](PanelFlow-${{ steps.version.outputs.version }}-macos-universal.tar.gz) |
+            | Linux | x64 | [.tar.gz](PanelFlow-${{ steps.version.outputs.version }}-linux-x64.tar.gz) |
 
             > Full release notes: [CHANGELOG.md](https://github.com/Agions/PanelFlow/blob/${{ steps.version.outputs.tag }}/CHANGELOG.md)
           draft: true
@@ -94,14 +94,21 @@ jobs:
       - name: Build Tauri (Windows x64)
         run: npm run tauri build -- --target x86_64-pc-windows-msvc
 
-      - name: Upload Windows x64 artifacts
+      - name: Package as zip
+        shell: pwsh
+        run: |
+          $src = "src-tauri/target/x86_64-pc-windows-msvc/release"
+          $exe = "$src/PanelFlow.exe"
+          $out = "PanelFlow-${{ needs.prepare.outputs.version }}-windows-x64.zip"
+          Compress-Archive -Path "$src/PanelFlow.exe", "$src/*.dll" -DestinationPath $out -Force
+          echo "artifact_name=$out" >> $env:GITHUB_OUTPUT
+
+      - name: Upload Windows x64 zip
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.prepare.outputs.tag }}
           draft: true
-          files: |
-            src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
-            src-tauri/target/x86_64-pc-windows-msvc/release/bundle/msi/*.msi
+          assets: ${{ needs.build-windows-x64.outputs.artifact_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -130,14 +137,20 @@ jobs:
       - name: Build Tauri (Windows ARM64)
         run: npm run tauri build -- --target aarch64-pc-windows-msvc
 
-      - name: Upload Windows ARM64 artifacts
+      - name: Package as zip
+        shell: pwsh
+        run: |
+          $src = "src-tauri/target/aarch64-pc-windows-msvc/release"
+          $out = "PanelFlow-${{ needs.prepare.outputs.version }}-windows-arm64.zip"
+          Compress-Archive -Path "$src/PanelFlow.exe", "$src/*.dll" -DestinationPath $out -Force
+          echo "artifact_name=$out" >> $env:GITHUB_OUTPUT
+
+      - name: Upload Windows ARM64 zip
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.prepare.outputs.tag }}
           draft: true
-          files: |
-            src-tauri/target/aarch64-pc-windows-msvc/release/bundle/nsis/*.exe
-            src-tauri/target/aarch64-pc-windows-msvc/release/bundle/msi/*.msi
+          assets: ${{ needs.build-windows-arm64.outputs.artifact_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -166,13 +179,20 @@ jobs:
       - name: Build Tauri Universal (x64 + ARM64)
         run: npm run tauri build
 
-      - name: Upload macOS artifacts
+      - name: Package as tar.gz
+        run: |
+          cd src-tauri/target/*/release/bundle/dmg
+          APP=$(ls *.app | head -1)
+          cd ..
+          tar -czf "PanelFlow-${{ needs.prepare.outputs.version }}-macos-universal.tar.gz" "bundle/dmg/$APP"
+          echo "artifact_name=PanelFlow-${{ needs.prepare.outputs.version }}-macos-universal.tar.gz" >> $GITHUB_OUTPUT
+
+      - name: Upload macOS tar.gz
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.prepare.outputs.tag }}
           draft: true
-          files: |
-            src-tauri/target/*/release/bundle/dmg/*.dmg
+          assets: ${{ needs.build-macos.outputs.artifact_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -212,13 +232,17 @@ jobs:
       - name: Build Tauri (Linux)
         run: npm run tauri build
 
-      - name: Upload Linux artifacts
+      - name: Package as tar.gz
+        run: |
+          cd src-tauri/target/*/release
+          tar -czf "PanelFlow-${{ needs.prepare.outputs.version }}-linux-x64.tar.gz" PanelFlow
+          echo "artifact_name=PanelFlow-${{ needs.prepare.outputs.version }}-linux-x64.tar.gz" >> $GITHUB_OUTPUT
+
+      - name: Upload Linux tar.gz
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.prepare.outputs.tag }}
           draft: true
-          files: |
-            src-tauri/target/*/release/bundle/appimage/*.AppImage
-            src-tauri/target/*/release/bundle/deb/*.deb
+          assets: ${{ needs.build-linux.outputs.artifact_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
