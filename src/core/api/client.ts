@@ -6,8 +6,9 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 
 import { toast } from '@/shared/components/ui';
+import { secureStorage } from '@/core/services/secure-storage.service';
 
-// 请求配置
+const TOKEN_KEY = 'reelforge_token';
 interface RequestConfig extends AxiosRequestConfig {
   skipAuth?: boolean;
   skipErrorHandler?: boolean;
@@ -45,9 +46,9 @@ class ApiClient {
   private setupInterceptors() {
     // 请求拦截器
     this.client.interceptors.request.use(
-      (config) => {
-        // 添加认证 token
-        const token = localStorage.getItem('reelforge_token');
+      async (config) => {
+        // 添加认证 token（优先使用安全存储，降级到 localStorage）
+        const token = await secureStorage.getSecureConfig(TOKEN_KEY) ?? localStorage.getItem(TOKEN_KEY);
         if (token && !(config as any).headers?.skipAuth) {
           (config as any).headers = { ...config.headers, Authorization: `Bearer ${token}` };
         }
@@ -207,22 +208,23 @@ class ApiClient {
   /**
    * 设置 Token
    */
-  setToken(token: string): void {
-    localStorage.setItem('reelforge_token', token);
+  async setToken(token: string): Promise<void> {
+    // 优先使用安全存储（Tauri），降级到 localStorage
+    await secureStorage.saveSecureConfig(TOKEN_KEY, token);
   }
 
   /**
    * 清除 Token
    */
-  clearToken(): void {
-    localStorage.removeItem('reelforge_token');
+  async clearToken(): Promise<void> {
+    await secureStorage.deleteSecureConfig(TOKEN_KEY);
   }
 
   /**
    * 获取 Token
    */
-  getToken(): string | null {
-    return localStorage.getItem('reelforge_token');
+  async getToken(): Promise<string | null> {
+    return await secureStorage.getSecureConfig(TOKEN_KEY);
   }
 }
 

@@ -331,8 +331,9 @@ const VideoEditor: React.FC = () => {
         clearInterval(progressInterval);
       }
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '未知错误';
       logger.error('导出失败:', error);
-      toast.error(`导出失败: ${error}`);
+      toast.error(`导出失败: ${errorMessage}`);
     } finally {
       setTimeout(() => {
         setIsExporting(false);

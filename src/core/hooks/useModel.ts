@@ -7,6 +7,7 @@ import { useState, useCallback, useMemo } from 'react';
 
 import { AI_MODELS, MODEL_PROVIDERS, getModelById, getModelsByProvider, getRecommendedModels } from '@/core/config/models.config';
 import type { AIModel, ModelProvider, ModelCategory, AIModelSettings } from '@/core/types';
+import { secureStorage } from '@/core/services/secure-storage.service';
 
 export interface UseModelReturn {
   // 模型列表
@@ -88,12 +89,12 @@ export function useModel(): UseModelReturn {
   
   // 更新设置
   const updateSettings = useCallback((settings: Partial<AIModelSettings>) => {
-    // 保存到 localStorage
+    // 保存到安全存储（优先使用 Tauri Store，降级到 localStorage）
     if (selectedModel) {
       const key = `ai_model_settings_${selectedModel.provider}`;
-      const current = localStorage.getItem(key);
+      const current = await secureStorage.getSecureConfig(key);
       const updated = current ? { ...JSON.parse(current), ...settings } : settings;
-      localStorage.setItem(key, JSON.stringify(updated));
+      await secureStorage.saveSecureConfig(key, JSON.stringify(updated));
     }
   }, [selectedModel]);
   
@@ -113,10 +114,10 @@ export function useModel(): UseModelReturn {
         throw new Error('未知的提供商');
       }
       
-      // 保存到 localStorage
-      localStorage.setItem(`api_${provider}_key`, apiKey);
+      // 保存到安全存储（优先使用 Tauri Store，降级到 localStorage）
+      await secureStorage.saveSecureConfig(`api_${provider}_key`, apiKey);
       if (apiSecret) {
-        localStorage.setItem(`api_${provider}_secret`, apiSecret);
+        await secureStorage.saveSecureConfig(`api_${provider}_secret`, apiSecret);
       }
       
       return true;

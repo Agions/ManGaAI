@@ -1,6 +1,6 @@
 /**
  * Export Module - 多格式导出功能
- * 
+ *
  * 支持的格式：
  * - PDF: 漫画书
  * - ZIP: PNG/WebP 压缩包
@@ -11,6 +11,7 @@
 
 import { saveAs } from 'file-saver';
 import JSZip from 'jszip';
+import { logger } from '@/core/utils/logger';
 
 export enum ExportFormat {
   PDF = 'pdf',
@@ -146,7 +147,7 @@ export async function exportAsZip(
         const ext = scene.imageUrl.includes('.png') ? 'png' : 'jpg';
         imgFolder?.file(`scene_${String(i + 1).padStart(3, '0')}.${ext}`, blob);
       } catch (err) {
-        console.warn(`Failed to fetch image for scene ${scene.id}:`, err);
+        logger.warn(`Failed to fetch image for scene ${scene.id}:`, err);
       }
     }
   }

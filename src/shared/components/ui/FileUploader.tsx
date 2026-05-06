@@ -7,6 +7,7 @@ import { Upload, ArrowUp } from 'lucide-react';
 import React, { useCallback, useState, useRef } from 'react';
 
 import toast from '@/shared/components/ui/Toast';
+import { logger } from '@/core/utils/logger';
 
 import styles from './FileUploader.module.less';
 
@@ -100,7 +101,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
         result
           .then(() => {/* validation passed */})
           .catch((err) => {
-            console.warn('File validation warning:', err);
+            logger.warn('File validation warning:', err);
           });
         return false;
       }

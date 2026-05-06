@@ -35,7 +35,7 @@ class SecureStorageService {
         const { Store } = await import('@tauri-apps/plugin-store');
         this.store = await Store.load('secure-data.json');
       } catch (error) {
-        console.warn('[SecureStorage] Tauri store not available, using localStorage fallback:', error);
+        logger.warn('[SecureStorage] Tauri store not available, using localStorage fallback:', error);
         this.useFallback = true;
       }
     })();

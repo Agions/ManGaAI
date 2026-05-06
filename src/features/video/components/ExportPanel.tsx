@@ -13,9 +13,15 @@ import { logger } from '@/core/utils/logger';
 import styles from './ExportPanel.module.less';
 
 // Placeholder exportScript function until proper implementation is available
+// TODO: Implement actual script export functionality
 const exportScript = async (_script: unknown, _format: string, _filename: string) => {
-  // TODO: Implement actual script export functionality
-  console.log('exportScript called with:', _script, _format, _filename);
+  logger.debug('exportScript called with:', { script: _script, format: _format, filename: _filename });
+  // 实现时需要调用对应的导出服务：
+  // - txt: 使用 fs/writer 输出纯文本
+  // - srt: 使用 subtitle.service 的导出功能
+  // - pdf: 使用 jspdf 生成 PDF
+  // - html: 生成 HTML 文档
+  throw new Error('脚本导出功能待实现');
 };
 
 // 导出脚本到文件

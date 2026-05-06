@@ -4,11 +4,12 @@
  * 
  * @author Agions
  * @date 2024
- * @version 1.0
+ * @version 1.1 - API密钥改用secureStorage存储
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 import { logger } from '@/core/utils/logger';
+import { secureStorage } from '@/core/services/secure-storage.service';
 import { useLegacyStore } from '@/shared/stores';
 
 // 启用调试模式
@@ -33,6 +34,43 @@ const setStoredValue = <T>(key: string, value: T): void => {
     if (DEBUG) logger.info(`[useSettings] 保存设置: ${key}`, value);
   } catch (error) {
     logger.error(`[useSettings] 保存 ${key} 时发生错误:`, error);
+  }
+};
+
+// 安全存储的API密钥key映射
+const API_KEY_SECURE_KEYS: Record<string, string> = {
+  'openai_api_key': 'openai_api_key',
+  'anthropic_api_key': 'anthropic_api_key',
+  'iflytek_api_key': 'iflytek_api_key',
+  'zhipu_api_key': 'zhipu_api_key',
+  'baidu_api_key': 'baidu_api_key',
+};
+
+// 安全存储的API密钥获取
+const getSecureStoredApiKey = async (key: string): Promise<ApiKeyState> => {
+  try {
+    const secureKey = API_KEY_SECURE_KEYS[key];
+    if (secureKey) {
+      const value = await secureStorage.getSecureConfig(secureKey);
+      if (value) {
+        return JSON.parse(value);
+      }
+    }
+  } catch (error) {
+    logger.error(`[useSettings] 读取安全存储 ${key} 时发生错误:`, error);
+  }
+  return { value: '', isValid: null, isTesting: false };
+};
+
+// 安全存储的API密钥设置
+const setSecureStoredApiKey = async (key: string, state: ApiKeyState): Promise<void> => {
+  try {
+    const secureKey = API_KEY_SECURE_KEYS[key];
+    if (secureKey) {
+      await secureStorage.saveSecureConfig(secureKey, JSON.stringify(state));
+    }
+  } catch (error) {
+    logger.error(`[useSettings] 保存安全存储 ${key} 时发生错误:`, error);
   }
 };
 
@@ -123,16 +161,21 @@ export const useSettingsStore = () => {
 // API密钥相关钩子
 // OpenAI API密钥
 export const useOpenAIAPIKey = () => {
-  const [apiKey, setApiKey] = useState<ApiKeyState>(() => getStoredValue('openai_api_key', { 
+  const [apiKey, setApiKey] = useState<ApiKeyState>({ 
     value: '', 
     isValid: null, 
     isTesting: false 
-  }));
+  });
 
-  const updateApiKey = useCallback((newApiKey: Partial<ApiKeyState>) => {
+  // 初始化时从安全存储加载
+  useEffect(() => {
+    getSecureStoredApiKey('openai_api_key').then(setApiKey);
+  }, []);
+
+  const updateApiKey = useCallback(async (newApiKey: Partial<ApiKeyState>) => {
     setApiKey(prev => {
       const updated = { ...prev, ...newApiKey };
-      setStoredValue('openai_api_key', updated);
+      setSecureStoredApiKey('openai_api_key', updated);
       return updated;
     });
   }, []);
@@ -142,16 +185,20 @@ export const useOpenAIAPIKey = () => {
 
 // Claude API密钥
 export const useClaudeAPIKey = () => {
-  const [apiKey, setApiKey] = useState<ApiKeyState>(() => getStoredValue('anthropic_api_key', { 
+  const [apiKey, setApiKey] = useState<ApiKeyState>({ 
     value: '', 
     isValid: null, 
     isTesting: false 
-  }));
+  });
 
-  const updateApiKey = useCallback((newApiKey: Partial<ApiKeyState>) => {
+  useEffect(() => {
+    getSecureStoredApiKey('anthropic_api_key').then(setApiKey);
+  }, []);
+
+  const updateApiKey = useCallback(async (newApiKey: Partial<ApiKeyState>) => {
     setApiKey(prev => {
       const updated = { ...prev, ...newApiKey };
-      setStoredValue('anthropic_api_key', updated);
+      setSecureStoredApiKey('anthropic_api_key', updated);
       return updated;
     });
   }, []);
@@ -161,16 +208,20 @@ export const useClaudeAPIKey = () => {
 
 // 讯飞 API密钥
 export const useXFAPIKey = () => {
-  const [apiKey, setApiKey] = useState<ApiKeyState>(() => getStoredValue('iflytek_api_key', { 
+  const [apiKey, setApiKey] = useState<ApiKeyState>({ 
     value: '', 
     isValid: null, 
     isTesting: false 
-  }));
+  });
 
-  const updateApiKey = useCallback((newApiKey: Partial<ApiKeyState>) => {
+  useEffect(() => {
+    getSecureStoredApiKey('iflytek_api_key').then(setApiKey);
+  }, []);
+
+  const updateApiKey = useCallback(async (newApiKey: Partial<ApiKeyState>) => {
     setApiKey(prev => {
       const updated = { ...prev, ...newApiKey };
-      setStoredValue('iflytek_api_key', updated);
+      setSecureStoredApiKey('iflytek_api_key', updated);
       return updated;
     });
   }, []);
@@ -180,16 +231,20 @@ export const useXFAPIKey = () => {
 
 // 智谱 API密钥
 export const useZhipuAPIKey = () => {
-  const [apiKey, setApiKey] = useState<ApiKeyState>(() => getStoredValue('zhipu_api_key', { 
+  const [apiKey, setApiKey] = useState<ApiKeyState>({ 
     value: '', 
     isValid: null, 
     isTesting: false 
-  }));
+  });
 
-  const updateApiKey = useCallback((newApiKey: Partial<ApiKeyState>) => {
+  useEffect(() => {
+    getSecureStoredApiKey('zhipu_api_key').then(setApiKey);
+  }, []);
+
+  const updateApiKey = useCallback(async (newApiKey: Partial<ApiKeyState>) => {
     setApiKey(prev => {
       const updated = { ...prev, ...newApiKey };
-      setStoredValue('zhipu_api_key', updated);
+      setSecureStoredApiKey('zhipu_api_key', updated);
       return updated;
     });
   }, []);
@@ -197,18 +252,22 @@ export const useZhipuAPIKey = () => {
   return [apiKey, updateApiKey] as const;
 };
 
-// Anthropic API密钥
+// Anthropic API密钥 (与Claude相同)
 export const useAnthropic = () => {
-  const [apiKey, setApiKey] = useState<ApiKeyState>(() => getStoredValue('anthropic_api_key', { 
+  const [apiKey, setApiKey] = useState<ApiKeyState>({ 
     value: '', 
     isValid: null, 
     isTesting: false 
-  }));
+  });
 
-  const updateApiKey = useCallback((newApiKey: Partial<ApiKeyState>) => {
+  useEffect(() => {
+    getSecureStoredApiKey('anthropic_api_key').then(setApiKey);
+  }, []);
+
+  const updateApiKey = useCallback(async (newApiKey: Partial<ApiKeyState>) => {
     setApiKey(prev => {
       const updated = { ...prev, ...newApiKey };
-      setStoredValue('anthropic_api_key', updated);
+      setSecureStoredApiKey('anthropic_api_key', updated);
       return updated;
     });
   }, []);
@@ -218,16 +277,20 @@ export const useAnthropic = () => {
 
 // 百度 API密钥
 export const useBaiduAPIKey = () => {
-  const [apiKey, setApiKey] = useState<ApiKeyState>(() => getStoredValue('baidu_api_key', { 
+  const [apiKey, setApiKey] = useState<ApiKeyState>({ 
     value: '', 
     isValid: null, 
     isTesting: false 
-  }));
+  });
 
-  const updateApiKey = useCallback((newApiKey: Partial<ApiKeyState>) => {
+  useEffect(() => {
+    getSecureStoredApiKey('baidu_api_key').then(setApiKey);
+  }, []);
+
+  const updateApiKey = useCallback(async (newApiKey: Partial<ApiKeyState>) => {
     setApiKey(prev => {
       const updated = { ...prev, ...newApiKey };
-      setStoredValue('baidu_api_key', updated);
+      setSecureStoredApiKey('baidu_api_key', updated);
       return updated;
     });
   }, []);
@@ -239,16 +302,20 @@ export const useBaiduAPIKey = () => {
 export const useApiKey = (provider: string) => {
   const storageKey = `${provider}_api_key`;
   
-  const [apiKey, setApiKey] = useState<ApiKeyState>(() => getStoredValue(storageKey, { 
+  const [apiKey, setApiKey] = useState<ApiKeyState>({ 
     value: '', 
     isValid: null, 
     isTesting: false 
-  }));
+  });
 
-  const updateApiKey = useCallback((newApiKey: Partial<ApiKeyState>) => {
+  useEffect(() => {
+    getSecureStoredApiKey(storageKey).then(setApiKey);
+  }, [storageKey]);
+
+  const updateApiKey = useCallback(async (newApiKey: Partial<ApiKeyState>) => {
     setApiKey(prev => {
       const updated = { ...prev, ...newApiKey };
-      setStoredValue(storageKey, updated);
+      setSecureStoredApiKey(storageKey, updated);
       return updated;
     });
   }, [storageKey]);
