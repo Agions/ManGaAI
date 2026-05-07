@@ -34,11 +34,16 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - name: Install dependencies
-        run: npm install
+        run: pnpm install
 
       - name: Build VitePress
-        run: npx vitepress build docs
+        run: pnpm docs:vp:build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
