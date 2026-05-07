@@ -10,6 +10,7 @@ use tauri::command;
 use std::fs::{self, File};
 use std::io::Write;
 use tauri::Manager;
+use std::ffi::OsStr;
 use std::collections::HashMap;
 use std::path::PathBuf;
 
@@ -17,6 +18,18 @@ use std::path::PathBuf;
 fn run_ffmpeg(args: &[&str]) -> Result<(), String> {
     let output = Command::new("ffmpeg")
         .args(args)
+        .output()
+        .map_err(|e| format!("执行FFmpeg命令失败: {}", e))?;
+    if !output.status.success() {
+        let err = String::from_utf8_lossy(&output.stderr);
+        return Err(format!("FFmpeg错误: {}", err));
+    }
+    Ok(())
+}
+
+fn run_ffmpeg_vec(args: &[String]) -> Result<(), String> {
+    let output = Command::new("ffmpeg")
+        .args(args.iter().map(|s| s.as_ref()).collect::<Vec<&OsStr>>())
         .output()
         .map_err(|e| format!("执行FFmpeg命令失败: {}", e))?;
     if !output.status.success() {
@@ -386,23 +399,26 @@ async fn cut_video(params: CutVideoParams, window: tauri::Window) -> Result<Stri
             video_filters.push_str(&format!("subtitles='{}'", subtitle_path));
         }
         
-        let mut ffmpeg_args = vec![
-            "-y",
-            "-ss", &segment.start.to_string(),
-            "-i", &params.input_path,
-            "-t", &duration.to_string(),
+        let mut ffmpeg_args: Vec<String> = vec![
+            "-y".to_string(),
+            "-ss".to_string(),
+            segment.start.to_string(),
+            "-i".to_string(),
+            params.input_path.clone(),
+            "-t".to_string(),
+            duration.to_string(),
         ];
         for arg in video_params.split_whitespace() {
-            ffmpeg_args.push(arg);
+            ffmpeg_args.push(arg.to_string());
         }
-        ffmpeg_args.extend(["-c:v", &video_codec]);
+        ffmpeg_args.extend(["-c:v".to_string(), video_codec.clone()]);
         if !video_filters.is_empty() {
-            ffmpeg_args.extend(["-vf", &video_filters]);
+            ffmpeg_args.extend(["-vf".to_string(), video_filters.clone()]);
         }
-        ffmpeg_args.extend(["-c:a", "aac", "-strict", "experimental", &segment_path]);
+        ffmpeg_args.extend(["-c:a".to_string(), "aac".to_string(), "-strict".to_string(), "experimental".to_string(), segment_path.clone()]);
 
         println!("执行FFmpeg命令: {:?}", ffmpeg_args);
-        run_ffmpeg(&ffmpeg_args)?;
+        run_ffmpeg_vec(&ffmpeg_args)?;
 
         segment_files.push(segment_path);
     }
@@ -733,7 +749,7 @@ fn main() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_global_shortcut::Builder::default().build())
         .plugin(tauri_plugin_os::init())
-        .plugin(tauri_plugin_store::init())
+        .plugin(tauri_plugin_store::Builder::default().build())
         .setup(|_app| {
             println!("应用设置初始化");
             Ok(())
