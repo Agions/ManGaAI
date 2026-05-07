@@ -11,7 +11,7 @@ use std::path::{Path, PathBuf};
 
 /// Execute ffmpeg directly without shell to prevent command injection.
 /// Each arg is passed as a separate argument — no shell interpretation.
-fn run_ffmpeg(args: &[&str]) -> Result<(), String> {
+fn run_ffmpeg<T: AsRef<str>>(args: &[T]) -> Result<(), String> {
     let output = Command::new("ffmpeg")
         .args(args)
         .output()
@@ -25,8 +25,8 @@ fn run_ffmpeg(args: &[&str]) -> Result<(), String> {
 
 /// Split a space-separated flag+value string into individual args for ffmpeg.
 /// Only handles simple whitespace splitting — no shell variable/quote interpretation.
-fn split_ffmpeg_args(s: &str) -> Vec<&str> {
-    s.split_whitespace().collect()
+fn split_ffmpeg_args(s: &str) -> Vec<String> {
+    s.split_whitespace().map(|x| x.to_string()).collect()
 }
 
 // 视频元数据
@@ -326,19 +326,22 @@ async fn cut_video(params: CutVideoParams, window: tauri::Window) -> Result<Stri
             video_filters.push_str(&format!("subtitles='{}'", subtitle_path));
         }
 
-        let mut ffmpeg_args = vec![
-            "-y",
-            "-ss", &segment.start.to_string(),
-            "-i", &params.input_path,
-            "-t", &duration.to_string(),
+        let mut ffmpeg_args: Vec<String> = vec![
+            "-y".to_string(),
+            "-ss".to_string(),
+            segment.start.to_string(),
+            "-i".to_string(),
+            params.input_path.clone(),
+            "-t".to_string(),
+            duration.to_string(),
         ];
         // video_params is server-controlled (format/quality match arms) — split safely
         ffmpeg_args.extend(split_ffmpeg_args(&video_params));
-        ffmpeg_args.extend(["-c:v", &video_codec]);
+        ffmpeg_args.extend(["-c:v".to_string(), video_codec.clone()]);
         if !video_filters.is_empty() {
-            ffmpeg_args.extend(["-vf", &video_filters]);
+            ffmpeg_args.extend(["-vf".to_string(), video_filters.clone()]);
         }
-        ffmpeg_args.extend(["-c:a", "aac", "-strict", "experimental", &segment_path]);
+        ffmpeg_args.extend(["-c:a".to_string(), "-strict".to_string(), "experimental".to_string(), segment_path.clone()]);
 
         info!("执行FFmpeg命令: {:?}", ffmpeg_args);
         run_ffmpeg(&ffmpeg_args)?;
