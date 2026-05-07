@@ -7,11 +7,12 @@ use std::fs::{self, File};
 use std::io::Write;
 use std::collections::HashMap;
 use std::sync::Mutex;
+use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
 
 /// Execute ffmpeg directly without shell to prevent command injection.
 /// Each arg is passed as a separate argument — no shell interpretation.
-fn run_ffmpeg<T: AsRef<str>>(args: &[T]) -> Result<(), String> {
+fn run_ffmpeg<T: AsRef<OsStr>>(args: &[T]) -> Result<(), String> {
     let output = Command::new("ffmpeg")
         .args(args)
         .output()
