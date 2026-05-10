@@ -6,6 +6,8 @@
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 
+import { logger } from '@/core/utils/logger';
+
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
@@ -37,7 +39,7 @@ export class GlobalErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    console.error('[ErrorBoundary] Caught error:', error, errorInfo);
+    logger.error('[ErrorBoundary] Caught error', { error: error?.message, errorInfo });
     this.props.onError?.(error, errorInfo);
   }
 

@@ -110,7 +110,7 @@ export async function getFFmpegInstance(): Promise<FFmpeg> {
         progress: Math.round(progress * 100),
         status: 'encoding',
         message: `处理中... ${Math.round(progress * 100)}%`,
-        eta: time > 0 ? Math.round((1 - progress) * time / 1000) : undefined,
+        eta: time > 0 ? Math.round(((1 - progress) * time) / 1000) : undefined,
       });
     }
   });
@@ -165,20 +165,6 @@ export async function loadFFmpeg(progressCallback?: ProgressCallback): Promise<b
 // 检查 FFmpeg.wasm 是否可用
 export function isFFmpegWasmAvailable(): boolean {
   return typeof window !== 'undefined' && typeof SharedArrayBuffer !== 'undefined';
-}
-
-// 检查是否在 Tauri 环境中
-function isTauri(): boolean {
-  if (typeof window === 'undefined') return false;
-  return '__TAURI__' in window;
-}
-
-// 格式化时间
-function formatTime(seconds: number): string {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = Math.floor(seconds % 60);
-  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
 // 生成 SRT 字幕文件
@@ -268,7 +254,7 @@ export async function composeVideoWithFFmpeg(
   // 对于连续场景，使用复杂 filter 进行合成
   const outputFile = `output.${format}`;
 
-  if (scenes.every(s => s.mediaType === 'image')) {
+  if (scenes.every((s) => s.mediaType === 'image')) {
     // 全是图片场景：使用 loop 和 concat
     const args: string[] = ['-y'];
 
@@ -338,10 +324,12 @@ export async function composeVideoWithFFmpeg(
     let concatParts = '';
     for (let i = 0; i < scenes.length; i++) {
       const scene = scenes[i];
-      const sceneDuration = scene.duration;
 
       // 对每段进行缩放
-      args.push('-filter_complex', `[${i}:v]scale=${resolution.width}:${resolution.height}:force_original_aspect_ratio=decrease,pad=${resolution.width}:${resolution.height}:(ow-iw)/2:(oh-ih)/2,setpts=PTS-STARTPTS+${totalDuration}s/TB[v${i}]`);
+      args.push(
+        '-filter_complex',
+        `[${i}:v]scale=${resolution.width}:${resolution.height}:force_original_aspect_ratio=decrease,pad=${resolution.width}:${resolution.height}:(ow-iw)/2:(oh-ih)/2,setpts=PTS-STARTPTS+${totalDuration}s/TB[v${i}]`
+      );
     }
 
     for (let i = 0; i < scenes.length; i++) {
@@ -428,9 +416,12 @@ export async function addSubtitlesWithFFmpeg(
   // 执行字幕烧录
   await ff.exec([
     '-y',
-    '-i', 'input_video',
-    '-vf', `subtitles=subtitles.srt:force_style='FontName=Arial,FontSize=24,PrimaryColour=&HFFFFFF,OutlineColour=&H000000,Outline=2'`,
-    '-c:a', 'copy',
+    '-i',
+    'input_video',
+    '-vf',
+    `subtitles=subtitles.srt:force_style='FontName=Arial,FontSize=24,PrimaryColour=&HFFFFFF,OutlineColour=&H000000,Outline=2'`,
+    '-c:a',
+    'copy',
     outputPath,
   ]);
 
@@ -501,12 +492,18 @@ export async function addBackgroundMusicWithFFmpeg(
 
   await ff.exec([
     '-y',
-    '-i', 'input_video',
-    '-i', `background_music.${musicExt}`,
-    '-filter_complex', audioFilter,
-    '-map', '0:v',
-    '-map', '[aout]',
-    '-c:v', 'copy',
+    '-i',
+    'input_video',
+    '-i',
+    `background_music.${musicExt}`,
+    '-filter_complex',
+    audioFilter,
+    '-map',
+    '0:v',
+    '-map',
+    '[aout]',
+    '-c:v',
+    'copy',
     outputPath,
   ]);
 
@@ -651,14 +648,7 @@ export async function concatenateVideosWithFFmpeg(
   const concatList = videoBlobs.map((_, i) => `file 'input_${i}'`).join('\n');
   await ff.writeFile('concat.txt', new TextEncoder().encode(concatList));
 
-  await ff.exec([
-    '-y',
-    '-f', 'concat',
-    '-safe', '0',
-    '-i', 'concat.txt',
-    '-c', 'copy',
-    outputPath,
-  ]);
+  await ff.exec(['-y', '-f', 'concat', '-safe', '0', '-i', 'concat.txt', '-c', 'copy', outputPath]);
 
   progressCallback?.({
     progress: 90,

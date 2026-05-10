@@ -33,7 +33,6 @@ import type {
   Keyframe,
   AIResponse,
   RequestConfig,
-  StreamCallbacks,
   MockConfig,
 } from './ai.service.types';
 

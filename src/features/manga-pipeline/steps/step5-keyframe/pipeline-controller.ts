@@ -16,6 +16,7 @@ import {
   type ImageGenerationOptions,
   type VideoGenerationOptions,
 } from '@/core/services/image-generation.service';
+import { logger } from '@/core/utils/logger';
 
 import { BasePipelineController } from '../../base/BasePipelineController';
 
@@ -418,7 +419,7 @@ export class KeyframePipeline extends BasePipelineController {
         .filter((i): i is number => i !== null);
 
       if (failures.length > 0) {
-        console.warn(`[KeyframePipeline] ${failures.length} 个视频生成失败`);
+        logger.warn(`[KeyframePipeline] ${failures.length} 个视频生成失败`);
       }
     });
 

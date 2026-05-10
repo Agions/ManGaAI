@@ -44,7 +44,6 @@ const DEFAULT_MAX_RETRIES = 2;
 function isNetworkError(error: unknown): boolean {
   if (axios.isAxiosError(error)) {
     // 网络错误、超时、5xx 服务器错误可重试
-    const code = error.code;
     const status = error.response?.status;
     return (
       !status || // 网络错误
