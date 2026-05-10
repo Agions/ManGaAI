@@ -5,6 +5,7 @@ export interface ScriptScene extends Scene {
   sceneNumber: number;
   videoNote?: string;  // 视频分镜备注
   bgmSuggestion?: string;
+  dialogue?: DialogueLine[];  // 场景对话
 }
 
 export interface DialogueLine {

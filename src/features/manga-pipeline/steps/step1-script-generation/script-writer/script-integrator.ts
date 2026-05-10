@@ -24,13 +24,14 @@ export function integrateScript(
 
   // 将场景转换为带对话的 ScriptScene
   const scriptScenes: ScriptScene[] = scenes.map((scene, sceneIdx) => {
-    generateDialogue(scene, paragraphs);
+    const dialogue = generateDialogue(scene, paragraphs);
     
     return {
       ...scene,
       sceneNumber: sceneIdx + 1,
       videoNote: generateVideoNote(scene),
       bgmSuggestion: generateBgmSuggestion(scene),
+      dialogue,
     };
   });
 
