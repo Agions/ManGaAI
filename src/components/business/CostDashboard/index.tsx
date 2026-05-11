@@ -54,10 +54,17 @@ const statusColorMap: Record<ReviewExportStatus, string> = {
   failed: 'destructive',
 };
 
-const Statistic: React.FC<{ title: string; value: number; prefix?: string }> = ({ title, value, prefix }) => (
+const Statistic: React.FC<{ title: string; value: number; prefix?: string }> = ({
+  title,
+  value,
+  prefix,
+}) => (
   <div className={styles.statistic}>
     <div className={styles.statisticLabel}>{title}</div>
-    <div className={styles.statisticValue}>{prefix}{value.toFixed(3)}</div>
+    <div className={styles.statisticValue}>
+      {prefix}
+      {value.toFixed(3)}
+    </div>
   </div>
 );
 
@@ -75,12 +82,14 @@ const InputNumber: React.FC<{
   />
 );
 
-const CostDashboard: React.FC<CostDashboardProps> = ({ projectId }) => {
-  const [stats, setStats] = useState<CostStats>(projectId ? costService.getProjectStats(projectId) : costService.getStats());
+function CostDashboard({ projectId }: CostDashboardProps) {
+  const [stats, setStats] = useState<CostStats>(
+    projectId ? costService.getProjectStats(projectId) : costService.getStats()
+  );
   const [budget, setBudget] = useState<CostBudget>(costService.getBudget());
   const [lastAlert, setLastAlert] = useState<CostAlert | null>(null);
   const [exportActivities, setExportActivities] = useState<ReviewExportActivity[]>(
-    reviewExportService.getActivities(projectId).slice(0, 8),
+    reviewExportService.getActivities(projectId).slice(0, 8)
   );
 
   useEffect(() => {
@@ -131,7 +140,9 @@ const CostDashboard: React.FC<CostDashboardProps> = ({ projectId }) => {
       key: 'source',
       width: 120,
       render: (v: any) => (
-        <Badge variant="outline">{v === 'project_edit' ? '编辑页' : v === 'project_detail' ? '详情页' : '未知'}</Badge>
+        <Badge variant="outline">
+          {v === 'project_edit' ? '编辑页' : v === 'project_detail' ? '详情页' : '未知'}
+        </Badge>
       ),
     },
     {
@@ -140,7 +151,15 @@ const CostDashboard: React.FC<CostDashboardProps> = ({ projectId }) => {
       key: 'status',
       width: 100,
       render: (v: any) => (
-        <Badge variant={(statusColorMap as any)[v] === 'success' ? 'default' : (statusColorMap as any)[v] === 'destructive' ? 'destructive' : 'secondary'}>
+        <Badge
+          variant={
+            (statusColorMap as any)[v] === 'success'
+              ? 'default'
+              : (statusColorMap as any)[v] === 'destructive'
+                ? 'destructive'
+                : 'secondary'
+          }
+        >
           {(statusLabelMap as any)[v]}
         </Badge>
       ),
@@ -155,8 +174,20 @@ const CostDashboard: React.FC<CostDashboardProps> = ({ projectId }) => {
   ];
 
   const columns: TableColumn<CostRecord>[] = [
-    { title: '时间', dataIndex: 'timestamp', key: 'timestamp', width: 120, render: (v: any) => new Date(v).toLocaleDateString() },
-    { title: '类型', dataIndex: 'type', key: 'type', width: 90, render: (v: any) => <Badge variant="outline">{v}</Badge> },
+    {
+      title: '时间',
+      dataIndex: 'timestamp',
+      key: 'timestamp',
+      width: 120,
+      render: (v: any) => new Date(v).toLocaleDateString(),
+    },
+    {
+      title: '类型',
+      dataIndex: 'type',
+      key: 'type',
+      width: 90,
+      render: (v: any) => <Badge variant="outline">{v}</Badge>,
+    },
     { title: 'Provider', dataIndex: 'provider', key: 'provider', width: 100 },
     { title: '模型', dataIndex: 'model', key: 'model', width: 120, render: (v: any) => v ?? '-' },
     { title: '成本', dataIndex: 'cost', key: 'cost', width: 100, render: (v: any) => fmt(v) },
@@ -171,12 +202,7 @@ const CostDashboard: React.FC<CostDashboardProps> = ({ projectId }) => {
 
   return (
     <div className={styles.container}>
-      {lastAlert && (
-        <Alert
-          variant="warning"
-          className={styles.alert}
-        />
-      )}
+      {lastAlert && <Alert variant="warning" className={styles.alert} />}
 
       <Card>
         <CardHeader>
@@ -192,15 +218,21 @@ const CostDashboard: React.FC<CostDashboardProps> = ({ projectId }) => {
 
           <div className={styles.budgetRows}>
             <div>
-              <span>日预算 {fmt(budgetStatus.daily.used)} / {fmt(budgetStatus.daily.limit)}</span>
+              <span>
+                日预算 {fmt(budgetStatus.daily.used)} / {fmt(budgetStatus.daily.limit)}
+              </span>
               <Progress value={Math.min(100, Number(budgetStatus.daily.percent.toFixed(1)))} />
             </div>
             <div>
-              <span>周预算 {fmt(budgetStatus.weekly.used)} / {fmt(budgetStatus.weekly.limit)}</span>
+              <span>
+                周预算 {fmt(budgetStatus.weekly.used)} / {fmt(budgetStatus.weekly.limit)}
+              </span>
               <Progress value={Math.min(100, Number(budgetStatus.weekly.percent.toFixed(1)))} />
             </div>
             <div>
-              <span>月预算 {fmt(budgetStatus.monthly.used)} / {fmt(budgetStatus.monthly.limit)}</span>
+              <span>
+                月预算 {fmt(budgetStatus.monthly.used)} / {fmt(budgetStatus.monthly.limit)}
+              </span>
               <Progress value={Math.min(100, Number(budgetStatus.monthly.percent.toFixed(1)))} />
             </div>
           </div>
@@ -208,10 +240,27 @@ const CostDashboard: React.FC<CostDashboardProps> = ({ projectId }) => {
           {!projectId && (
             <div className={styles.budgetEdit}>
               <span>预算设置:</span>
-              <span>日</span><InputNumber min={1} value={budget.daily} onChange={(v) => updateBudget('daily', v)} />
-              <span>周</span><InputNumber min={1} value={budget.weekly} onChange={(v) => updateBudget('weekly', v)} />
-              <span>月</span><InputNumber min={1} value={budget.monthly} onChange={(v) => updateBudget('monthly', v)} />
-              <Button onClick={() => costService.saveToStorage()} variant="outline" size="sm">保存预算</Button>
+              <span>日</span>
+              <InputNumber
+                min={1}
+                value={budget.daily}
+                onChange={(v) => updateBudget('daily', v)}
+              />
+              <span>周</span>
+              <InputNumber
+                min={1}
+                value={budget.weekly}
+                onChange={(v) => updateBudget('weekly', v)}
+              />
+              <span>月</span>
+              <InputNumber
+                min={1}
+                value={budget.monthly}
+                onChange={(v) => updateBudget('monthly', v)}
+              />
+              <Button onClick={() => costService.saveToStorage()} variant="outline" size="sm">
+                保存预算
+              </Button>
             </div>
           )}
         </CardContent>
@@ -226,7 +275,9 @@ const CostDashboard: React.FC<CostDashboardProps> = ({ projectId }) => {
             <TableHeader>
               <TableRow>
                 {columns.map((col) => (
-                  <TableHead key={col.key} style={{ width: col.width }}>{col.title}</TableHead>
+                  <TableHead key={col.key} style={{ width: col.width }}>
+                    {col.title}
+                  </TableHead>
                 ))}
               </TableRow>
             </TableHeader>
@@ -234,7 +285,11 @@ const CostDashboard: React.FC<CostDashboardProps> = ({ projectId }) => {
               {records.slice(0, 20).map((record) => (
                 <TableRow key={record.id}>
                   {columns.map((col) => (
-                    <TableCell key={col.key}>{col.render ? col.render(record[col.dataIndex], record) : String(record[col.dataIndex] ?? '')}</TableCell>
+                    <TableCell key={col.key}>
+                      {col.render
+                        ? col.render(record[col.dataIndex], record)
+                        : String(record[col.dataIndex] ?? '')}
+                    </TableCell>
                   ))}
                 </TableRow>
               ))}
@@ -252,28 +307,38 @@ const CostDashboard: React.FC<CostDashboardProps> = ({ projectId }) => {
             <TableHeader>
               <TableRow>
                 {exportColumns.map((col) => (
-                  <TableHead key={col.key} style={{ width: col.width }}>{col.title}</TableHead>
+                  <TableHead key={col.key} style={{ width: col.width }}>
+                    {col.title}
+                  </TableHead>
                 ))}
               </TableRow>
             </TableHeader>
             <TableBody>
               {exportActivities.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={exportColumns.length} style={{ textAlign: 'center' }}>暂无导出活动</TableCell>
+                  <TableCell colSpan={exportColumns.length} style={{ textAlign: 'center' }}>
+                    暂无导出活动
+                  </TableCell>
                 </TableRow>
-              ) : exportActivities.map((record) => (
-                <TableRow key={record.id}>
-                  {exportColumns.map((col) => (
-                    <TableCell key={col.key}>{col.render ? col.render(record[col.dataIndex], record) : String(record[col.dataIndex] ?? '')}</TableCell>
-                  ))}
-                </TableRow>
-              ))}
+              ) : (
+                exportActivities.map((record) => (
+                  <TableRow key={record.id}>
+                    {exportColumns.map((col) => (
+                      <TableCell key={col.key}>
+                        {col.render
+                          ? col.render(record[col.dataIndex], record)
+                          : String(record[col.dataIndex] ?? '')}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </CardContent>
       </Card>
     </div>
   );
-};
+}
 
 export default CostDashboard;

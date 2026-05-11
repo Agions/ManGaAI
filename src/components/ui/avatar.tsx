@@ -1,8 +1,8 @@
-"use client"
+'use client';
 
-import * as AvatarPrimitive from "@radix-ui/react-avatar";
+import * as AvatarPrimitive from '@radix-ui/react-avatar';
 import { User } from 'lucide-react';
-import * as React from "react"
+import * as React from 'react';
 
 // Re-export Radix Avatar primitives directly for backward compatibility
 export const AvatarImage = AvatarPrimitive.Image;
@@ -20,7 +20,7 @@ interface AntDAvatarProps {
   children?: React.ReactNode;
 }
 
-const AntDAvatar: React.FC<AntDAvatarProps> = ({ size = 'default', src, icon, className, style, children }) => {
+function AntDAvatar({ size = 'default', src, icon, className, style, children }: AntDAvatarProps) {
   const sizeMap: Record<string, number> = { small: 24, default: 40, large: 64 };
   const pxSize = typeof size === 'number' ? size : sizeMap[size] || 40;
 
@@ -49,11 +49,9 @@ const AntDAvatar: React.FC<AntDAvatarProps> = ({ size = 'default', src, icon, cl
 
   return (
     <AvatarPrimitive.Root style={rootStyle} className={className}>
-      <AvatarFallback style={{ width: pxSize, height: pxSize }}>
-        {icon || <User />}
-      </AvatarFallback>
+      <AvatarFallback style={{ width: pxSize, height: pxSize }}>{icon || <User />}</AvatarFallback>
     </AvatarPrimitive.Root>
   );
-};
+}
 
-export { AntDAvatar as Avatar, type AntDAvatarProps }
+export { AntDAvatar as Avatar, type AntDAvatarProps };

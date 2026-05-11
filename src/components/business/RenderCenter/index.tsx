@@ -36,7 +36,7 @@ interface RenderCenterProps {
   onApplyRenderedFrame?: (frameId: string, imageUrl: string) => void;
 }
 
-const RenderCenter: React.FC<RenderCenterProps> = ({ frames, projectId, onApplyRenderedFrame }) => {
+function RenderCenter({ frames, projectId, onApplyRenderedFrame }: RenderCenterProps) {
   const [jobs, setJobs] = useState<FrameRenderJob[]>([]);
   const [logs, setLogs] = useState<RenderLog[]>([]);
   const [isRunning, setIsRunning] = useState(false);
@@ -85,7 +85,9 @@ const RenderCenter: React.FC<RenderCenterProps> = ({ frames, projectId, onApplyR
           `构图：${frame.composition}`,
           `镜头：${frame.cameraType}`,
           frame.dialogue ? `对白：${frame.dialogue}` : '',
-        ].filter(Boolean).join('，'),
+        ]
+          .filter(Boolean)
+          .join('，'),
         model: 'seedream-5.0',
         maxRetries: 1,
         projectId,
@@ -120,14 +122,38 @@ const RenderCenter: React.FC<RenderCenterProps> = ({ frames, projectId, onApplyR
           </div>
 
           <div className={styles.actions}>
-            <Button onClick={enqueueFrames} disabled={frames.length === 0} size="sm" variant="outline">加入分镜</Button>
+            <Button
+              onClick={enqueueFrames}
+              disabled={frames.length === 0}
+              size="sm"
+              variant="outline"
+            >
+              加入分镜
+            </Button>
             {!isPaused ? (
-              <Button onClick={() => renderQueueService.pause()} disabled={!isRunning} size="sm" variant="outline">暂停</Button>
+              <Button
+                onClick={() => renderQueueService.pause()}
+                disabled={!isRunning}
+                size="sm"
+                variant="outline"
+              >
+                暂停
+              </Button>
             ) : (
-              <Button onClick={() => renderQueueService.resume()} size="sm" variant="outline">继续</Button>
+              <Button onClick={() => renderQueueService.resume()} size="sm" variant="outline">
+                继续
+              </Button>
             )}
-            <Button onClick={() => void renderQueueService.run()} disabled={isRunning || pendingCount === 0} size="sm">开始渲染</Button>
-            <Button onClick={() => renderQueueService.clearCompleted()} size="sm" variant="outline">清理已完成</Button>
+            <Button
+              onClick={() => void renderQueueService.run()}
+              disabled={isRunning || pendingCount === 0}
+              size="sm"
+            >
+              开始渲染
+            </Button>
+            <Button onClick={() => renderQueueService.clearCompleted()} size="sm" variant="outline">
+              清理已完成
+            </Button>
           </div>
 
           <Table>
@@ -142,7 +168,9 @@ const RenderCenter: React.FC<RenderCenterProps> = ({ frames, projectId, onApplyR
             <TableBody>
               {jobs.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4} style={{ textAlign: 'center' }}>暂无渲染任务</TableCell>
+                  <TableCell colSpan={4} style={{ textAlign: 'center' }}>
+                    暂无渲染任务
+                  </TableCell>
                 </TableRow>
               ) : (
                 jobs.map((job) => (
@@ -156,7 +184,13 @@ const RenderCenter: React.FC<RenderCenterProps> = ({ frames, projectId, onApplyR
                     </TableCell>
                     <TableCell>
                       {job.error && (
-                        <Button size="sm" variant="outline" onClick={() => renderQueueService.retry(job.id)}>重试</Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => renderQueueService.retry(job.id)}
+                        >
+                          重试
+                        </Button>
                       )}
                     </TableCell>
                   </TableRow>
@@ -173,10 +207,7 @@ const RenderCenter: React.FC<RenderCenterProps> = ({ frames, projectId, onApplyR
         </CardHeader>
         <CardContent>
           <div className={styles.logFilter}>
-            <Select
-              value={logFilter}
-              onValueChange={(value: LogFilter) => setLogFilter(value)}
-            >
+            <Select value={logFilter} onValueChange={(value: LogFilter) => setLogFilter(value)}>
               <SelectTrigger style={{ width: 140 }}>
                 <SelectValue />
               </SelectTrigger>
@@ -197,7 +228,9 @@ const RenderCenter: React.FC<RenderCenterProps> = ({ frames, projectId, onApplyR
                 <div key={index} className={styles.logItem}>
                   <Badge variant={logColorMap[item.level] || 'outline'}>{item.level}</Badge>
                   <span>{item.message}</span>
-                  <span className={styles.logTime}>{new Date(item.timestamp).toLocaleTimeString()}</span>
+                  <span className={styles.logTime}>
+                    {new Date(item.timestamp).toLocaleTimeString()}
+                  </span>
                 </div>
               ))
             )}
@@ -206,6 +239,6 @@ const RenderCenter: React.FC<RenderCenterProps> = ({ frames, projectId, onApplyR
       </Card>
     </div>
   );
-};
+}
 
 export default RenderCenter;
