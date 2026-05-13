@@ -409,49 +409,78 @@ export const formatDateTime = (date: Date | string): string => {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
-/**
- * 格式化时间 (mm:ss)
- */
-export const formatTime = (seconds: number): string => {
-  if (isNaN(seconds) || seconds < 0) return '00:00';
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-};
+export interface FormatTimeOptions {
+  /** 显示小时: true=始终显示, false=不显示, 'auto'=仅>0时显示(默认false) */
+  hours?: boolean | 'auto';
+  /** 毫秒位数: 0=无, 1=十分之一秒(.X), 2=百分之一秒(.XX), 3=毫秒(.mmm) */
+  ms?: 0 | 1 | 2 | 3;
+  /** 数字进位取整方式，默认 Math.floor */
+  round?: 'floor' | 'round' | 'ceil';
+}
 
 /**
- * 将秒数格式化为 MM:SS.s 时间格式（带1位小数毫秒）
+ * 统一时间格式化
+ * @example formatTime(90)                           → "01:30"
+ * @example formatTime(90, { hours: true })         → "00:01:30"
+ * @example formatTime(90.5, { ms: 1 })              → "01:30.5"
+ * @example formatTime(3661.5, { hours: 'auto' })    → "1:01:01.5"
  */
-export const formatTimeWithMs = (seconds: number): string => {
-  if (isNaN(seconds) || seconds < 0) return '00:00.0';
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  const ms = Math.floor((seconds % 1) * 10);
-  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}.${ms}`;
-};
+export function formatTime(seconds: number, opts: FormatTimeOptions = {}): string {
+  const { hours = false, ms = 0, round = 'floor' } = opts;
+  if (isNaN(seconds) || seconds < 0) return ms > 0 ? '00:00.' + '0'.repeat(ms) : '00:00';
 
-/**
- * 格式化时间 HH:MM:SS（小时始终显示，与 formatDuration 行为不同）
- * formatDuration 在不足1小时时会省略小时部分，本函数始终显示
- */
-export const formatTimeHMS = (seconds: number): string => {
-  if (isNaN(seconds) || seconds < 0) return '00:00:00';
-  const hrs = Math.floor(seconds / 3600);
-  const mins = Math.floor((seconds % 3600) / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-};
+  let s: number, m: number, h: number, fractional: number;
 
-/**
- * 格式化时间 MM:SS.XX（百分之一秒，SubtitleEditor 使用）
- */
-export const formatTimeWithCentiseconds = (seconds: number): string => {
-  if (isNaN(seconds) || seconds < 0) return '00:00.00';
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  const cs = Math.floor((seconds % 1) * 100);
-  return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}.${String(cs).padStart(2, '0')}`;
-};
+  if (ms === 0) {
+    s = Math.floor(seconds % 60);
+    m = Math.floor(seconds / 60);
+    h = Math.floor(m / 60);
+    if (hours !== false) m = m % 60;
+    fractional = 0;
+  } else {
+    // Round only the fractional part of seconds, then decompose
+    const base = ms === 3 ? 1000 : ms === 2 ? 100 : 10;
+    const secFrac = (seconds % 1) * base;
+    const roundedFrac = Math.round(secFrac);
+    const carry = roundedFrac >= base ? 1 : 0;
+    const fracPart = roundedFrac % base;
+    const totalSecs = Math.floor(seconds) + carry;
+    s = totalSecs % 60;
+    const totalMins = Math.floor(totalSecs / 60);
+    h = Math.floor(totalMins / 60);
+    if (hours === false) m = totalMins;
+    else m = totalMins % 60;
+    fractional = fracPart;
+  }
+
+  const pad = (n: number, len = 2) => String(n).padStart(len, '0');
+  const padFrac = (n: number) => {
+    if (ms === 0) return '';
+    if (ms === 1) return `.${n}`;
+    if (ms === 2) return `.${pad(n)}`;
+    return `.${pad(n, 3)}`;
+  };
+
+  const frac = ms > 0 ? padFrac(fractional) : '';
+  const secs = `${pad(s)}${frac}`;
+
+  if (hours === true) {
+    return `${pad(h)}:${pad(m)}:${secs}`;
+  }
+  if (hours === 'auto') {
+    return h > 0 ? `${h}:${pad(m)}:${secs}` : `${pad(m)}:${secs}`;
+  }
+  return `${pad(m)}:${secs}`;
+}
+
+/** @deprecated 请使用 formatTime(seconds, { hours: true }) */
+export const formatTimeHMS = (seconds: number): string => formatTime(seconds, { hours: true });
+
+/** @deprecated 请使用 formatTime(seconds, { ms: 1 }) */
+export const formatTimeWithMs = (seconds: number): string => formatTime(seconds, { ms: 1 });
+
+/** @deprecated 请使用 formatTime(seconds, { ms: 2 }) */
+export const formatTimeWithCentiseconds = (seconds: number): string => formatTime(seconds, { ms: 2 });
 
 /**
  * 格式化 ASS 字幕时间 (H:MM:SS.cc，百分之一秒)
