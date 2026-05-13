@@ -17,7 +17,15 @@ import {
 } from '@/core/types/novel.types';
 
 import { aiService } from './ai.service';
-
+import {
+  extractCharacterNames,
+  extractLocations,
+  extractTimePeriod,
+  generateDefaultPrompt,
+  DIALOGUE_PATTERNS,
+  CHAPTER_PATTERNS,
+  ruleBasedSegmentation,
+} from './novel-helpers';
 
 /**
  * 小说分析器
@@ -153,19 +161,12 @@ ${content.slice(0, 2000)}
     novelId: string,
     estimatedChapterCount: number
   ): Promise<Chapter[]> {
-    // 使用正则表达式检测章节标题模式
-    const chapterPatterns = [
-      /^第[一二三四五六七八九十百千\d]+章[：:\s]*(.+)$/gm,
-      /^第[一二三四五六七八九十百千\d]+节[：:\s]*(.+)$/gm,
-      /^Chapter\s+\d+[：:\s]*(.+)$/gim,
-      /^第[一二三四五六七八九十百千\d]+卷.*$/gm,
-    ];
-
+    // 使用 CHAPTER_PATTERNS 检测章节标题
     const chapters: Chapter[] = [];
     let currentPosition = 0;
 
     // 尝试匹配章节标题
-    for (const pattern of chapterPatterns) {
+    for (const pattern of CHAPTER_PATTERNS) {
       const matches = [...content.matchAll(pattern)];
       if (matches.length > 0) {
         for (let i = 0; i < matches.length && i < this.config.maxChapters; i++) {
@@ -196,7 +197,7 @@ ${content.slice(0, 2000)}
 
     // 如果没有检测到章节标题，按段落分割
     if (chapters.length === 0) {
-      const paragraphs = content.split(/\n\n+/).filter(p => p.trim().length > 50);
+      const paragraphs = content.split(/\n\n+/).filter((p) => p.trim().length > 50);
       const chapterSize = Math.ceil(paragraphs.length / estimatedChapterCount);
 
       for (let i = 0; i < paragraphs.length; i += chapterSize) {
@@ -216,9 +217,9 @@ ${content.slice(0, 2000)}
 
     // 收集章节中的信息
     for (const chapter of chapters) {
-      chapter.characters = this.extractCharacterNames(chapter.content);
-      chapter.locations = this.extractLocations(chapter.content);
-      chapter.timePeriod = this.extractTimePeriod(chapter.content);
+      chapter.characters = extractCharacterNames(chapter.content);
+      chapter.locations = extractLocations(chapter.content);
+      chapter.timePeriod = extractTimePeriod(chapter.content);
     }
 
     return chapters;
@@ -285,7 +286,7 @@ ${chapter.content.slice(0, 3000)}${chapter.content.length > 3000 ? '...' : ''}
         }
       } catch {
         // AI 解析失败，使用规则分割
-        const fallbackScenes = this.ruleBasedSegmentation(chapter);
+        const fallbackScenes = ruleBasedSegmentation(chapter, this.config.sceneMinLength);
         scenes.push(...fallbackScenes);
       }
     }
@@ -301,7 +302,7 @@ ${chapter.content.slice(0, 3000)}${chapter.content.length > 3000 ? '...' : ''}
     const content = chapter.content;
 
     // 按段落分割
-    const paragraphs = content.split(/\n\n+/).filter(p => p.trim());
+    const paragraphs = content.split(/\n\n+/).filter((p) => p.trim());
 
     let currentSceneContent = '';
     let sceneNumber = 0;
@@ -414,7 +415,7 @@ ${content.slice(0, 5000)}
    */
   private extractCharactersByRule(content: string, scenes: NovelScene[]): Character[] {
     const characterMap = new Map<string, Character>();
-    const allText = scenes.map(s => s.content).join(' ');
+    const allText = scenes.map((s) => s.content).join(' ');
 
     // 简单规则：提取所有人名
     const namePattern = /([A-Z][a-z]+|[「『]?[\u4e00-\u9fa5]{2,4}[」』]?)/g;
@@ -509,7 +510,7 @@ ${content.slice(0, 5000)}
         for (const dialog of dialogues) {
           // 尝试匹配已知的角色
           const matchedCharacter = characters.find(
-            c => c.name === character || c.aliases?.includes(character)
+            (c) => c.name === character || c.aliases?.includes(character)
           );
 
           scene.dialogues.push({
@@ -528,7 +529,7 @@ ${content.slice(0, 5000)}
       }
 
       // 提取旁白
-      const dialogueContent = scene.dialogues.map(d => d.content).join(' ');
+      const dialogueContent = scene.dialogues.map((d) => d.content).join(' ');
       const paragraphs = scene.content.split(/\n/);
       for (const para of paragraphs) {
         if (para.trim() && !dialogueContent.includes(para.trim())) {
@@ -655,10 +656,7 @@ ${content.slice(0, 5000)}
     for (const scene of scenes) {
       // 统计情感
       for (const emotion of scene.emotions) {
-        emotionCounts.set(
-          emotion.type,
-          (emotionCounts.get(emotion.type) ?? 0) + 1
-        );
+        emotionCounts.set(emotion.type, (emotionCounts.get(emotion.type) ?? 0) + 1);
       }
 
       // 收集时间和地点
@@ -674,9 +672,9 @@ ${content.slice(0, 5000)}
       totalChapters: chapters.length,
       totalScenes: scenes.length,
       totalCharacters: characters.length,
-      mainCharacters: characters.filter(c => c.role === 'main').length,
-      supportingCharacters: characters.filter(c => c.role === 'supporting').length,
-      minorCharacters: characters.filter(c => c.role === 'minor').length,
+      mainCharacters: characters.filter((c) => c.role === 'main').length,
+      supportingCharacters: characters.filter((c) => c.role === 'supporting').length,
+      minorCharacters: characters.filter((c) => c.role === 'minor').length,
       dialogueCount,
       avgChapterLength:
         chapters.length > 0
@@ -702,12 +700,12 @@ ${content.slice(0, 5000)}
     // 中文名模式
     const cnPattern = /[\u4e00-\u9fa5]{2,4}(?=(说|道|问|答|喊|叫|回答|告诉))/g;
     const cnMatches = text.match(cnPattern) ?? [];
-    cnMatches.forEach(n => names.add(n));
+    cnMatches.forEach((n) => names.add(n));
 
     // 英文名模式
     const enPattern = /[A-Z][a-z]+(?=\s+says|\s+asks|\s+answered)/g;
     const enMatches = text.match(enPattern) ?? [];
-    enMatches.forEach(n => names.add(n));
+    enMatches.forEach((n) => names.add(n));
 
     return Array.from(names).slice(0, 5);
   }
@@ -717,9 +715,29 @@ ${content.slice(0, 5000)}
    */
   private extractLocations(text: string): string[] {
     const locationKeywords = [
-      '学校', '医院', '商场', '公园', '图书馆', '办公室', '家', '房间',
-      '教室', '餐厅', '咖啡厅', '街道', '城市', '乡村', '山', '海',
-      '河', '湖', '森林', '花园', '广场', '车站', '机场'
+      '学校',
+      '医院',
+      '商场',
+      '公园',
+      '图书馆',
+      '办公室',
+      '家',
+      '房间',
+      '教室',
+      '餐厅',
+      '咖啡厅',
+      '街道',
+      '城市',
+      '乡村',
+      '山',
+      '海',
+      '河',
+      '湖',
+      '森林',
+      '花园',
+      '广场',
+      '车站',
+      '机场',
     ];
 
     const locations: string[] = [];
