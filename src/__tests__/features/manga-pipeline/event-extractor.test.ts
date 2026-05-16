@@ -1,6 +1,6 @@
 import { Chapter } from '../../../features/manga-pipeline/steps/step1-script-generation/parser/chapter-splitter';
 import { ClassifiedParagraph } from '../../../features/manga-pipeline/steps/step1-script-generation/parser/classifier';
-import { extractEvents } from '../../../features/manga-pipeline/steps/step1-script-generation/parser/event-extractor';
+import { extractEvents } from '../../../features/manga-pipeline/steps/step1-script-generation/parser/extractor';
 
 describe('EventExtractor', () => {
   it('should extract events from action paragraphs', () => {

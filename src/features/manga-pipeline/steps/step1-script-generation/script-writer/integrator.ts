@@ -3,7 +3,7 @@ import { CharacterCard } from '../types/character';
 import { Scene } from '../types/scene';
 import { Script, ScriptScene } from '../types/script';
 
-import { generateDialogue } from './dialogue-generator';
+import { generateDialogue } from './dialogue-gen';
 
 export interface ScriptIntegrationOptions {
   title?: string;

@@ -25,18 +25,18 @@ export function splitChapters(text: string): ChapterSplitResult {
 
   // 章节标题正则
   const patterns = [
-    /^第[一二三四五六七八九十百千万\d]+[章节回篇]/,  // 第1章
-    /^Chapter\s+\d+/i,                                  // Chapter 1
-    /^[一二三四五六七八九十百千万]+、\.?[^\s]{2,}/,    // 一、场景名
-    /^\[Scene\s+\d+\]/,                                 // [Scene 1]
-    /^第[一二三四五六七八九十百千万\d]+部分/,          // 第一部分
+    /^第[一二三四五六七八九十百千万\d]+[章节回篇]/, // 第1章
+    /^Chapter\s+\d+/i, // Chapter 1
+    /^[一二三四五六七八九十百千万]+、\.?[^\s]{2,}/, // 一、场景名
+    /^\[Scene\s+\d+\]/, // [Scene 1]
+    /^第[一二三四五六七八九十百千万\d]+部分/, // 第一部分
   ];
 
   let currentChapter: Chapter | null = null;
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
-    const isChapterTitle = patterns.some(p => p.test(line));
+    const isChapterTitle = patterns.some((p) => p.test(line));
 
     if (isChapterTitle && line.length < 50) {
       if (currentChapter) {

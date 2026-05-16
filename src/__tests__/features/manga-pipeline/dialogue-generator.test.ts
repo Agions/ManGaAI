@@ -1,5 +1,5 @@
 import { ClassifiedParagraph } from '../../../features/manga-pipeline/steps/step1-script-generation/parser/classifier';
-import { generateDialogue } from '../../../features/manga-pipeline/steps/step1-script-generation/script-writer/dialogue-generator';
+import { generateDialogue } from '../../../features/manga-pipeline/steps/step1-script-generation/script-writer/dialogue-gen';
 import { Scene } from '../../../features/manga-pipeline/steps/step1-script-generation/types/scene';
 
 describe('DialogueGenerator', () => {

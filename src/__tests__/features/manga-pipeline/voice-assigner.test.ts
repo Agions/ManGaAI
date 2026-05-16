@@ -1,5 +1,9 @@
 import { CharacterCard } from '../../../features/manga-pipeline/steps/step1-script-generation/types/character';
-import { assignVoices, VOICE_PRESETS, VoiceAssignment } from '../../../features/manga-pipeline/steps/step4-voice-synthesis/services/voice-assigner';
+import {
+  assignVoices,
+  VOICE_PRESETS,
+  VoiceAssignment,
+} from '../../../features/manga-pipeline/steps/step4-voice-synthesis/services/assigner';
 
 describe('voice-assigner', () => {
   describe('assignVoices', () => {
@@ -43,7 +47,7 @@ describe('voice-assigner', () => {
 
       expect(result).toHaveLength(1);
       // 应该匹配到云扬（专业男声）
-      const yunyang = VOICE_PRESETS.find(v => v.name === '云扬（专业男声）');
+      const yunyang = VOICE_PRESETS.find((v) => v.name === '云扬（专业男声）');
       expect(result[0].voiceId).toBe(yunyang?.id);
     });
 
@@ -84,7 +88,7 @@ describe('voice-assigner', () => {
 
       const result = assignVoices(characters);
 
-      expect(result[0].pitch).toBe(2);   // 偏高
+      expect(result[0].pitch).toBe(2); // 偏高
       expect(result[0].speed).toBe(1.1); // 稍快
     });
 
@@ -104,7 +108,7 @@ describe('voice-assigner', () => {
 
       const result = assignVoices(characters);
 
-      expect(result[0].pitch).toBe(-1);  // 偏低
+      expect(result[0].pitch).toBe(-1); // 偏低
       expect(result[0].speed).toBe(0.9); // 稍慢
     });
 
@@ -171,9 +175,36 @@ describe('voice-assigner', () => {
 
     it('should assign all characters with valid voice assignments', () => {
       const characters: CharacterCard[] = [
-        { id: 'c1', name: '角色1', appearance: '', personality: '开朗', speakingStyle: '', voiceSuggestion: '', relationships: [], firstAppearance: '' },
-        { id: 'c2', name: '角色2', appearance: '', personality: '内向', speakingStyle: '', voiceSuggestion: '', relationships: [], firstAppearance: '' },
-        { id: 'c3', name: '角色3', appearance: '', personality: '急躁', speakingStyle: '', voiceSuggestion: '', relationships: [], firstAppearance: '' },
+        {
+          id: 'c1',
+          name: '角色1',
+          appearance: '',
+          personality: '开朗',
+          speakingStyle: '',
+          voiceSuggestion: '',
+          relationships: [],
+          firstAppearance: '',
+        },
+        {
+          id: 'c2',
+          name: '角色2',
+          appearance: '',
+          personality: '内向',
+          speakingStyle: '',
+          voiceSuggestion: '',
+          relationships: [],
+          firstAppearance: '',
+        },
+        {
+          id: 'c3',
+          name: '角色3',
+          appearance: '',
+          personality: '急躁',
+          speakingStyle: '',
+          voiceSuggestion: '',
+          relationships: [],
+          firstAppearance: '',
+        },
       ];
 
       const result = assignVoices(characters);
@@ -195,7 +226,7 @@ describe('voice-assigner', () => {
     });
 
     it('should have valid voice profile structure', () => {
-      VOICE_PRESETS.forEach(preset => {
+      VOICE_PRESETS.forEach((preset) => {
         expect(preset.id).toBeDefined();
         expect(preset.name).toBeDefined();
         expect(preset.gender).toBeDefined();

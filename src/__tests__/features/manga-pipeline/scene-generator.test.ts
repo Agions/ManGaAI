@@ -1,6 +1,6 @@
 import { NarrativeStructure } from '../../../features/manga-pipeline/steps/step1-script-generation/analyzer/narrative';
 import { StoryEvent } from '../../../features/manga-pipeline/steps/step1-script-generation/parser/event-extractor';
-import { generateScenes } from '../../../features/manga-pipeline/steps/step1-script-generation/script-writer/scene-generator';
+import { generateScenes } from '../../../features/manga-pipeline/steps/step1-script-generation/script-writer/scene-gen';
 import { CharacterCard } from '../../../features/manga-pipeline/steps/step1-script-generation/types/character';
 
 describe('SceneGenerator', () => {

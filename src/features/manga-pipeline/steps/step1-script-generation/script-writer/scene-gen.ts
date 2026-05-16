@@ -1,5 +1,5 @@
 import { NarrativeStructure } from '../analyzer/narrative';
-import { StoryEvent } from '../parser/event-extractor';
+import { StoryEvent } from '../parser/extractor';
 import { CharacterCard } from '../types/character';
 import { Scene } from '../types/scene';
 

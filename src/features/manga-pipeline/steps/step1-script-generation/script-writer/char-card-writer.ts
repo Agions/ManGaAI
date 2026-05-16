@@ -1,5 +1,5 @@
 import { CharacterGraph } from '../analyzer/character-graph';
-import { StoryEvent } from '../parser/event-extractor';
+import { StoryEvent } from '../parser/extractor';
 import { CharacterCard } from '../types/character';
 
 export interface GenerateCharacterCardsOptions {

@@ -4,20 +4,20 @@ export interface BGMSelection {
   sceneId: string;
   sceneNumber: number;
   emotion: string;
-  bgmType: string;         // 音乐类型/风格
-  intensity: number;       // 强度 0-1
-  fadeIn: number;           // 淡入时长（秒）
-  fadeOut: number;         // 淡出时长（秒）
-  volume: number;          // 音量 0-1
-  cueIn: number;           // 开始时间点（秒）
-  cueOut: number;          // 结束时间点（秒）
+  bgmType: string; // 音乐类型/风格
+  intensity: number; // 强度 0-1
+  fadeIn: number; // 淡入时长（秒）
+  fadeOut: number; // 淡出时长（秒）
+  volume: number; // 音量 0-1
+  cueIn: number; // 开始时间点（秒）
+  cueOut: number; // 结束时间点（秒）
 }
 
 export interface BGMTrack {
   id: string;
   name: string;
-  type: string;            // 类型：tension, happy, sad, neutral, romantic, action
-  duration: number;        // 总时长（秒）
+  type: string; // 类型：tension, happy, sad, neutral, romantic, action
+  duration: number; // 总时长（秒）
   url?: string;
   tags: string[];
 }
@@ -71,25 +71,23 @@ export const BGM_STYLES: Record<string, BGMTrack> = {
 /**
  * 为每个场景选择合适的 BGM
  */
-export function selectBGM(
-  scenes: ScriptScene[]
-): BGMSelection[] {
-  return scenes.map(scene => {
+export function selectBGM(scenes: ScriptScene[]): BGMSelection[] {
+  return scenes.map((scene) => {
     const emotion = scene.emotion;
     const bgmType = mapEmotionToBGMType(emotion);
     const bgm = BGM_STYLES[bgmType];
-    
+
     // 估算 BGM 时长（与场景时长匹配）
     const duration = estimateSceneDuration(scene);
-    
+
     return {
       sceneId: scene.id,
       sceneNumber: scene.sceneNumber,
       emotion,
       bgmType,
       intensity: getBGMIntensity(emotion),
-      fadeIn: 1.5,     // 默认 1.5 秒淡入
-      fadeOut: 1.5,   // 默认 1.5 秒淡出
+      fadeIn: 1.5, // 默认 1.5 秒淡入
+      fadeOut: 1.5, // 默认 1.5 秒淡出
       volume: getBGMVolume(emotion),
       cueIn: 0,
       cueOut: Math.min(duration, bgm.duration),
@@ -136,12 +134,12 @@ function getBGMVolume(emotion: string): number {
 function estimateSceneDuration(scene: ScriptScene): number {
   // 基于场景类型估算
   const baseDuration: Record<string, number> = {
-    '对话': 8,
-    '动作': 12,
-    '追逐': 15,
-    '对峙': 10,
-    '情感': 10,
-    '独白': 6,
+    对话: 8,
+    动作: 12,
+    追逐: 15,
+    对峙: 10,
+    情感: 10,
+    独白: 6,
   };
   return baseDuration[scene.type] || 8;
 }

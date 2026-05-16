@@ -1,5 +1,5 @@
-import { Chapter } from './chapter-splitter';
 import { ClassifiedParagraph } from './classifier';
+import { Chapter } from './splitter';
 
 export interface StoryEvent {
   id: string;

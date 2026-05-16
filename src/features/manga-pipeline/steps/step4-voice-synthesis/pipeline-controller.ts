@@ -6,13 +6,13 @@ import {
 } from '../../../../core/pipeline/step.interface';
 import { Script } from '../step1-script-generation/types/script';
 
-import { selectBGM, BGMSelection } from './services/bgm-selector';
+import { assignVoices, VoiceAssignment } from './services/assigner';
+import { selectBGM, BGMSelection } from './services/bgm';
 import {
   generateDialogueTTS,
   DialogueSegment,
   synthesizeAllDialogueAudio,
 } from './services/tts-generator';
-import { assignVoices, VoiceAssignment } from './services/voice-assigner';
 
 export interface VoiceSynthesisResult {
   script: Script;

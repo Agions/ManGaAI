@@ -10,12 +10,12 @@ export type {
 } from './types/script';
 
 // Parser
-export { splitChapters } from './parser/chapter-splitter';
-export type { Chapter, ChapterSplitResult } from './parser/chapter-splitter';
+export { splitChapters } from './parser/splitter';
+export type { Chapter, ChapterSplitResult } from './parser/splitter';
 export { classifyParagraphs, classifyParagraph } from './parser/classifier';
 export type { ClassifiedParagraph, ParagraphType } from './parser/classifier';
-export { extractEvents } from './parser/event-extractor';
-export type { StoryEvent } from './parser/event-extractor';
+export { extractEvents } from './parser/extractor';
+export type { StoryEvent } from './parser/extractor';
 
 // Analyzer
 export { analyzeNarrativeStructure } from './analyzer/narrative';
@@ -29,13 +29,13 @@ export type { ConflictAnalysisResult, Conflict, ConflictType } from './analyzer/
 export { generateCharacterCards } from './script-writer/char-card-writer';
 export { createCharacterCardStorage } from './script-writer/char-card-storage';
 export type { CharacterCardStorage } from './script-writer/char-card-storage';
-export { generateScenes } from './script-writer/scene-generator';
-export { generateDialogue } from './script-writer/dialogue-generator';
-export { integrateScript } from './script-writer/script-integrator';
+export { generateScenes } from './script-writer/scene-gen';
+export { generateDialogue } from './script-writer/dialogue-gen';
+export { integrateScript } from './script-writer/integrator';
 
 // Evaluator
-export { evaluateScript } from './evaluator/script-evaluator';
-export type { EvaluationResult, EvaluationIssue } from './evaluator/script-evaluator';
+export { evaluateScript } from './evaluator/evaluator';
+export type { EvaluationResult, EvaluationIssue } from './evaluator/evaluator';
 
 // Pipeline
 export { ScriptGenerationPipeline } from './pipeline-controller';

@@ -1,4 +1,4 @@
-import { StoryEvent } from '../parser/event-extractor';
+import { StoryEvent } from '../parser/extractor';
 
 import { NarrativeStructure } from './narrative';
 

@@ -1,4 +1,4 @@
-import { StoryEvent } from '../parser/event-extractor';
+import { StoryEvent } from '../parser/extractor';
 
 export type StoryArc = 'introduction' | 'rising' | 'climax' | 'falling' | 'resolution';
 

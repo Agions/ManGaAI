@@ -1,4 +1,4 @@
-import { splitChapters } from '../../../features/manga-pipeline/steps/step1-script-generation/parser/chapter-splitter';
+import { splitChapters } from '../../../features/manga-pipeline/steps/step1-script-generation/parser/splitter';
 
 describe('ChapterSplitter', () => {
   it('should split by "第X章" pattern', () => {

@@ -1,4 +1,10 @@
-import { groupMaterials, MaterialGroup, GroupingOptions, MaterialMatch, MaterialItem } from '../../../features/manga-pipeline/steps/step3-material-matching/services/smart-grouper';
+import {
+  groupMaterials,
+  MaterialGroup,
+  GroupingOptions,
+  MaterialMatch,
+  MaterialItem,
+} from '../../../features/manga-pipeline/steps/step3-material-matching/services/grouper';
 
 const createMockMaterialItem = (id: string): MaterialItem => ({
   id,
@@ -10,7 +16,7 @@ const createMockMaterialItem = (id: string): MaterialItem => ({
 const createMockMaterialMatch = (overrides: Partial<MaterialMatch> = {}): MaterialMatch => ({
   sceneId: 'scene-001',
   sceneNumber: 1,
-  emotion: 'neutral',  // 新增必填字段
+  emotion: 'neutral', // 新增必填字段
   matches: [createMockMaterialItem('mat-001')],
   fallback: 'stock footage',
   confidence: 0.8,
@@ -67,7 +73,7 @@ describe('SmartGrouper', () => {
         createMockMaterialMatch({ sceneId: 'scene-002', sceneNumber: 2 }),
       ];
       const groups = groupMaterials(matches);
-      groups.forEach(group => {
+      groups.forEach((group) => {
         expect(group.continuityScore).toBeGreaterThanOrEqual(0);
         expect(group.continuityScore).toBeLessThanOrEqual(1);
       });
@@ -95,11 +101,15 @@ describe('SmartGrouper', () => {
     it('should deduplicate materials within a group', () => {
       // When same material ID appears multiple times in a single match, it should be deduplicated
       const matches = [
-        createMockMaterialMatch({ sceneId: 'scene-001', sceneNumber: 1, matches: [createMockMaterialItem('mat-001'), createMockMaterialItem('mat-001')] }),
+        createMockMaterialMatch({
+          sceneId: 'scene-001',
+          sceneNumber: 1,
+          matches: [createMockMaterialItem('mat-001'), createMockMaterialItem('mat-001')],
+        }),
       ];
       const groups = groupMaterials(matches);
       // mat-001 appears twice but should only be counted once
-      const mat001Count = groups[0].materials.filter(m => m.id === 'mat-001').length;
+      const mat001Count = groups[0].materials.filter((m) => m.id === 'mat-001').length;
       expect(mat001Count).toBe(1);
     });
   });

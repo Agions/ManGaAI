@@ -1,5 +1,10 @@
 import { ScriptScene } from '../../../features/manga-pipeline/steps/step1-script-generation/types/script';
-import { selectBGM, BGM_STYLES, BGMSelection, BGMTrack } from '../../../features/manga-pipeline/steps/step4-voice-synthesis/services/bgm-selector';
+import {
+  selectBGM,
+  BGM_STYLES,
+  BGMSelection,
+  BGMTrack,
+} from '../../../features/manga-pipeline/steps/step4-voice-synthesis/services/bgm';
 
 describe('bgm-selector', () => {
   const createMockScenes = (): ScriptScene[] => [
@@ -304,13 +309,13 @@ describe('bgm-selector', () => {
   describe('BGM_STYLES', () => {
     it('should have all required BGM types', () => {
       const requiredTypes = ['tension', 'happy', 'sad', 'neutral', 'romantic', 'action'];
-      requiredTypes.forEach(type => {
+      requiredTypes.forEach((type) => {
         expect(BGM_STYLES[type]).toBeDefined();
       });
     });
 
     it('should have valid BGMTrack structure', () => {
-      Object.values(BGM_STYLES).forEach(track => {
+      Object.values(BGM_STYLES).forEach((track) => {
         expect(track.id).toBeDefined();
         expect(track.name).toBeDefined();
         expect(track.type).toBeDefined();
@@ -320,7 +325,7 @@ describe('bgm-selector', () => {
     });
 
     it('should have default duration of 180 seconds for all tracks', () => {
-      Object.values(BGM_STYLES).forEach(track => {
+      Object.values(BGM_STYLES).forEach((track) => {
         expect(track.duration).toBe(180);
       });
     });

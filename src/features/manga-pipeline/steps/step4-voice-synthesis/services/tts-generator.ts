@@ -3,7 +3,7 @@ import type { TTSConfig } from '../../../../../shared/types/index';
 import type { DialogueSegment, TTSGenerationResult } from '../../../types/dialogue';
 import { Script, ScriptScene } from '../../step1-script-generation/types/script';
 
-import { VoiceAssignment } from './voice-assigner';
+import { VoiceAssignment } from './assigner';
 
 // Re-export for external consumers (e.g., step5-keyframe)
 export type { DialogueSegment, TTSGenerationResult };

@@ -8,8 +8,8 @@ import {
 } from '../../../../core/pipeline/step.interface';
 
 import { BatchGenerationPlan, createAIGenerationPlan } from './services/ai-materials';
+import { MaterialGroup, groupMaterials } from './services/grouper';
 import { MaterialMatch, batchSearch } from './services/searcher';
-import { MaterialGroup, groupMaterials } from './services/smart-grouper';
 
 export interface MaterialMatchingResult {
   storyboard: Storyboard;
