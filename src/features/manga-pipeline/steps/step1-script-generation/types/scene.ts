@@ -9,7 +9,7 @@ export interface Scene {
   characters: string[];
   type: '对话' | '动作' | '追逐' | '对峙' | '情感' | '独白';
   cameraHint: CameraType;
-  transition: TransitionType;
+  transition?: TransitionType;
   emotion: string;
-  content: string;  // 场景描述 + 对话
+  content: string; // 场景描述 + 对话
 }
