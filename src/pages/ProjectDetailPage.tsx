@@ -18,19 +18,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { Tabs, TabPane } from '@/components/ui/tabs';
 import { Title, Text, Paragraph } from '@/components/ui/typography';
-import {
-  Modal,
-  Spin,
-  Space,
-  Empty,
-  List,
-  ListItem,
-  Alert,
-  Select,
-  Input,
-  Button,
-  Card,
-} from '@/components/ui/ui-components';
+import { Modal, Spin, Space, Empty, Alert, Button, Card } from '@/components/ui/ui-components';
+import type { EvaluationScores, FrameComment, StoryboardVersion } from '@/core/services';
 import {
   collaborationService,
   costService,
@@ -38,15 +27,10 @@ import {
   reviewExportService,
   tauriService,
 } from '@/core/services';
-import type {
-  EvaluationScores,
-  FrameComment,
-  StoryboardVersion,
-  VersionDiffSummary,
-} from '@/core/services';
 import { runWhenIdle } from '@/core/utils/idle';
 import { logger } from '@/core/utils/logger';
 import type { NovelMetadata } from '@/features/script/components/NovelImporter';
+import { StoryboardCollaborationPanel } from '@/features/storyboard';
 import type { StoryboardFrame } from '@/features/storyboard/components/StoryboardEditor';
 import { toast } from '@/shared/components/ui/Toast';
 import { useProjectStore } from '@/shared/stores';
@@ -79,13 +63,6 @@ const ProjectDetail = () => {
   const [activeTab, setActiveTab] = useState<string>('novel');
   const [novelMetadata, setNovelMetadata] = useState<NovelMetadata | null>(null);
   const [selectedFrameId, setSelectedFrameId] = useState<string | undefined>(undefined);
-  const [, setStoryboardComments] = useState<FrameComment[]>([]);
-  const [storyboardVersions, setStoryboardVersions] = useState<StoryboardVersion[]>([]);
-  const [commentDraft, setCommentDraft] = useState('');
-  const [versionLabel, setVersionLabel] = useState('');
-  const [compareLeftVersionId, setCompareLeftVersionId] = useState<string | undefined>(undefined);
-  const [compareRightVersionId, setCompareRightVersionId] = useState<string | undefined>(undefined);
-  const [versionDiff, setVersionDiff] = useState<VersionDiffSummary | null>(null);
   const preloadByTab = useMemo<Record<string, Array<() => Promise<unknown>>>>(
     () => ({
       novel: [importScriptEditor],
@@ -185,12 +162,10 @@ const ProjectDetail = () => {
       ) {
         collaborationService.hydrate(
           currentProject.id,
-          currentProject.storyboardComments as FrameComment[],
-          currentProject.storyboardVersions as StoryboardVersion[]
+          (currentProject.storyboardComments ?? []) as FrameComment[],
+          (currentProject.storyboardVersions ?? []) as StoryboardVersion[]
         );
       }
-      setStoryboardComments(collaborationService.listComments(currentProject.id) as FrameComment[]);
-      setStoryboardVersions(collaborationService.listVersions(currentProject.id));
     } else {
       toast.error('找不到项目信息');
       navigate('/projects');
@@ -208,62 +183,6 @@ const ProjectDetail = () => {
       setSelectedFrameId(storyboardFrames[0].id);
     }
   }, [storyboardFrames, selectedFrameId, setSelectedFrameId]);
-
-  const handleAddStoryboardComment = () => {
-    if (!project?.id || !selectedFrame || !commentDraft.trim()) return;
-
-    collaborationService.addComment({
-      projectId: project.id,
-      frameId: selectedFrame.id,
-      content: commentDraft.trim(),
-      author: 'current-user',
-    });
-    const comments = collaborationService.listComments(project.id);
-    setStoryboardComments(comments);
-    persistProjectPatch({ storyboardComments: comments });
-    setCommentDraft('');
-    toast.success('评论已添加');
-  };
-
-  const handleSaveStoryboardVersion = () => {
-    if (!project?.id) return;
-    const version = collaborationService.saveVersion({
-      projectId: project.id,
-      label: versionLabel.trim() || `版本-${new Date().toLocaleTimeString()}`,
-      createdBy: 'current-user',
-      payload: storyboardFrames,
-    });
-    const versions = collaborationService.listVersions(project.id);
-    setStoryboardVersions(versions);
-    persistProjectPatch({ storyboardVersions: versions });
-    setVersionLabel('');
-    setCompareLeftVersionId(version.id);
-    setVersionDiff(null);
-    toast.success('已保存分镜版本快照');
-  };
-
-  const handleCompareVersions = () => {
-    if (!compareLeftVersionId || !compareRightVersionId) {
-      toast.warning('请选择两个版本进行对比');
-      return;
-    }
-    const diff = collaborationService.diffVersions(compareLeftVersionId, compareRightVersionId);
-    setVersionDiff(diff);
-  };
-
-  const handleRollbackVersion = () => {
-    if (!project?.id || !compareLeftVersionId) {
-      toast.warning('请选择要回滚的版本');
-      return;
-    }
-    const payload = collaborationService.rollback(project.id, compareLeftVersionId);
-    if (!Array.isArray(payload)) {
-      toast.error('回滚失败，未找到对应版本');
-      return;
-    }
-    persistProjectPatch({ storyboardFrames: payload });
-    toast.success('已回滚到所选版本');
-  };
 
   const handleExportReviewNotes = async () => {
     if (!project?.id) return;
@@ -608,119 +527,14 @@ const ProjectDetail = () => {
               {activeScript?.content && activeScript.content.length > 0 ? (
                 <div className={styles.storyboardDetail}>
                   {storyboardFrames.length > 0 ? (
-                    <>
-                      <Card size="small" title="分镜列表" className={styles.storyboardFramesCard}>
-                        <Select
-                          style={{ width: '100%' }}
-                          placeholder="选择分镜"
-                          value={selectedFrameId}
-                          onChange={(v) => setSelectedFrameId(v as string | undefined)}
-                          options={storyboardFrames.map((frame, index) => ({
-                            label: `${index + 1}. ${frame.title || `分镜 ${index + 1}`}`,
-                            value: frame.id,
-                          }))}
-                        />
-                        {selectedFrame ? (
-                          <div className={styles.framePreview}>
-                            <Text strong>{selectedFrame.title || '未命名分镜'}</Text>
-                            <Text type="secondary">
-                              {selectedFrame.sceneDescription || '无场景描述'}
-                            </Text>
-                            <Text type="secondary">
-                              镜头: {selectedFrame.cameraType || '-'} / 时长:{' '}
-                              {selectedFrame.duration || 0}s
-                            </Text>
-                          </div>
-                        ) : null}
-                      </Card>
-
-                      <Card size="small" title="镜头评论" className={styles.collabCard}>
-                        <Space.Compact block>
-                          <Input
-                            value={commentDraft}
-                            onChange={(e) => setCommentDraft(e.target.value)}
-                            placeholder={
-                              selectedFrame ? `对 ${selectedFrame.title} 添加评论` : '先选择分镜'
-                            }
-                            disabled={!selectedFrame}
-                          />
-                          <Button
-                            type="primary"
-                            onClick={handleAddStoryboardComment}
-                            disabled={!selectedFrame || !commentDraft.trim()}
-                          >
-                            添加
-                          </Button>
-                        </Space.Compact>
-                        <List
-                          className={styles.collabList}
-                          size="small"
-                          dataSource={
-                            project?.id
-                              ? collaborationService.listComments(project.id, selectedFrame?.id)
-                              : []
-                          }
-                          locale={{ emptyText: '暂无评论' }}
-                          renderItem={(item) => (
-                            <ListItem>
-                              <div>
-                                <div>{item.content}</div>
-                                <Text type="secondary">
-                                  {new Date(item.createdAt).toLocaleString()}
-                                </Text>
-                              </div>
-                            </ListItem>
-                          )}
-                        />
-                      </Card>
-
-                      <Card size="small" title="版本管理" className={styles.collabCard}>
-                        <Space wrap className={styles.versionActions}>
-                          <Input
-                            value={versionLabel}
-                            onChange={(e) => setVersionLabel(e.target.value)}
-                            placeholder="版本标签（可选）"
-                            style={{ width: 220 }}
-                          />
-                          <Button onClick={handleSaveStoryboardVersion}>保存快照</Button>
-                        </Space>
-
-                        <Space wrap className={styles.versionActions}>
-                          <Select
-                            placeholder="选择版本A"
-                            value={compareLeftVersionId}
-                            onChange={(v) => setCompareLeftVersionId(v as string | undefined)}
-                            style={{ width: 200 }}
-                            options={storyboardVersions.map((v) => ({
-                              value: v.id,
-                              label: v.label,
-                            }))}
-                          />
-                          <Select
-                            placeholder="选择版本B"
-                            value={compareRightVersionId}
-                            onChange={(v) => setCompareRightVersionId(v as string | undefined)}
-                            style={{ width: 200 }}
-                            options={storyboardVersions.map((v) => ({
-                              value: v.id,
-                              label: v.label,
-                            }))}
-                          />
-                          <Button onClick={handleCompareVersions}>版本差异</Button>
-                          <Button danger onClick={handleRollbackVersion}>
-                            回滚到版本A
-                          </Button>
-                        </Space>
-                        {versionDiff && (
-                          <Alert
-                            type={versionDiff.changeCount > 0 ? 'info' : 'success'}
-                            showIcon
-                            message={`差异字段数: ${versionDiff.changeCount}`}
-                            description={versionDiff.changedKeys.slice(0, 8).join(', ') || '无差异'}
-                          />
-                        )}
-                      </Card>
-                    </>
+                    <StoryboardCollaborationPanel
+                      projectId={project?.id ?? ''}
+                      storyboardFrames={storyboardFrames}
+                      selectedFrameId={selectedFrameId}
+                      onSelectFrame={setSelectedFrameId}
+                      onPersistPatch={persistProjectPatch}
+                      onFrameUpdate={(frames) => persistProjectPatch({ storyboardFrames: frames })}
+                    />
                   ) : (
                     <Empty description="暂无分镜，请先在编辑页生成分镜" image={undefined}>
                       <Button

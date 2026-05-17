@@ -9,3 +9,9 @@ export { default as StoryboardEditor } from './components/StoryboardEditor';
 // Service
 export { getStoryboardService, resetStoryboardService } from '@/core/services/storyboard.service';
 export type { StoryboardFrame } from './components/StoryboardEditor';
+
+// Collaboration panel (extracted from ProjectDetailPage)
+export {
+  StoryboardCollaborationPanel,
+  type StoryboardCollaborationPanelProps,
+} from './components/StoryboardCollaborationPanel';
