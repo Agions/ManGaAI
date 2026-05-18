@@ -29,33 +29,35 @@ src/
 ├── main.tsx                  # 入口文件
 ├── ErrorBoundary.tsx         # 错误边界
 │
+├── components/ui/            # shadcn/ui 扁平组件
+│   ├── button.tsx
+│   ├── card.tsx
+│   ├── dialog.tsx
+│   ├── input.tsx
+│   ├── select.tsx
+│   └── ...                   # 每个组件独立文件
+│
 ├── pages/                    # 路由级页面
 │   ├── HomePage.tsx
 │   ├── ProjectEditPage.tsx
 │   └── SettingsPage.tsx
 │
-├── components/               # 业务组件
-│   ├── ui/                   # 基础 UI 组件
-│   │   ├── Button.tsx
-│   │   ├── Modal.tsx
-│   │   ├── Select.tsx
-│   │   └── ...
-│   ├── layout/               # 布局组件
-│   │   └── AppLayout/
-│   └── business/             # 业务组件
-│       ├── CostDashboard/
-│       └── CompositionStudio/
-│
 ├── features/                 # 功能模块 (DDD)
-│   ├── workflow/
-│   │   ├── components/      # WorkflowEditor, NodePalette, NodeConfig
-│   │   ├── hooks/
-│   │   └── services/
-│   ├── storyboard/          # 分镜编辑
-│   ├── character/           # 角色管理
-│   ├── script/              # 脚本生成
-│   ├── video/               # 视频播放/导出
-│   └── ...
+│   ├── ai/                   # AI 模型选择
+│   ├── audio/                # 音频处理
+│   ├── character/            # 角色管理
+│   ├── cost/                 # 成本追踪
+│   ├── editor/               # 可视化编辑器（Timeline/SimpleTimeline）
+│   ├── export/               # 导出功能
+│   ├── home/                 # 首页
+│   ├── manga-pipeline/       # 漫画流水线
+│   ├── notification/         # 通知系统
+│   ├── project/              # 项目管理
+│   ├── script/               # 脚本生成
+│   ├── storyboard/           # 分镜编辑
+│   ├── subtitle/             # 字幕编辑
+│   ├── video/                # 视频播放/导出
+│   └── video-export/         # 视频导出
 │
 ├── shared/                   # 共享基础设施
 │   ├── components/ui/       # 可复用 UI 组件
@@ -67,7 +69,11 @@ src/
 │
 └── core/                     # 核心服务
     ├── config/              # 应用配置
+    ├── constants/           # 常量
+    ├── data/                # 静态数据
+    ├── hooks/               # 核心 Hooks
     ├── pipeline/            # 流水线引擎
+    ├── router/              # 路由工具
     └── services/            # AI、TTS、图像生成等 30+ 服务
 ```
 
@@ -103,15 +109,29 @@ features/[名称]/
 ## 导入路径
 
 ```typescript
-// 绝对导入（@/ 别名）
-import { Button } from '@/shared/components/ui/Button';
-import { workflowService } from '@/features/workflow';
-import type { StoryboardFrame } from '@/shared/types';
+// shadcn/ui 组件 — 直接导入（推荐）
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
+
+// shared 共享模块
+import { useDebounce } from '@/shared/hooks';
+import { projectStore } from '@/shared/stores';
+import type { Project } from '@/shared/types';
+
+// features 功能模块
+import { scriptService } from '@/features/script';
+
+// core 核心服务
+import { aiService } from '@/core/services';
+import { pipelineService } from '@/core/services';
 
 // 相对导入（用于近邻文件）
 import { useState } from 'react';
 import './styles.css';
 ```
+
+> **注意**：`@/components/ui/ui-components` 桶导出已废弃，请直接导入 `@/components/ui/button` 等。
 
 ## 关键文件
 

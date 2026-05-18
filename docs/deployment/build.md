@@ -16,6 +16,18 @@ pnpm preview
 
 # Tauri 桌面应用构建
 pnpm tauri build
+
+# 运行测试
+pnpm test
+
+# 快速测试（跳过 lint）
+pnpm test:fast
+
+# 构建 VitePress 文档
+pnpm docs:vp:build
+
+# 开发 VitePress 文档
+pnpm docs:vp:dev
 ```
 
 ## Web 部署
@@ -60,8 +72,20 @@ VITE_APP_MODE=web
 pnpm tauri build
 ```
 
-输出位置：
+### 构建产物位置
 
-- macOS: `src-tauri/target/release/bundle/dmg/`
-- Linux: `src-tauri/target/release/bundle/appimage/`
-- Windows: `src-tauri/target/release/bundle/msi/`
+| 平台    | 路径                                        |
+| ------- | ------------------------------------------- |
+| macOS   | `src-tauri/target/release/bundle/dmg/`      |
+| Linux   | `src-tauri/target/release/bundle/appimage/` |
+| Windows | `src-tauri/target/release/bundle/msi/`      |
+
+## 文档构建
+
+```bash
+# 构建文档（输出到 docs/.vitepress/dist）
+pnpm docs:vp:build
+
+# 开发文档（热重载）
+pnpm docs:vp:dev
+```

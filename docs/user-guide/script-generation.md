@@ -18,12 +18,12 @@ interface ScriptSegment {
   startTime: number;
   endTime: number;
   content: string;
-  character?: string; // 对话用
-  emotion?: string; // 对话用
+  character?: string;
+  emotion?: string;
 }
 ```
 
-## 生成选项
+## 脚本风格
 
 | 风格          | 适用场景   |
 | ------------- | ---------- |

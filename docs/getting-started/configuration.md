@@ -10,12 +10,10 @@ panel-flow 的配置选项。
 
 ```bash
 # 智谱 GLM-5
-VITE_MINIMAX_API_KEY=your_key
-VITE_ALIBABA_API_URL=https://dashscope.aliyuncs.com/api/v1
+VITE_ALIBABA_API_KEY=your_key
 
 # MiniMax M2.5
 VITE_MINIMAX_API_KEY=your_key
-VITE_MINIMAX_API_URL=https://api.minimax.chat/v1
 
 # 月之暗面 Kimi K2.5
 VITE_KIMI_API_KEY=your_key
@@ -23,7 +21,7 @@ VITE_KIMI_API_KEY=your_key
 # 字节 Doubao 2.0
 VITE_DOUBAO_API_KEY=your_key
 
-# 阿里 Qwen 2.5
+# 阿里云 Qwen 2.5
 VITE_QWEN_API_KEY=your_key
 
 # 百度 ERNIE 4.0
@@ -33,9 +31,8 @@ VITE_ERNIE_API_KEY=your_key
 ### 图像生成
 
 ```bash
-# 字节 Seedream 5.0（推荐）
+# 字节 Seedream 5.0
 VITE_SEEDDREAM_API_KEY=your_key
-VITE_SEEDDREAM_API_URL=https://api.minimax.chat/v1
 
 # 快手 Kling 1.6
 VITE_KLING_API_KEY=your_key
@@ -44,10 +41,10 @@ VITE_KLING_API_KEY=your_key
 ### 语音合成
 
 ```bash
-# Edge TTS（免费，默认）
+# TTS 提供商：edge | cosyvoice | kantts
 VITE_TTS_PROVIDER=edge
 
-# 阿里云 CosyVoice 2.0
+# 阿里云 CosyVoice 2.0（如使用 cosyvoice）
 VITE_COSYVOICE_API_KEY=your_key
 ```
 

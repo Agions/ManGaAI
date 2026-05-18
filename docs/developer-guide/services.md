@@ -20,11 +20,11 @@ panel-flow 的核心服务实现。
 │  tts.service.ts          - 文本转语音                       │
 │  lip-sync.service.ts     - 唇音同步                         │
 │  pipeline.service.ts     - 流水线引擎                       │
-│  storyboard.service.ts  - 分镜管理                         │
+│  storyboard.service.ts  - 分镜管理                          │
 │  character.service.ts   - 角色管理                          │
 │  subtitle.service.ts    - 字幕生成与导出                    │
 │  video-analysis.service.ts - 视频分析                       │
-│  video-compositor.service.ts - 视频合成                      │
+│  video-compositor.service.ts - 视频合成                     │
 │  evaluation.service.ts   - 质量评测                         │
 │  cost.service.ts         - 成本追踪                          │
 │  quality-gate.service.ts - 质量门禁                         │

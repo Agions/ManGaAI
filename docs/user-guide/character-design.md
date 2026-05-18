@@ -11,7 +11,7 @@ interface Character {
   role: 'protagonist' | 'antagonist' | 'supporting' | 'extra';
   description: string;
   appearance: CharacterAppearance;
-  consistency: CharacterConsistency; // AI 生成一致性
+  consistency: CharacterConsistency;
   voice?: TTSVoice;
   tags: string[];
 }
@@ -23,9 +23,9 @@ AI 图像生成中保持一致的角色外观：
 
 ```typescript
 interface CharacterConsistency {
-  seed: number; // 随机种子
-  weights?: Record<string, number>; // 特征权重
-  referenceImages: string[]; // 参考图片
+  seed: number;
+  weights?: Record<string, number>;
+  referenceImages: string[];
 }
 ```
 

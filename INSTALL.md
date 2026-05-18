@@ -1,20 +1,21 @@
-# Install PanelFlow
+# 安装 PanelFlow
 
 ## macOS
 
-### Option 1: Homebrew (Recommended)
-```bash
-# First, tap the PanelFlow repository
-brew tap Agions/tap https://github.com/Agions/homebrew-tap
+### 选项一：Homebrew（推荐）
 
-# Then install PanelFlow
+```bash
+# 克隆并安装
+brew tap Agions/tap https://github.com/Agions/homebrew-tap
 brew install --cask PanelFlow
 ```
 
-### Option 2: Download DMG
-Download the latest `.dmg` from [GitHub Releases](https://github.com/Agions/PanelFlow/releases/latest) and drag `PanelFlow.app` to `/Applications`.
+### 选项二：下载 DMG
 
-### Option 3: Install Script
+从 [GitHub Releases](https://github.com/Agions/PanelFlow/releases/latest) 下载最新的 `.dmg` 文件，将 `PanelFlow.app` 拖入 `/Applications`。
+
+### 选项三：安装脚本
+
 ```bash
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Agions/PanelFlow/main/scripts/install.sh)"
 ```
@@ -23,31 +24,39 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/Agions/PanelFlow/main/sc
 
 ## Windows
 
-Download the latest `.exe` (NSIS installer) or `.msi` from [GitHub Releases](https://github.com/Agions/PanelFlow/releases/latest) and run it.
+从 [GitHub Releases](https://github.com/Agions/PanelFlow/releases/latest) 下载最新的 `.exe`（NSIS 安装程序）或 `.msi`，运行即可。
 
 ---
 
 ## Linux
 
-### Debian/Ubuntu
+### Debian / Ubuntu
+
 ```bash
 curl -sL https://raw.githubusercontent.com/Agions/PanelFlow/main/scripts/install.sh | bash
 ```
-Or download the `.deb` from [GitHub Releases](https://github.com/Agions/PanelFlow/releases/latest) and run:
+
+或从 [GitHub Releases](https://github.com/Agions/PanelFlow/releases/latest) 下载 `.deb` 并运行：
+
 ```bash
 sudo dpkg -i PanelFlow_*.deb
 ```
 
 ### Arch Linux (AUR)
+
 ```bash
 yay -S PanelFlow
 ```
 
 ---
 
-## Build from Source
+## 源码构建
+
 ```bash
 git clone https://github.com/Agions/PanelFlow.git
 cd PanelFlow
-npm install && npm run tauri build
+pnpm install
+pnpm tauri build
 ```
+
+构建产物位于 `src-tauri/target/release/bundle/`。

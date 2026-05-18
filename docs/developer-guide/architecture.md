@@ -30,19 +30,18 @@ src/
 ├── App.tsx                 # 应用入口
 ├── main.tsx               # React 渲染入口
 ├── ErrorBoundary.tsx      # 错误边界
+├── components/ui/         # shadcn/ui 扁平组件（button.tsx, card.tsx 等）
 ├── pages/                 # 路由级页面
 │   ├── HomePage.tsx
 │   ├── ProjectEditPage.tsx
 │   └── SettingsPage.tsx
-├── components/            # 业务组件（Business）
-│   ├── ui/                # 基础 UI 组件
-│   ├── layout/            # 布局组件
-│   └── business/          # 业务组件
 ├── features/              # 功能模块 (DDD)
 │   ├── ai/                 # AI 模型选择
 │   ├── audio/              # 音频处理
 │   ├── character/          # 角色设计
+│   ├── cost/               # 成本追踪
 │   ├── editor/             # 可视化编辑器（Timeline/SimpleTimeline）
+│   ├── export/             # 导出功能
 │   ├── home/               # 首页
 │   ├── manga-pipeline/     # 漫画流水线
 │   ├── notification/       # 通知系统
@@ -53,9 +52,7 @@ src/
 │   ├── video/              # 视频播放
 │   └── video-export/       # 视频导出
 ├── shared/                 # 共享基础设施
-│   ├── components/         # 可复用 UI 组件
-│   │   ├── ui/             # Button, Card, Modal, Select, Tooltip 等
-│   │   └── layout/         # AppLayout, PageHeader
+│   ├── components/ui/     # 可复用 UI 组件
 │   ├── hooks/              # 可复用 React Hooks
 │   ├── services/           # 存储/HTTP 等基础设施
 │   ├── stores/             # Zustand 状态存储

@@ -2,6 +2,17 @@
 
 在 5 分钟内启动并运行 panel-flow。
 
+## 技术栈
+
+|   类别   | 技术                                |
+| :------: | ----------------------------------- |
+| 前端框架 | React 18 · TypeScript 5 · Vite 5    |
+| UI 组件  | shadcn/ui (Radix UI + Tailwind CSS) |
+| 状态管理 | Zustand                             |
+|  桌面端  | Tauri 2.0 (Rust)                    |
+|   动画   | Framer Motion                       |
+|  国际化  | i18next                             |
+
 ## 前置要求
 
 - **Node.js** 18+
@@ -14,7 +25,7 @@
 ### 1. 克隆仓库
 
 ```bash
-git clone https://github.com/Agions/panel-flow.git
+git clone https://github.com/Agion/panel-flow.git
 cd panel-flow
 ```
 
@@ -52,14 +63,14 @@ pnpm dev
 
 ```
 📥 导入 → 🧠 AI分析 → 📝 脚本生成 → 🎬 分镜设计
-                                              │
-                   ┌──────────────────────────┤
-                   │                          │
-                   ▼                          ▼
-             🖼️ 批量渲染  ◀──  🎭 角色设计
-                   │
-                   ▼
-             📤 导出
+                                             │
+                    ┌──────────────────────────┤
+                    │                          │
+                    ▼                          ▼
+              🖼️ 批量渲染  ◀──  🎭 角色设计
+                    │
+                    ▼
+              📤 导出
 ```
 
 1. **导入**：上传小说/脚本/提示词

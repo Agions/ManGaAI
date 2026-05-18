@@ -18,19 +18,6 @@ All notable changes to this project will be documented in this file.
 - **迁移至 shadcn/ui**: 基于 Radix UI + Tailwind CSS 的全新组件系统
 - **CSS 清理**: 移除 197 行 antd 相关 CSS
 
-### 🎉 Major Rebranding
-
-- **Project Renamed**: ManGaAI → **PanelFlow**
-- **Version Bump**: v2.1.0 → v1.0.0
-- **Complete Rebrand**: New logo, brand identity, all configurations updated
-
-### ✨ Workflow Engine
-
-- **Step 6 Scene Rendering**: Complete implementation
-- **Step 7 Dynamic Composition**: Camera movement system, Ken Burns effects, transitions
-- **Step 8 Voiceover & BGM**: Dialogue collection, character voice mapping, ambient BGM
-- **Step 9 Export**: Timeline orchestration, multi-track composition, export settings
-
 ### ✨ New Features
 
 - Professional tool-style UI redesign
@@ -78,11 +65,12 @@ All notable changes to this project will be documented in this file.
 
 ### 🤖 LLM Models (2026 Latest)
 
-- Baidu ERNIE 4.0
-- Alibaba Qwen 2.5
-- Moonshot Kimi K2.5
-- Zhipu GLM-5
+- 智谱 GLM-5
 - MiniMax M2.5
+- 月之暗面 Kimi K2.5
+- 字节 Doubao 2.0
+- 阿里 Qwen 2.5
+- 百度 ERNIE 4.0
 
 ## [0.1.0] - 2026-02-16
 

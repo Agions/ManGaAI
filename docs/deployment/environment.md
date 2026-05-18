@@ -1,14 +1,14 @@
 # 环境变量
 
-panel-flow 环境变量说明。
+panel-flow 环境变量配置说明。
 
-## 变量命名
+## 变量命名规范
 
 | 前缀    | 用途                     |
 | ------- | ------------------------ |
 | `VITE_` | 客户端侧（暴露给浏览器） |
 
-## AI 提供商
+## AI 提供商配置
 
 ### 文字生成
 
@@ -44,10 +44,21 @@ VITE_API_BASE_URL=https://api.example.com
 
 ## .env 文件
 
-**切勿提交 `.env` 文件到版本控制**。`.gitignore` 已包含：
+**重要：切勿将 `.env` 文件提交到版本控制**。`.gitignore` 已包含以下规则：
 
 ```
 .env
 .env.local
 .env.*.local
+```
+
+## 配置示例
+
+创建 `.env.local` 文件进行本地开发配置：
+
+```bash
+VITE_APP_MODE=web
+VITE_APP_NAME=panel-flow-dev
+VITE_API_BASE_URL=http://localhost:3000
+VITE_MINIMAX_API_KEY=your_dev_key
 ```

@@ -6,7 +6,7 @@
 
 **MIT License · React 18 + Tauri 2.0 + TypeScript 5**
 
-[![CI](https://img.shields.io/github/actions/workflow/status/Agions/PanelFlow/ci.yml?style=flat-square&label=CI)](https://github.com/Agions/PanelFlow/actions)
+[![CI](https://img.shields.io/github/actions/workflow/status/Agion/PanelFlow/ci.yml?style=flat-square&label=CI)](https://github.com/Agion/PanelFlow/actions)
 [![License](https://img.shields.io/badge/License-MIT-45B8AC?style=flat-square)](https://opensource.org/licenses/MIT)
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org)
@@ -19,14 +19,14 @@
 
 ```
 📥 导入 ──▶ 🧠 AI分析 ──▶ 📝 脚本生成 ──▶ 🎬 分镜设计
-                                               │
-                    ┌──────────────────────────┤
-                    │                          │
-                    ▼                          ▼
-              🖼️ 批量渲染  ◀──  🎭 角色设计
-                    │
-                    ▼
-              🎞️ 合成导出
+                                              │
+                   ┌──────────────────────────┤
+                   │                          │
+                   ▼                          ▼
+             🖼️ 批量渲染  ◀──  🎭 角色设计
+                   │
+                   ▼
+             🎞️ 合成导出
 ```
 
 |    步骤     | 功能             | 说明                              |
@@ -44,7 +44,7 @@
 ## 快速开始
 
 ```bash
-git clone https://github.com/Agions/panel-flow.git
+git clone https://github.com/Agion/panel-flow.git
 cd panel-flow
 pnpm install
 pnpm dev
@@ -66,15 +66,15 @@ VITE_SEEDDREAM_API_KEY=your_key_here
 
 ## 技术栈
 
-|   类别   | 技术                             |
-| :------: | -------------------------------- |
-| 前端框架 | React 18 · TypeScript 5 · Vite 5 |
-| UI 组件  | Ant Design 5 · Tailwind CSS      |
-| 状态管理 | Zustand                          |
-|  桌面端  | Tauri 2.0 (Rust)                 |
-|   动画   | Framer Motion                    |
-|  国际化  | i18next                          |
-|   测试   | Jest · React Testing Library     |
+|   类别   | 技术                                |
+| :------: | ----------------------------------- |
+| 前端框架 | React 18 · TypeScript 5 · Vite 5    |
+| UI 组件  | shadcn/ui (Radix UI + Tailwind CSS) |
+| 状态管理 | Zustand                             |
+|  桌面端  | Tauri 2.0 (Rust)                    |
+|   动画   | Framer Motion                       |
+|  国际化  | i18next                             |
+|   测试   | Jest · React Testing Library        |
 
 ---
 
@@ -93,31 +93,37 @@ VITE_SEEDDREAM_API_KEY=your_key_here
 ```
 PanelFlow/
 ├── src/
-│   ├── features/           # 功能模块（DDD 风格）
-│   │   ├── ai/            # AI 模型选择
-│   │   ├── audio/         # 音频编辑
-│   │   ├── character/     # 角色设计
-│   │   ├── editor/        # 可视化编辑器（Timeline）
-│   │   ├── home/          # 首页
-│   │   ├── project/       # 项目管理
-│   │   ├── script/        # 脚本生成
-│   │   ├── storyboard/    # 分镜编辑
-│   │   ├── subtitle/      # 字幕编辑
-│   │   └── video/         # 视频播放/导出
-│   ├── shared/            # 共享基础设施
-│   │   ├── components/ui/ # 可复用 UI 组件
-│   │   ├── hooks/         # 可复用 Hooks
-│   │   ├── services/      # 存储、API 客户端
-│   │   ├── stores/        # Zustand 状态存储
-│   │   ├── types/         # 共享类型
-│   │   └── utils/         # 工具函数
-│   ├── core/              # 核心服务
-│   │   ├── pipeline/      # 流水线引擎
-│   │   └── services/      # 30+ AI/视频服务
-│   └── pages/             # 路由级页面
-├── src-tauri/             # Tauri 桌面端（Rust）
-├── docs/                  # VitePress 文档
-└── scripts/               # 构建脚本
+│   ├── components/ui/         # shadcn/ui 扁平组件（button.tsx, card.tsx 等）
+│   ├── features/              # 功能模块（DDD 风格）
+│   │   ├── ai/                # AI 模型选择
+│   │   ├── audio/             # 音频编辑
+│   │   ├── character/         # 角色设计
+│   │   ├── cost/              # 成本追踪
+│   │   ├── editor/            # 可视化编辑器（Timeline）
+│   │   ├── export/            # 导出功能
+│   │   ├── home/              # 首页
+│   │   ├── manga-pipeline/    # 漫画流水线
+│   │   ├── notification/       # 通知系统
+│   │   ├── project/           # 项目管理
+│   │   ├── script/            # 脚本生成
+│   │   ├── storyboard/        # 分镜编辑
+│   │   ├── subtitle/          # 字幕编辑
+│   │   ├── video/             # 视频播放/导出
+│   │   └── video-export/      # 视频导出
+│   ├── shared/                # 共享基础设施
+│   │   ├── components/ui/     # 可复用 UI 组件
+│   │   ├── hooks/             # 可复用 Hooks
+│   │   ├── services/          # 存储、API 客户端
+│   │   ├── stores/            # Zustand 状态存储
+│   │   ├── types/             # 共享类型
+│   │   └── utils/             # 工具函数
+│   ├── core/                  # 核心服务
+│   │   ├── pipeline/          # 流水线引擎
+│   │   └── services/          # 30+ AI/视频服务
+│   └── pages/                 # 路由级页面
+├── src-tauri/                 # Tauri 桌面端（Rust）
+├── docs/                      # VitePress 文档
+└── scripts/                   # 构建脚本
 ```
 
 ---

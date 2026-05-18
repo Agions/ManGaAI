@@ -15,5 +15,5 @@ title: 入门指南
 
 ## 需要帮助？
 
-- 查看 [用户指南](../user-guide/workflow-overview) 了解完整工作流
-- 查看 [开发指南](../developer-guide/architecture) 了解技术架构
+- 查看 [用户指南](../user-guide/index) 了解完整工作流
+- 查看 [开发指南](../developer-guide/index) 了解技术架构

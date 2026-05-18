@@ -8,12 +8,12 @@
 interface StoryboardFrame {
   id: string;
   title: string;
-  sceneDescription: string; // 视觉描述
-  composition: string; // 构图类型
+  sceneDescription: string;
+  composition: string;
   cameraType: CameraType; // wide | medium | closeup | pan | tilt | dolly
-  dialogue?: string; // 关联对话
-  duration: number; // 时长（秒）
-  imageUrl?: string; // 生成的图片
+  dialogue?: string;
+  duration: number;
+  imageUrl?: string;
 }
 ```
 

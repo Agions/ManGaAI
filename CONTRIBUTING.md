@@ -1,75 +1,90 @@
-# PanelFlow Development Guide
+# PanelFlow 开发指南
 
-## Project Overview
+## 项目概述
 
-PanelFlow is a professional AI-powered video script creation platform that transforms stories and scripts into polished video content.
+PanelFlow 是 AI 驱动的视频脚本创作平台，将小说、剧本或提示词转化为专业级视频内容。
 
-## Tech Stack
+## 技术栈
 
-- **Frontend**: React 18 + TypeScript 5
-- **Build Tool**: Vite
-- **UI Library**: Ant Design 5
-- **State Management**: Zustand
-- **Desktop**: Tauri (Rust)
-- **Animation**: Framer Motion
+- **前端框架**：React 18 · TypeScript 5 · Vite 5
+- **UI 组件**：shadcn/ui (Radix UI + Tailwind CSS)
+- **状态管理**：Zustand
+- **桌面端**：Tauri 2.0 (Rust)
+- **动画**：Framer Motion
+- **国际化**：i18next
+- **测试**：Jest · React Testing Library
 
-## Project Structure
+## 项目结构
 
 ```
 src/
-├── core/                      # Core modules
-│   ├── config/               # Configuration
-│   │   ├── app.config.ts    # App config
-│   │   └── models.config.ts  # AI model config
-│   ├── services/            # Business services
-│   │   ├── ai.service.ts    # AI service
-│   │   ├── video.service.ts # Video processing
-│   │   └── ...
-│   ├── stores/              # State management
-│   │   ├── app.store.ts     # App state
-│   │   ├── project.store.ts # Project state
-│   │   └── workflow.store.ts# Workflow state
-│   ├── types/               # Type definitions
-│   └── utils/               # Utilities
-│       ├── requestCache.ts   # Request cache
-│       └── retryRequest.ts   # Retry mechanism
-├── components/              # UI components
-│   ├── common/             # Common components
-│   ├── layout/             # Layout components
-│   └── business/           # Business components
-│       └── VideoEditor/     # Video editor (decoupled)
-├── context/                 # React Context
-└── pages/                   # Page components
+├── components/              # UI 组件
+│   ├── ui/                 # 基础 UI 组件（扁平结构，每个组件独立文件）
+│   │   ├── button.tsx      # 直引方式
+│   │   ├── card.tsx
+│   │   ├── dialog.tsx
+│   │   └── ui-components.tsx  # barrel 导出（已废弃）
+│   └── layout/             # 布局组件
+├── features/                # 功能模块（DDD 风格）
+│   ├── ai/                 # AI 模型选择
+│   ├── audio/              # 音频编辑
+│   ├── character/          # 角色设计
+│   ├── editor/             # 可视化编辑器（Timeline）
+│   ├── project/            # 项目管理
+│   ├── script/             # 脚本生成
+│   ├── storyboard/         # 分镜编辑
+│   └── video/              # 视频播放/导出
+├── shared/                  # 共享基础设施
+│   ├── components/ui/      # 可复用 UI 组件
+│   ├── hooks/              # 可复用 React Hooks
+│   ├── services/           # 存储、API 客户端
+│   ├── stores/             # Zustand 状态存储
+│   ├── types/              # 共享类型定义
+│   └── utils/              # 工具函数
+├── core/                    # 核心服务
+│   ├── services/           # AI、视频等 30+ 服务
+│   ├── pipeline/            # 流水线引擎
+│   ├── hooks/              # 核心 Hooks
+│   └── data/               # 静态数据
+├── pages/                   # 路由级页面
+└── App.tsx                  # 根组件
+src-tauri/                   # Tauri 桌面端（Rust）
 ```
 
-## Development Guide
+## 开发指南
 
-### Adding a New Service
+### 添加新服务
 
-1. Create service file under `src/core/services/`
-2. Use singleton pattern for export
-3. Export from `src/core/services/index.ts`
+1. 在 `src/core/services/` 创建服务文件
+2. 使用单例模式导出
+3. 从 `src/core/services/index.ts` 导出
 
 ```typescript
-// Example: src/core/services/example.service.ts
+// src/core/services/example.service.ts
 class ExampleService {
-  // Service logic
+  private static instance: ExampleService;
+
+  static getInstance(): ExampleService {
+    if (!ExampleService.instance) {
+      ExampleService.instance = new ExampleService();
+    }
+    return ExampleService.instance;
+  }
 }
 
-export const exampleService = new ExampleService();
+export const exampleService = ExampleService.getInstance();
 ```
 
-### Adding New State
+### 添加新状态
 
-1. Create store file under `src/core/stores/`
-2. Use Zustand's persist middleware
-3. Configure debounced storage for performance
+1. 在 `src/shared/stores/` 创建 store 文件
+2. 使用 Zustand 的 persist 中间件
+3. 配置防抖存储以优化性能
 
 ```typescript
-// Example: src/core/stores/example.store.ts
+// src/shared/stores/example.store.ts
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { createDebouncedStorage } from './middlewares/persistWithDebounce';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 interface ExampleState {
   data: string;
@@ -84,113 +99,98 @@ export const useExampleStore = create<ExampleState>()(
     }),
     {
       name: 'example-storage',
-      storage: createJSONStorage(() => createDebouncedStorage(localStorage, 1000)),
+      storage: createJSONStorage(() => localStorage),
     }
   )
 );
 ```
 
-### Adding New Components
+### 添加新组件
 
-1. Create component directory under `src/components/`
-2. Follow component decomposition principles
-3. Use hooks to separate logic
-
-### AI Service Usage
+1. 在 `src/components/ui/` 创建组件文件（每个组件独立文件）
+2. 从 `ui-components.tsx` 导出（或直引使用）
 
 ```typescript
-import { aiService } from '@/core/services/ai.service';
+// src/components/ui/example.tsx
+import { cn } from '@/shared/utils/class-names';
 
-// Generate script
-const script = await aiService.generateScript(model, settings, {
-  topic: 'Topic',
-  style: 'professional',
-  tone: 'formal',
-  length: 'medium',
-  audience: 'Technical audience',
-  language: 'en',
-});
-
-// Stream generation
-for await (const chunk of aiService.streamGenerate(prompt, options)) {
-  // Handle stream output
-  updateUI(chunk);
+interface ExampleProps {
+  className?: string;
+  children?: React.ReactNode;
 }
 
-// Batch generation
-const results = await aiService.batchGenerate(prompts, {
-  model: 'glm-5',
-  provider: 'zhipu',
-  concurrency: 3,
+export function Example({ className, children }: ExampleProps) {
+  return <div className={cn('some-class', className)}>{children}</div>;
+}
+```
+
+## 命令
+
+```bash
+# 开发模式
+pnpm dev
+
+# 生产构建
+pnpm build
+
+# 类型检查
+pnpm build:check
+
+# 运行测试
+pnpm test
+
+# 快速测试（含覆盖率）
+pnpm test:fast
+
+# 监听模式
+pnpm test:watch
+
+# 构建 Tauri 桌面应用
+pnpm tauri build
+
+# 代码检查
+pnpm lint
+
+# 自动修复代码检查问题
+pnpm lint:fix
+
+# 构建文档
+pnpm docs:vp:build
+
+# 开发文档
+pnpm docs:vp:dev
+```
+
+## AI 服务使用
+
+```typescript
+import { aiService } from '@/core/services';
+
+// 文本生成
+const result = await aiService.generate('写一段戏剧性场景', {
+  provider: 'minimax',
+  model: 'M2.5',
+  maxTokens: 1000,
+});
+console.log(result.content);
+
+// 多轮对话
+const chatResult = await aiService.chat(messages, {
+  provider: 'minimax',
+  model: 'M2.5',
 });
 ```
 
-### Using Workflow Store
+## 测试
 
-```typescript
-import { useWorkflowStore, STEP_ORDER } from '@/core/stores/workflow.store';
+- 使用 TypeScript 严格模式
+- 使用函数式组件 + Hooks
+- 遵循 React 组件拆分原则
+- 使用 ESLint + Prettier 格式化
 
-// Start workflow
-useWorkflowStore.getState().startWorkflow('import');
+## 提交规范
 
-// Update step progress
-useWorkflowStore.getState().setStepProgress('generate', 50);
-
-// Complete step with data
-useWorkflowStore.getState().completeStep('generate', { script: data });
-
-// Validate step
-const { valid, errors } = useWorkflowStore.getState().validateStep('generate');
-```
-
-## Commands
-
-```bash
-# Development mode
-npm run dev
-
-# Build
-npm run build
-
-# Type check
-npm run build:check
-
-# Run tests
-npm test
-
-# Fast tests with coverage
-npm run test:fast
-
-# Watch mode
-npm run test:watch
-
-# Run tests for changed files only
-npm run test:changed
-
-# Run tests with coverage report
-npm run test:coverage
-
-# Build Tauri desktop app
-npm run tauri build
-
-# Lint
-npm run lint
-
-# Auto-fix lint issues
-npm run lint:fix
-```
-
-## Testing
-
-- Use TypeScript strict mode
-- Use functional components + Hooks
-- Follow React component decomposition principles
-- Use ESLint + Prettier formatting
-- Format commit messages using Conventional Commits
-
-## Commit Conventions
-
-We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
+遵循 [Conventional Commits](https://www.conventionalcommits.org/) 规范：
 
 ```
 <type>(<scope>): <subject>
@@ -200,68 +200,33 @@ We follow the [Conventional Commits](https://www.conventionalcommits.org/) speci
 [optional footer]
 ```
 
-### Types
+### 类型
 
-| Type | Description |
-|------|-------------|
-| `feat` | New feature |
-| `fix` | Bug fix |
-| `docs` | Documentation changes |
-| `style` | Code formatting (no logic change) |
-| `refactor` | Code refactoring |
-| `perf` | Performance improvement |
-| `test` | Adding or updating tests |
-| `build` | Build system changes |
-| `ci` | CI/CD configuration changes |
-| `chore` | Other changes |
-| `revert` | Reverting previous changes |
+| Type       | Description              |
+| ---------- | ------------------------ |
+| `feat`     | 新功能                   |
+| `fix`      | Bug 修复                 |
+| `docs`     | 文档变更                 |
+| `style`    | 代码格式化（无逻辑变更） |
+| `refactor` | 代码重构                 |
+| `perf`     | 性能改进                 |
+| `test`     | 添加或更新测试           |
+| `build`    | 构建系统变更             |
+| `ci`       | CI/CD 配置变更           |
+| `chore`    | 其他变更                 |
 
-### Examples
+### 示例
 
 ```bash
-# Feature
+# 新功能
 git commit -m "feat(editor): add video preview functionality"
 
-# Bug fix
+# Bug 修复
 git commit -m "fix(workflow): resolve pipeline cancellation issue"
 
-# Documentation
+# 文档
 git commit -m "docs(readme): update installation instructions"
 
-# Refactoring
+# 重构
 git commit -m "refactor(services): extract common retry logic"
-```
-
-## Versioning & Releases
-
-We use `standard-version` for automated versioning and CHANGELOG generation.
-
-```bash
-# Patch release (bug fixes)
-npm run release:patch
-
-# Minor release (new features, backward compatible)
-npm run release:minor
-
-# Major release (breaking changes)
-npm run release:major
-```
-
-This will:
-1. Bump version in `package.json`
-2. Update `CHANGELOG.md`
-3. Create a git tag
-4. Commit changes
-
-## Testing
-
-```bash
-# Run all tests
-npm test
-
-# Run specific test file
-npm test -- ai.service.test.ts
-
-# Watch mode
-npm test -- --watch
 ```

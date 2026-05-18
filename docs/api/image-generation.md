@@ -36,6 +36,6 @@ const result = await imageGenerationService.generateImage({
 
 | 提供商   | 模型         | 适用场景         |
 | -------- | ------------ | ---------------- |
-| 字节跳动 | seedream-5.0 | 动画、插画，推荐 |
-| 快手     | kling-1.6    | 图像+视频生成    |
-| 生数科技 | vidu-2.0     | 高一致性         |
+| 字节跳动 | Seedream 5.0 | 动画、插画，推荐 |
+| 快手     | Kling 1.6    | 图像+视频生成    |
+| 生数科技 | Vidu 2.0     | 高一致性         |

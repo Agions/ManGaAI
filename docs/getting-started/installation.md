@@ -20,13 +20,13 @@ panel-flow 的详细安装说明。
 
 ```bash
 # 克隆
-git clone https://github.com/Agions/panel-flow.git
+git clone https://github.com/Agion/panel-flow.git
 cd panel-flow
 
 # 安装依赖
 pnpm install
 
-# 启动
+# 启动开发服务器
 pnpm dev
 ```
 
@@ -67,6 +67,16 @@ pnpm tauri build
 ```
 
 构建输出：`src-tauri/target/release/bundle/`
+
+## 文档构建
+
+```bash
+# 开发文档
+pnpm docs:dev
+
+# 构建文档
+pnpm docs:build
+```
 
 ## 故障排除
 

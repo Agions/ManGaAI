@@ -32,7 +32,7 @@ async generate(
 ```typescript
 const result = await aiService.generate('写一段戏剧性场景', {
   provider: 'minimax',
-  model: 'glm-5',
+  model: 'm2.5',
   maxTokens: 1000,
 });
 console.log(result.content);
@@ -58,9 +58,9 @@ async chat(messages: ChatMessage[], options?: ChatOptions): Promise<ChatResult>
 
 | 提供商   | 模型       |
 | -------- | ---------- |
-| 智谱     | glm-5      |
-| MiniMax  | m2.5       |
-| 月之暗面 | kimi-k2.5  |
-| 字节跳动 | doubao-2.0 |
-| 阿里云   | qwen-2.5   |
-| 百度     | ernie-4.0  |
+| 智谱     | GLM-5      |
+| MiniMax  | M2.5       |
+| 月之暗面 | Kimi K2.5  |
+| 字节跳动 | Doubao 2.0 |
+| 阿里云   | Qwen 2.5   |
+| 百度     | ERNIE 4.0  |
